@@ -1,0 +1,27 @@
+# TradingBot — Python Dependencies
+# Run once: pip install -r requirements.txt
+
+# Playwright (browser automation + CDP)
+playwright>=1.40.0
+
+# OCR
+pytesseract>=0.3.10
+Pillow>=10.0.0
+
+# Excel / trade logs
+openpyxl>=3.1.0
+
+# HTTP (CDP health checks, Telegram)
+requests>=2.31.0
+
+# Environment config
+python-dotenv>=1.0.0
+
+# Telegram Bot API
+pyTelegramBotAPI>=4.14.0
+
+# Scheduling (used in some automation scripts)
+schedule>=1.2.0
+
+# Standard lib only below this line — listed for documentation
+# subprocess, threading, signal, json, pathlib, datetime, logging, dataclasses

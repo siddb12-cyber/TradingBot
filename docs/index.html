@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>TradingBot Portfolio Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#070d1a;--bg-card:#0c1526;--bg-card2:#0f1c30;--border:#1a2d4a;
+    --green:#00d084;--red:#ff3366;--blue:#3b82f6;--yellow:#f59e0b;--purple:#8b5cf6;
+    --text:#e2e8f0;--text2:#94a3b8;--text3:#475569;
+    --font:'Inter',sans-serif;--mono:'JetBrains Mono',monospace;
+  }
+  html,body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;font-size:14px}
+  .app{max-width:1400px;margin:0 auto;padding:20px 24px}
+
+  /* HEADER */
+  .header{display:flex;align-items:center;justify-content:space-between;padding:16px 0 24px;border-bottom:1px solid var(--border);margin-bottom:24px}
+  .header-left{display:flex;align-items:center;gap:14px}
+  .header-title{font-size:20px;font-weight:700;letter-spacing:0.5px}
+  .header-sub{font-size:12px;color:var(--text2);margin-top:2px}
+  .badge{padding:4px 10px;border-radius:4px;font-size:11px;font-weight:600;letter-spacing:0.8px}
+  .badge-paper{background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.3)}
+  .badge-live{background:rgba(255,51,102,0.15);color:#ff3366;border:1px solid rgba(255,51,102,0.3)}
+  .header-right{text-align:right;font-size:12px;color:var(--text2)}
+  .update-time{font-family:var(--mono);font-size:11px;color:var(--text3)}
+
+  /* ACTIVE TRADE BANNER */
+  .active-trade-banner{
+    background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);
+    border-radius:8px;padding:10px 16px;margin-bottom:20px;
+    display:flex;align-items:center;gap:10px;font-size:13px;color:#93c5fd
+  }
+  .live-dot{width:8px;height:8px;border-radius:50%;background:#3b82f6;
+    box-shadow:0 0 8px #3b82f6;animation:pulse 1.5s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+  /* KPI CARDS */
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+  .kpi-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:18px 16px;position:relative;overflow:hidden}
+  .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .kpi-green::before{background:linear-gradient(90deg,var(--green),transparent)}
+  .kpi-red::before{background:linear-gradient(90deg,var(--red),transparent)}
+  .kpi-blue::before{background:linear-gradient(90deg,var(--blue),transparent)}
+  .kpi-yellow::before{background:linear-gradient(90deg,var(--yellow),transparent)}
+  .kpi-purple::before{background:linear-gradient(90deg,var(--purple),transparent)}
+  .kpi-label{font-size:10px;font-weight:500;letter-spacing:1px;color:var(--text3);text-transform:uppercase;margin-bottom:8px}
+  .kpi-value{font-size:26px;font-weight:700;font-family:var(--mono);line-height:1}
+  .kpi-sub{font-size:11px;color:var(--text2);margin-top:6px}
+
+  /* CHARTS */
+  .charts-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px}
+  .card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px}
+  .card-title{font-size:12px;font-weight:600;letter-spacing:1px;color:var(--text2);text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+  .card-title span{width:3px;height:14px;border-radius:2px;display:inline-block}
+  .chart-wrap{position:relative;height:220px}
+
+  /* VALIDATION PANEL */
+  .val-grid{display:grid;grid-template-columns:200px 1fr;gap:16px;margin-bottom:24px;align-items:start}
+  .readiness-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center}
+  .readiness-score{font-size:56px;font-weight:700;font-family:var(--mono);line-height:1;margin:12px 0 8px}
+  .readiness-label{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;padding:4px 12px;border-radius:4px;display:inline-block;margin-bottom:8px}
+  .readiness-sub{font-size:11px;color:var(--text3)}
+  .metrics-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px}
+  .metric-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .metric-row:last-child{margin-bottom:0}
+  .metric-name{font-size:11px;color:var(--text2);width:130px;flex-shrink:0;letter-spacing:0.3px}
+  .metric-bar-wrap{flex:1;background:#0a1628;border-radius:3px;height:6px;overflow:hidden}
+  .metric-bar{height:100%;border-radius:3px;transition:width 0.6s ease}
+  .metric-val{font-size:12px;font-family:var(--mono);font-weight:600;width:48px;text-align:right;flex-shrink:0}
+
+  /* TRADE TABLE */
+  .table-card{background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:24px}
+  .table-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .filter-btns{display:flex;gap:6px}
+  .filter-btn{padding:5px 12px;border-radius:5px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:11px;cursor:pointer;font-family:var(--font);transition:all 0.2s}
+  .filter-btn:hover,.filter-btn.active{background:var(--blue);border-color:var(--blue);color:#fff}
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:12px}
+  th{text-align:left;padding:8px 12px;color:var(--text3);font-size:10px;letter-spacing:0.8px;text-transform:uppercase;border-bottom:1px solid var(--border);font-weight:500}
+  td{padding:10px 12px;border-bottom:1px solid rgba(26,45,74,0.5);vertical-align:middle}
+  tr:hover td{background:rgba(59,130,246,0.04)}
+  tr:last-child td{border-bottom:none}
+  .signal-cell{font-family:var(--mono);font-size:11px;font-weight:500}
+  .outcome-badge{padding:3px 9px;border-radius:4px;font-size:10px;font-weight:600;letter-spacing:0.5px;font-family:var(--mono)}
+  .outcome-T1,.outcome-T2,.outcome-T3{background:rgba(0,208,132,0.12);color:var(--green)}
+  .outcome-SL{background:rgba(255,51,102,0.12);color:var(--red)}
+  .outcome-EOD{background:rgba(148,163,184,0.12);color:var(--text2)}
+  .outcome-OPEN{background:rgba(59,130,246,0.12);color:var(--blue)}
+  .conf-HIGH{color:var(--green)}
+  .conf-MEDIUM{color:var(--yellow)}
+  .conf-LOW{color:var(--red)}
+  .pts-pos{color:var(--green);font-family:var(--mono);font-weight:600}
+  .pts-neg{color:var(--red);font-family:var(--mono);font-weight:600}
+  .pts-zero{color:var(--text2);font-family:var(--mono)}
+  .empty-state{text-align:center;padding:40px;color:var(--text3)}
+  .empty-icon{font-size:32px;margin-bottom:8px}
+
+  /* FOOTER */
+  .footer{text-align:center;padding:16px 0;color:var(--text3);font-size:11px;border-top:1px solid var(--border);margin-top:8px}
+
+  @media(max-width:900px){
+    .charts-grid{grid-template-columns:1fr}
+    .val-grid{grid-template-columns:1fr}
+    .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div>
+        <div class="header-title">⚡ TradingBot Portfolio</div>
+        <div class="header-sub">NIFTY Options &nbsp;·&nbsp; Intraday &nbsp;·&nbsp; AI-Assisted</div>
+      </div>
+      <span class="badge badge-paper" style="color:#f59e0b;border-color:rgba(245,158,11,0.3)">PAPER MODE</span>
+    </div>
+    <div class="header-right">
+      <div style="font-size:12px;color:var(--text2)">Managed by TradingBot</div>
+      <div class="update-time">Updated: 17 May 2026, 18:49 UTC</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:2px">Validation until 2026-05-31</div>
+    </div>
+  </div>
+
+  
+
+  <!-- KPI CARDS -->
+  <div class="kpi-grid">
+    <div class="kpi-card kpi-green">
+      <div class="kpi-label">Total P&amp;L</div>
+      <div class="kpi-value" style="color:#00d084">+0</div>
+      <div class="kpi-sub">Points &nbsp;|&nbsp; Paper Mode</div>
+    </div>
+    <div class="kpi-card kpi-blue">
+      <div class="kpi-label">Win Rate</div>
+      <div class="kpi-value" style="color:var(--blue)">0%</div>
+      <div class="kpi-sub">0W / 0L of 0 trades</div>
+    </div>
+    <div class="kpi-card kpi-purple">
+      <div class="kpi-label">Avg Confidence</div>
+      <div class="kpi-value" style="color:var(--purple)">0</div>
+      <div class="kpi-sub">out of 100 &nbsp;|&nbsp; MTF Score</div>
+    </div>
+    <div class="kpi-card kpi-green">
+      <div class="kpi-label">Best Trade</div>
+      <div class="kpi-value" style="color:#00d084">+0</div>
+      <div class="kpi-sub">Points</div>
+    </div>
+    <div class="kpi-card kpi-red">
+      <div class="kpi-label">Worst Trade</div>
+      <div class="kpi-value" style="color:#00d084">0</div>
+      <div class="kpi-sub">Points</div>
+    </div>
+    <div class="kpi-card kpi-yellow">
+      <div class="kpi-label">Max Drawdown</div>
+      <div class="kpi-value" style="color:var(--yellow)">0</div>
+      <div class="kpi-sub">Points peak-to-trough</div>
+    </div>
+    <div class="kpi-card kpi-blue">
+      <div class="kpi-label">Current Streak</div>
+      <div class="kpi-value" style="color:var(--blue)">
+        0–
+      </div>
+      <div class="kpi-sub">No trades yet streak</div>
+    </div>
+    <div class="kpi-card kpi-blue">
+      <div class="kpi-label">Open Trades</div>
+      <div class="kpi-value" style="color:var(--blue)">6</div>
+      <div class="kpi-sub">Active positions</div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="charts-grid">
+    <div class="card">
+      <div class="card-title"><span style="background:var(--green)"></span>Cumulative P&amp;L</div>
+      <div class="chart-wrap"><canvas id="cumChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span style="background:var(--blue)"></span>Daily P&amp;L</div>
+      <div class="chart-wrap"><canvas id="dailyChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- VALIDATION PANEL -->
+  <div class="val-grid">
+    <div class="readiness-card">
+      <div class="card-title" style="justify-content:center"><span style="background:var(--purple)"></span>Readiness</div>
+      <div class="readiness-score" style="color:#ff3366">0</div>
+      <div class="readiness-label" style="background:rgba(0,0,0,0.3);color:#ff3366;border:1px solid #ff336630">NOT READY</div>
+      <div class="readiness-sub" style="margin-top:10px">out of 100 points</div>
+      <div class="readiness-sub" style="margin-top:4px">Live threshold: 75</div>
+    </div>
+    <div class="metrics-card">
+      <div class="card-title"><span style="background:var(--purple)"></span>Validation Metrics</div>
+      <div id="metricsContainer"></div>
+    </div>
+  </div>
+
+  <!-- TRADE HISTORY -->
+  <div class="table-card">
+    <div class="table-header">
+      <div class="card-title" style="margin-bottom:0"><span style="background:var(--blue)"></span>Trade History</div>
+      <div class="filter-btns">
+        <button class="filter-btn active" onclick="filterTrades('ALL')">All</button>
+        <button class="filter-btn" onclick="filterTrades('WIN')">Wins</button>
+        <button class="filter-btn" onclick="filterTrades('LOSS')">Losses</button>
+        <button class="filter-btn" onclick="filterTrades('OPEN')">Open</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table id="tradeTable">
+        <thead><tr>
+          <th>Date</th><th>Time</th><th>Signal</th><th>Entry</th>
+          <th>Outcome</th><th>Points</th><th>Confidence</th><th>MTF</th><th>TF 5m</th>
+        </tr></thead>
+        <tbody id="tradeBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">TradingBot &nbsp;·&nbsp; Haus and Kinder / Rivermoor &nbsp;·&nbsp; Samara Retail India Pvt Ltd &nbsp;·&nbsp; Paper Trading Active</div>
+</div>
+
+<script>
+const KPIS = {"total_trades": 0, "open_count": 6, "win_count": 0, "sl_count": 0, "win_rate": 0, "total_pts": 0, "best_pts": 0, "worst_pts": 0, "avg_conf": 0, "max_drawdown": 0, "streak": 0, "streak_type": "", "avg_lots": 1, "cumulative": [{"date": "", "time": "14-51-28", "cum": 0.0, "pts": 0.0}, {"date": "", "time": "15-48-10", "cum": 0.0, "pts": 0.0}, {"date": "", "time": "15-53-12", "cum": 0.0, "pts": 0.0}, {"date": "", "time": "15-58-15", "cum": 0.0, "pts": 0.0}, {"date": "", "time": "16-03-27", "cum": 0.0, "pts": 0.0}, {"date": "", "time": "16-08-29", "cum": 0.0, "pts": 0.0}], "daily_pnl": [{"date": "unknown", "pnl": 0.0}], "trade_rows": [{"date": "", "time": "14-51-28", "signal": "BUY 23650 PE", "trend": "BEARISH / PE BIAS", "price": 23625.95, "vwap": 23752.27, "outcome": "OPEN", "points": 0.0, "confidence": 0.0, "conf_level": "", "lots": 1.0, "mtf": "", "tf5": "", "tf15": "", "tf1h": "", "trade_id": "", "status": ""}, {"date": "", "time": "15-48-10", "signal": "BUY 23650 PE", "trend": "BEARISH / PE BIAS", "price": 23632.85, "vwap": 23731.13, "outcome": "OPEN", "points": 0.0, "confidence": 0.0, "conf_level": "", "lots": 1.0, "mtf": "", "tf5": "", "tf15": "", "tf1h": "", "trade_id": "", "status": ""}, {"date": "", "time": "15-53-12", "signal": "BUY 23650 PE", "trend": "BEARISH / PE BIAS", "price": 23632.85, "vwap": 23731.13, "outcome": "OPEN", "points": 0.0, "confidence": 0.0, "conf_level": "", "lots": 1.0, "mtf": "", "tf5": "", "tf15": "", "tf1h": "", "trade_id": "", "status": ""}, {"date": "", "time": "15-58-15", "signal": "BUY 23650 PE", "trend": "BEARISH / PE BIAS", "price": 23632.85, "vwap": 23731.13, "outcome": "OPEN", "points": 0.0, "confidence": 0.0, "conf_level": "", "lots": 1.0, "mtf": "", "tf5": "", "tf15": "", "tf1h": "", "trade_id": "", "status": ""}, {"date": "", "time": "16-03-27", "signal": "BUY 23650 PE", "trend": "BEARISH / PE BIAS", "price": 23632.85, "vwap": 23731.13, "outcome": "OPEN", "points": 0.0, "confidence": 0.0, "conf_level": "", "lots": 1.0, "mtf": "", "tf5": "", "tf15": "", "tf1h": "", "trade_id": "", "status": ""}, {"date": "", "time": "16-08-29", "signal": "BUY 23650 PE", "trend": "BEARISH / PE BIAS", "price": 23632.85, "vwap": 23731.13, "outcome": "OPEN", "points": 0.0, "confidence": 0.0, "conf_level": "", "lots": 1.0, "mtf": "", "tf5": "", "tf15": "", "tf1h": "", "trade_id": "", "status": ""}]};
+const VAL  = {"signal_accuracy": 0, "sl_ratio": 0.0, "avg_confidence": 0, "max_consec_losses": 0, "trade_count": 0, "rejection_count": 0};
+
+// Chart defaults
+Chart.defaults.color = '#475569';
+Chart.defaults.borderColor = '#1a2d4a';
+Chart.defaults.font.family = "'JetBrains Mono', monospace";
+Chart.defaults.font.size = 11;
+
+// ── Cumulative P&L Chart ──
+const cumData = KPIS.cumulative || [];
+const cumLabels = cumData.map((_,i)=>i+1);
+const cumValues = cumData.map(d=>d.cum);
+new Chart(document.getElementById('cumChart'), {
+  type: 'line',
+  data: {
+    labels: cumLabels,
+    datasets: [{
+      label: 'Cumulative P&L (pts)',
+      data: cumValues,
+      borderColor: cumValues.length && cumValues[cumValues.length-1] >= 0 ? '#00d084' : '#ff3366',
+      backgroundColor: function(ctx){
+        const g = ctx.chart.ctx.createLinearGradient(0,0,0,200);
+        g.addColorStop(0, cumValues.length && cumValues[cumValues.length-1]>=0 ? 'rgba(0,208,132,0.15)' : 'rgba(255,51,102,0.15)');
+        g.addColorStop(1, 'rgba(0,0,0,0)');
+        return g;
+      },
+      borderWidth: 2,
+      fill: true,
+      tension: 0.3,
+      pointRadius: cumValues.length > 30 ? 0 : 3,
+      pointHoverRadius: 5,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: {
+      callbacks: { label: ctx => (ctx.parsed.y>=0?'+':'')+ctx.parsed.y+' pts' }
+    }},
+    scales: {
+      x: { grid: { display:false }, ticks: { maxTicksLimit:8 } },
+      y: { grid: { color:'#0f1e30' }, ticks: { callback: v=>(v>=0?'+':'')+v } }
+    }
+  }
+});
+
+// ── Daily P&L Chart ──
+const dailyData = KPIS.daily_pnl || [];
+const dLabels = dailyData.map(d=>d.date);
+const dValues = dailyData.map(d=>d.pnl);
+new Chart(document.getElementById('dailyChart'), {
+  type: 'bar',
+  data: {
+    labels: dLabels,
+    datasets: [{
+      label: 'Daily P&L (pts)',
+      data: dValues,
+      backgroundColor: dValues.map(v=>v>=0?'rgba(0,208,132,0.7)':'rgba(255,51,102,0.7)'),
+      borderColor: dValues.map(v=>v>=0?'#00d084':'#ff3366'),
+      borderWidth: 1, borderRadius: 3,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display:false }, tooltip: {
+      callbacks: { label: ctx => (ctx.parsed.y>=0?'+':'')+ctx.parsed.y+' pts' }
+    }},
+    scales: {
+      x: { grid: { display:false }, ticks: { maxTicksLimit:6 } },
+      y: { grid: { color:'#0f1e30' } }
+    }
+  }
+});
+
+// ── Validation Metrics ──
+const metricDefs = [
+  { key:'signal_accuracy', label:'Signal Accuracy', unit:'%', target:55, invert:false, color:'#00d084' },
+  { key:'sl_ratio',        label:'SL Hit Ratio',    unit:'%', target:40, invert:true,  color:'#ff3366' },
+  { key:'avg_confidence',  label:'Avg Confidence',  unit:'',  target:60, invert:false, color:'#8b5cf6' },
+  { key:'max_consec_losses',label:'Max Consec Loss',unit:'',  target:3,  invert:true,  color:'#f59e0b' },
+  { key:'trade_count',     label:'Trades Logged',   unit:'',  target:20, invert:false, color:'#3b82f6' },
+  { key:'rejection_count', label:'Rejections',      unit:'',  target:100,invert:false, color:'#475569' },
+];
+const mc = document.getElementById('metricsContainer');
+metricDefs.forEach(m => {
+  const val = VAL[m.key] || 0;
+  const pct = Math.min((val / (m.target || 100)) * 100, 100);
+  const isGood = m.invert ? val <= m.target : val >= m.target;
+  const barColor = isGood ? m.color : (m.invert ? '#00d084' : '#ff3366');
+  mc.innerHTML += `
+    <div class="metric-row">
+      <div class="metric-name">${m.label}</div>
+      <div class="metric-bar-wrap">
+        <div class="metric-bar" style="width:${pct}%;background:${barColor}"></div>
+      </div>
+      <div class="metric-val" style="color:${barColor}">${val}${m.unit}</div>
+    </div>`;
+});
+
+// ── Trade Table ──
+const trades = KPIS.trade_rows || [];
+function renderTable(filter) {
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('active', b.textContent===filter));
+  const tbody = document.getElementById('tradeBody');
+  const filtered = trades.filter(t=>{
+    if(filter==='ALL')   return true;
+    if(filter==='WIN')   return t.outcome.startsWith('T');
+    if(filter==='LOSS')  return t.outcome.startsWith('SL');
+    if(filter==='OPEN')  return t.outcome==='OPEN'||t.status==='OPEN';
+    return true;
+  });
+  if(!filtered.length){
+    tbody.innerHTML='<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📊</div><div>No trades yet — system will populate data as trades execute</div></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = [...filtered].reverse().map(t=>{
+    const oc = t.outcome.startsWith('T')?'T1':'outcome-'+t.outcome.split('_')[0];
+    const ptsCls = t.points>0?'pts-pos':t.points<0?'pts-neg':'pts-zero';
+    const ptsStr = t.points!==0?(t.points>0?'+':'')+t.points+'pts':'–';
+    return `<tr>
+      <td style="color:var(--text2);font-family:var(--mono)">${t.date}</td>
+      <td style="color:var(--text3);font-family:var(--mono)">${t.time}</td>
+      <td class="signal-cell">${t.signal}</td>
+      <td style="font-family:var(--mono)">${t.price||'–'}</td>
+      <td><span class="outcome-badge outcome-${t.outcome.split('_')[0]}">${t.outcome}</span></td>
+      <td class="${ptsCls}">${ptsStr}</td>
+      <td class="conf-${t.conf_level}">${t.confidence||'–'}${t.confidence?' / '+t.conf_level:''}</td>
+      <td style="color:var(--text2)">${t.mtf||'–'}</td>
+      <td style="color:var(--text2)">${t.tf5||'–'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterTrades(f){ renderTable(f); }
+renderTable('ALL');
+</script>
+</body>
+</html>
