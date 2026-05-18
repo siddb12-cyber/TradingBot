@@ -28,6 +28,7 @@ Paper Trading Only.
 """
 
 import logging
+import re
 import time
 from pathlib import Path
 from typing import Optional
@@ -97,17 +98,174 @@ DIR_SIDEWAYS = "SIDEWAYS"
 # INTERNAL HELPERS
 # =========================
 
-def _tf_direction(price: float, vwap: float, ema9: float) -> str:
+def _extract_indicators_from_dom(page) -> dict:
+    """
+    Read VWAP and EMA9 values directly from TradingView's page text.
+
+    More reliable than OCR for the small indicator legend text.
+    TradingView renders the legend as HTML — Playwright can read it directly
+    without any image processing.
+
+    Called as a fallback when OCR fails to extract VWAP or EMA9.
+
+    Returns: {"vwap": float|None, "ema9": float|None}
+    """
+    from extraction.ocr_engine import _parse_floats, NIFTY_PRICE_MIN, NIFTY_PRICE_MAX
+
+    result = {"vwap": None, "ema9": None}
+
+    try:
+        # Read the full page body text — TradingView renders legend as plain HTML text
+        text = page.inner_text("body", timeout=3000)
+    except Exception as e:
+        logger.debug("[MTF][DOM] Could not read page text: %s", e)
+        return result
+
+    if not text:
+        return result
+
+    logger.debug("[MTF][DOM] Page text sample (first 800 chars):\n%s", text[:800])
+
+    # ==============================================
+    # VWAP — anchor on "Session" keyword
+    # TradingView renders: "VWAP Session  23,384.63  23,415.80  23,353.46"
+    # "VWAP" may be garbled by OCR, but "Session" is stable.
+    # DOM text reads it directly so both words should be intact.
+    # ==============================================
+    vwap_patterns = [
+        r'VWAP\s+Session[^\d]*([\d,]+\.[\d]{2})',   # VWAP Session VALUE
+        r'VWAP[^\d\n]{0,60}([\d,]+\.[\d]{2})',       # VWAP ... VALUE
+        r'\bSession\b[^\d\n]{0,20}([\d,]+\.[\d]{2})', # Session VALUE (VWAP garbled)
+    ]
+    for pattern in vwap_patterns:
+        m = re.search(pattern, text, re.IGNORECASE)
+        if m:
+            candidates = _parse_floats(m.group(1))
+            for c in candidates:
+                if NIFTY_PRICE_MIN <= c <= NIFTY_PRICE_MAX:
+                    result["vwap"] = c
+                    logger.info("[MTF][DOM] VWAP extracted: %.2f (pattern: %s)", c, pattern)
+                    break
+        if result["vwap"] is not None:
+            break
+
+    # ==============================================
+    # EMA9 — anchor on "close" or "EMA" + digit
+    # TradingView renders: "EMA 9 close  23,384.45"
+    # ==============================================
+    ema_patterns = [
+        r'EMA\s*9\s*[Cc]lose[^\d]*([\d,]+\.[\d]{2})', # EMA 9 close VALUE
+        r'EMA\s*[Cc]lose[^\d]*([\d,]+\.[\d]{2})',      # EMA close VALUE
+        r'EMA\s*9[^\d\n]{0,30}([\d,]+\.[\d]{2})',      # EMA 9 VALUE
+        r'\b9\s+[Cc]lose[^\d]*([\d,]+\.[\d]{2})',      # 9 close VALUE
+    ]
+    for pattern in ema_patterns:
+        m = re.search(pattern, text, re.IGNORECASE)
+        if m:
+            candidates = _parse_floats(m.group(1))
+            for c in candidates:
+                if NIFTY_PRICE_MIN <= c <= NIFTY_PRICE_MAX:
+                    result["ema9"] = c
+                    logger.info("[MTF][DOM] EMA9 extracted: %.2f (pattern: %s)", c, pattern)
+                    break
+        if result["ema9"] is not None:
+            break
+
+    if result["vwap"] is None:
+        logger.warning("[MTF][DOM] VWAP not found in page text")
+    if result["ema9"] is None:
+        logger.warning("[MTF][DOM] EMA9 not found in page text")
+
+    return result
+
+
+def _tf_direction(price: float, vwap, ema9) -> str:
     """
     Determine bullish / bearish / sideways for a single timeframe.
+    Returns SIDEWAYS if price, vwap, or ema9 is None — never raises.
     Matches the same logic used in ai_trading_assistant.decide_signal().
     """
+    if price is None or vwap is None or ema9 is None:
+        logger.debug(
+            "[MTF] _tf_direction: missing value — price=%s vwap=%s ema9=%s → SIDEWAYS",
+            price, vwap, ema9,
+        )
+        return DIR_SIDEWAYS
     if price > vwap and price > ema9:
         return DIR_BULLISH
     elif price < vwap and price < ema9:
         return DIR_BEARISH
     else:
         return DIR_SIDEWAYS
+
+
+def _dismiss_ads(page) -> int:
+    """
+    Silently dismiss all known TradingView ad/popup/overlay types.
+
+    Handles:
+      - Upgrade / subscription modals ("Maybe later", "No thanks", "Continue for free")
+      - Cookie consent banners
+      - Toast / notification popups
+      - Survey / feedback overlays
+      - Generic close buttons (aria-label, data-name, class-based)
+
+    Each selector is tried with a 1.5s timeout so this never blocks the main loop.
+    Returns the count of elements successfully dismissed.
+    """
+    dismissed = 0
+
+    DISMISS_SELECTORS = [
+        # Text-based buttons (most reliable across TradingView UI updates)
+        'button:has-text("Maybe later")',
+        'button:has-text("No, thanks")',
+        'button:has-text("No thanks")',
+        'button:has-text("Continue for free")',
+        'button:has-text("Keep current plan")',
+        'button:has-text("Dismiss")',
+        'button:has-text("Got it")',
+        'button:has-text("Accept")',
+        'button:has-text("I agree")',
+        'button:has-text("Close")',
+        # TradingView-specific data attributes
+        '[data-name="close-button"]',
+        '[data-role="button"][aria-label="Close"]',
+        '[data-dialog-name] [aria-label="Close"]',
+        # CSS class patterns used by TradingView dialogs
+        '.js-dialog__close',
+        '.tv-dialog__close',
+        '.close-B02UUUN3',
+        '.closeButton-LeHfmr1a',
+        # Toast / notification close
+        '[data-role="toast-close-button"]',
+        # Cookie / GDPR banners
+        '#cookie-law-info-bar button',
+        # Aria-label fallback
+        'button[aria-label="Close"]',
+        'button[aria-label="Dismiss"]',
+    ]
+
+    for selector in DISMISS_SELECTORS:
+        try:
+            locator = page.locator(selector).first
+            if locator.is_visible(timeout=1500):
+                locator.click(timeout=1500)
+                dismissed += 1
+                logger.debug(f"[ADS] Dismissed: {selector}")
+                page.wait_for_timeout(300)
+        except Exception:
+            pass
+
+    # Keyboard Escape as final fallback for any remaining modal
+    try:
+        page.keyboard.press("Escape")
+    except Exception:
+        pass
+
+    if dismissed > 0:
+        logger.info(f"[ADS] Dismissed {dismissed} TradingView overlay(s)")
+
+    return dismissed
 
 
 def _switch_timeframe(page, tf_label: str) -> bool:
@@ -429,11 +587,20 @@ class MultiTimeframeAnalyzer:
         tf_results: dict = {}
 
         # =========================
+        # PRE-SCAN: DISMISS ADS / POPUPS
+        # =========================
+        # Run once before the loop to clear any overlay blocking the chart.
+        _dismiss_ads(page)
+
+        # =========================
         # STEP 1: PER-TIMEFRAME EXTRACTION
         # =========================
 
         for tf in TIMEFRAMES:
             logger.info(f"[MTF] Processing timeframe: {tf}")
+
+            # --- Dismiss any ad that appeared since last TF switch ---
+            _dismiss_ads(page)
 
             # --- Switch TradingView chart to this TF ---
             switched = _switch_timeframe(page, tf)
@@ -442,6 +609,9 @@ class MultiTimeframeAnalyzer:
 
             # --- Wait for chart re-render ---
             page.wait_for_timeout(TF_WAIT_MS)
+
+            # --- Dismiss any ad triggered by the TF switch ---
+            _dismiss_ads(page)
 
             # --- Screenshot ---
             shot_path = screenshot_dir / f"mtf_{tf}_{timestamp}.png"
@@ -473,6 +643,19 @@ class MultiTimeframeAnalyzer:
             price = ocr["current_price"]
             vwap  = ocr["vwap"]
             ema9  = ocr["ema9"]
+
+            # --- DOM Fallback: read VWAP / EMA9 from TradingView page text ---
+            # OCR frequently garbles the small indicator legend text.
+            # Playwright reads the page's HTML directly — no image processing.
+            if vwap is None or ema9 is None:
+                dom = _extract_indicators_from_dom(page)
+                if vwap is None and dom["vwap"] is not None:
+                    vwap = dom["vwap"]
+                    logger.info("[MTF] VWAP from DOM fallback: %.2f", vwap)
+                if ema9 is None and dom["ema9"] is not None:
+                    ema9 = dom["ema9"]
+                    logger.info("[MTF] EMA9 from DOM fallback: %.2f", ema9)
+
             direction = _tf_direction(price, vwap, ema9)
 
             tf_results[tf] = {
@@ -485,8 +668,11 @@ class MultiTimeframeAnalyzer:
             }
 
             logger.info(
-                f"[MTF] {tf} | price={price:.2f} vwap={vwap:.2f} ema9={ema9:.2f} "
-                f"| direction={direction}"
+                "[MTF] %s | price=%.2f vwap=%s ema9=%s | direction=%s",
+                tf, price,
+                ("%.2f" % vwap) if vwap else "None",
+                ("%.2f" % ema9) if ema9 else "None",
+                direction,
             )
 
         result["timeframe_data"] = tf_results
@@ -510,105 +696,132 @@ class MultiTimeframeAnalyzer:
                 f"Primary timeframe ({PRIMARY_TIMEFRAME}) OCR failed — "
                 f"cannot determine trade direction"
             )
-            result["valid"] = False
-            logger.error(f"[MTF] {result['error']}")
+            logger.error("[MTF] %s", result["error"])
             return result
 
         primary_direction = primary_data["direction"]
         primary_price     = primary_data["price"]
         primary_vwap      = primary_data["vwap"]
+        primary_ema9      = primary_data["ema9"]
 
         result["primary_direction"] = primary_direction
-        result["valid"]             = True
+        result["valid"] = True
 
         # =========================
-        # STEP 4: CONFIDENCE SCORING
+        # STEP 4: ALIGNMENT COUNT
         # =========================
 
-        # Component 1: Timeframe alignment (50 pts)
-        score_tf = _score_tf_alignment(primary_direction, tf_results)
+        aligned_count = sum(
+            1 for tf, data in tf_results.items()
+            if data.get("valid") and data.get("direction") == primary_direction
+        )
+        total_valid = sum(1 for d in tf_results.values() if d.get("valid"))
 
-        # Component 2: VWAP distance on primary TF (25 pts)
-        score_vwap = _score_vwap_distance(primary_price, primary_vwap)
+        result["aligned_count"]     = aligned_count
+        result["total_tf_count"]    = total_valid
+        result["alignment_summary"] = f"{aligned_count}/{total_valid} {primary_direction}"
 
-        # Component 3: EMA9 alignment across TFs (25 pts)
-        score_ema = _score_ema_alignment(primary_direction, tf_results)
+        logger.info(
+            "[MTF] Alignment: %s | primary=%s | price=%.2f",
+            result["alignment_summary"], primary_direction,
+            primary_price if primary_price else 0.0,
+        )
 
-        # Total score (0–100)
-        total_score = score_tf + score_vwap + score_ema
-        total_score = max(0, min(100, total_score))   # hard clamp
+        # =========================
+        # STEP 5: CONFIDENCE SCORE
+        # =========================
 
-        confidence_level = _classify_confidence(total_score)
+        score = 0
 
-        result["confidence_score"] = total_score
+        # Component 1: Timeframe alignment (50 pts max)
+        if total_valid > 0:
+            align_ratio = aligned_count / total_valid
+            score += int(align_ratio * SCORE_WEIGHT_TF_ALIGN)
+
+        # Component 2: VWAP proximity (25 pts max)
+        # Closer price is to VWAP, higher conviction
+        if primary_vwap and primary_price:
+            vwap_dist = abs(primary_price - primary_vwap)
+            if vwap_dist <= 10:
+                score += SCORE_WEIGHT_VWAP_DIST        # Full score: very close
+            elif vwap_dist <= 30:
+                score += int(SCORE_WEIGHT_VWAP_DIST * 0.75)
+            elif vwap_dist <= 60:
+                score += int(SCORE_WEIGHT_VWAP_DIST * 0.5)
+            elif vwap_dist <= 100:
+                score += int(SCORE_WEIGHT_VWAP_DIST * 0.25)
+            # > 100 pts: 0 score — too far from VWAP
+
+        # Component 3: EMA9 consistency (25 pts max)
+        # All valid TFs where EMA9 agrees with primary direction
+        if primary_ema9 and primary_price:
+            ema_agrees = 0
+            ema_total  = 0
+            for tf, data in tf_results.items():
+                if not data.get("valid") or data.get("ema9") is None:
+                    continue
+                ema_total += 1
+                tf_ema    = data["ema9"]
+                tf_price  = data["price"]
+                if primary_direction == DIR_BULLISH and tf_price > tf_ema:
+                    ema_agrees += 1
+                elif primary_direction == DIR_BEARISH and tf_price < tf_ema:
+                    ema_agrees += 1
+            if ema_total > 0:
+                score += int((ema_agrees / ema_total) * SCORE_WEIGHT_EMA_ALIGN)
+
+        score = min(100, max(0, score))
+
+        if score >= CONFIDENCE_HIGH_THRESHOLD:
+            confidence_level = CONFIDENCE_HIGH
+        elif score >= CONFIDENCE_MED_THRESHOLD:
+            confidence_level = CONFIDENCE_MEDIUM
+        else:
+            confidence_level = CONFIDENCE_LOW
+
+        result["confidence_score"] = score
         result["confidence_level"] = confidence_level
 
         logger.info(
-            f"[MTF] Confidence | tf_align={score_tf} + vwap_dist={score_vwap} "
-            f"+ ema_align={score_ema} = {total_score} → {confidence_level}"
+            "[MTF] Confidence: %d/100 (%s) | components: align=%.0f%% vwap_dist=%s ema_agree=%s",
+            score, confidence_level,
+            (aligned_count / total_valid * 100) if total_valid else 0,
+            ("%.1f pts" % abs(primary_price - primary_vwap)) if primary_vwap and primary_price else "N/A",
+            ("yes" if primary_ema9 and primary_price and
+             ((primary_direction == DIR_BULLISH and primary_price > primary_ema9) or
+              (primary_direction == DIR_BEARISH and primary_price < primary_ema9))
+             else "no") if primary_ema9 else "N/A",
         )
 
         # =========================
-        # STEP 5: ALIGNMENT SUMMARY
+        # STEP 6: TRADE SIGNAL
         # =========================
 
-        # Count TFs agreeing with primary direction (excluding sideways)
-        aligned_count = 0
-        valid_count   = 0
+        is_trade = (
+            primary_direction in (DIR_BULLISH, DIR_BEARISH)
+            and confidence_level in (CONFIDENCE_HIGH, CONFIDENCE_MEDIUM)
+        )
 
-        for tf, data in tf_results.items():
-            if not data.get("valid"):
-                continue
-            valid_count += 1
-            if data.get("direction") == primary_direction:
-                aligned_count += 1
+        if is_trade:
+            # Round to nearest NIFTY strike interval
+            strike = round(primary_price / NIFTY_STRIKE_INTERVAL) * NIFTY_STRIKE_INTERVAL
+            option_type = "CE" if primary_direction == DIR_BULLISH else "PE"
+            trade_signal = f"BUY {int(strike)} {option_type}"
 
-        result["aligned_count"]     = aligned_count
-        result["total_tf_count"]    = valid_count
-        result["alignment_summary"] = f"{aligned_count}/{valid_count} {primary_direction}"
+            result["trade_signal"] = trade_signal
+            result["is_trade"]     = True
 
-        logger.info(f"[MTF] Alignment: {result['alignment_summary']}")
-
-        # =========================
-        # STEP 6: BUILD TRADE SIGNAL
-        # =========================
-
-        # If primary is sideways OR confidence is LOW → no trade
-        if primary_direction == DIR_SIDEWAYS or confidence_level == CONFIDENCE_LOW:
-            sig = _build_trade_signal(DIR_SIDEWAYS, primary_price)
+            logger.info(
+                "[MTF] Trade signal: %s | SL=%.0f pts | T1=%.0f T2=%.0f T3=%.0f",
+                trade_signal, STOP_LOSS_POINTS,
+                TARGET_1_POINTS, TARGET_2_POINTS, TARGET_3_POINTS,
+            )
         else:
-            sig = _build_trade_signal(primary_direction, primary_price)
-
-        # Attach MTF metadata to signal dict for Telegram builder
-        sig["confidence_score"] = total_score
-        sig["confidence_level"] = confidence_level
-        sig["alignment_summary"] = result["alignment_summary"]
-        sig["timeframe_data"]    = tf_results
-
-        result["trade_signal"] = sig["trade_signal"]
-        result["is_trade"]     = sig["is_trade"]
-
-        # Merge signal into result for easy access by caller
-        result.update({k: v for k, v in sig.items() if k not in result})
-
-        # =========================
-        # DONE
-        # =========================
-
-        logger.info(
-            f"[MTF] Analysis complete | direction={primary_direction} | "
-            f"signal={sig['trade_signal']} | score={total_score} | level={confidence_level}"
-        )
+            result["trade_signal"] = "NO TRADE"
+            result["is_trade"]     = False
+            logger.info(
+                "[MTF] No trade: direction=%s confidence=%s (%d/100)",
+                primary_direction, confidence_level, score,
+            )
 
         return result
-
-    # =========================
-    # REPR
-    # =========================
-
-    def __repr__(self) -> str:
-        return (
-            f"MultiTimeframeAnalyzer("
-            f"timeframes={TIMEFRAMES}, "
-            f"primary={PRIMARY_TIMEFRAME})"
-        )
