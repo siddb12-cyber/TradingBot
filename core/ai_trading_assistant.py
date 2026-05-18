@@ -17,6 +17,13 @@ Priority 5 additions (Multi-Timeframe Confirmation):
     - MEDIUM (45-69) and HIGH (>=70) confidence proceed to risk check
     - Telegram signal includes: TF alignment, score, confidence level per TF breakdown
 
+Priority 6 additions (OI + News Sentiment):
+    - OIAnalysis computes PCR, max pain → score adjustment (-20 to +8)
+    - NewsSentimentEngine fetches VIX, US Futures, RSS, Google News → adjustment (-20 to +5)
+    - Adjustments applied AFTER base MTF score, BEFORE confidence gate
+    - Adjusted score clamped to 0-100
+    - Telegram signal now includes OI and sentiment summary lines
+
 Paper Trading Only. No real broker execution.
 """
 
@@ -52,6 +59,8 @@ from core.multi_timeframe import (
     CONFIDENCE_MEDIUM,
     CONFIDENCE_LOW,
 )
+from core.oi_analysis import OIAnalysis
+from core.news_sentiment import NewsSentimentEngine
 
 # =========================
 # LOGGING
@@ -129,15 +138,17 @@ def _tf_breakdown_lines(timeframe_data: dict) -> str:
     return "\n".join(lines)
 
 
-def build_signal_msg(ts, sig, trade_id, sizing, risk_summary):
+def build_signal_msg(ts, sig, trade_id, sizing, risk_summary, oi_result=None, sent_result=None):
     """
-    Build Telegram signal alert — includes MTF alignment + confidence score.
+    Build Telegram signal alert — includes MTF alignment + confidence score
+    + OI analysis summary + news sentiment summary.
     sig dict contains all MTF fields merged in by MultiTimeframeAnalyzer.
     """
     sep        = "--" * 16
     tf_lines   = _tf_breakdown_lines(sig.get("timeframe_data", {}))
     align_sum  = sig.get("alignment_summary", "?")
-    score      = sig.get("confidence_score", 0)
+    score      = sig.get("adjusted_confidence_score", sig.get("confidence_score", 0))
+    base_score = sig.get("confidence_score", 0)
     level      = sig.get("confidence_level", "?")
 
     # Primary TF data for header
@@ -145,6 +156,37 @@ def build_signal_msg(ts, sig, trade_id, sizing, risk_summary):
     price = primary_data.get("price", 0)
     vwap  = primary_data.get("vwap", 0)
     ema9  = primary_data.get("ema9", 0)
+
+    # OI summary line
+    if oi_result and oi_result.get("valid"):
+        pcr_val  = oi_result.get("pcr")
+        mp_val   = oi_result.get("max_pain")
+        atm_bias = oi_result.get("atm_bias", "NEUTRAL")
+        oi_adj_v = oi_result.get("score_adjustment", 0)
+        pcr_str  = "PCR=%.2f" % pcr_val if pcr_val else "PCR=N/A"
+        mp_str   = "MaxPain=%d" % int(mp_val) if mp_val else "MaxPain=N/A"
+        oi_line  = "%s  %s  ATMbias=%s  (%+dpts)" % (pcr_str, mp_str, atm_bias, oi_adj_v)
+    else:
+        oi_line = "N/A (fetch failed)"
+
+    # Sentiment summary line
+    if sent_result:
+        vix_v   = sent_result.get("vix")
+        us_pct  = sent_result.get("us_futures_pct")
+        mood    = sent_result.get("sentiment", "NEUTRAL")
+        s_adj_v = sent_result.get("total_adjustment", 0)
+        vix_str = "VIX=%.1f" % vix_v if vix_v else "VIX=N/A"
+        fut_str = "ES=F=%+.2f%%" % us_pct if us_pct is not None else "ES=F=N/A"
+        sent_line = "%s  %s  News=%s  (%+dpts)" % (vix_str, fut_str, mood, s_adj_v)
+    else:
+        sent_line = "N/A"
+
+    # Score breakdown line
+    oi_adj_val = (oi_result or {}).get("score_adjustment", 0)
+    s_adj_val  = (sent_result or {}).get("total_adjustment", 0)
+    score_line = "Base=%d  OI=%+d  Sent=%+d  Final=%d/100" % (
+        base_score, oi_adj_val, s_adj_val, score
+    )
 
     return (
         "NIFTY AI TRADE SIGNAL\n" + sep + "\n"
@@ -160,7 +202,9 @@ def build_signal_msg(ts, sig, trade_id, sizing, risk_summary):
         "Target 3    : " + sig["target3"] + "\n" + sep + "\n"
         "MTF Alignment  : " + align_sum + "\n"
         "Timeframes  :\n" + tf_lines + "\n" + sep + "\n"
-        "Confidence  : " + str(score) + "/100  [" + level + "]\n" + sep + "\n"
+        "OI Analysis : " + oi_line + "\n"
+        "Sentiment   : " + sent_line + "\n" + sep + "\n"
+        "Confidence  : " + score_line + "  [" + level + "]\n" + sep + "\n"
         "Qty (Lots)  : " + str(sizing["lots"]) + " lot(s)\n"
         "Max Loss    : Rs." + str(sizing["max_loss_inr"]) + " (" + str(sizing["risk_pct"]) + "% capital)\n"
         "Trade No.   : " + str(risk_summary["trades_today"]) + "/" + str(risk_summary["max_trades"]) + " today\n" + sep + "\n"
@@ -232,9 +276,11 @@ def run():
                 " MED>=" + str(CONFIDENCE_MED_THRESHOLD))
     logger.info("=" * 52)
 
-    state    = TradeStateManager()
-    risk     = RiskEngine()
-    analyzer = MultiTimeframeAnalyzer()
+    state     = TradeStateManager()
+    risk      = RiskEngine()
+    analyzer  = MultiTimeframeAnalyzer()
+    oi_engine = OIAnalysis()
+    sentiment = NewsSentimentEngine()
 
     if state.has_active_trade():
         logger.info(
@@ -330,16 +376,82 @@ def run():
             # Extract MTF result fields
             primary_direction = mtf["primary_direction"]
             sig               = mtf          # sig dict has all signal + MTF fields merged
-            score             = mtf["confidence_score"]
+            base_score        = mtf["confidence_score"]
             level             = mtf["confidence_level"]
             align_sum         = mtf["alignment_summary"]
             tf_data           = mtf["timeframe_data"]
 
             logger.info(
                 "[MTF] direction=" + str(primary_direction) +
-                " | score=" + str(score) +
+                " | base_score=" + str(base_score) +
                 " | level=" + level +
                 " | align=" + align_sum
+            )
+
+            # =========================
+            # STEP 3A: OI + SENTIMENT ADJUSTMENTS
+            # Apply after MTF base score, before confidence gate.
+            # Both engines are non-blocking — failure returns 0 adjustment.
+            # =========================
+
+            # Resolve entry price for OI ATM calculation
+            primary_data_pre = tf_data.get(PRIMARY_TIMEFRAME, {})
+            pre_price        = primary_data_pre.get("price") or 0.0
+
+            oi_result   = None
+            sent_result = None
+            oi_adj      = 0
+            sent_adj    = 0
+
+            if mtf["is_trade"] and primary_direction in ("BULLISH", "BEARISH"):
+                # OI adjustment
+                try:
+                    oi_result = oi_engine.get_score_adjustment(
+                        current_price=pre_price,
+                        signal_direction=primary_direction,
+                    )
+                    oi_adj = oi_result.get("score_adjustment", 0)
+                    logger.info("[OI] Adjustment: %+d (PCR=%s ATMbias=%s)",
+                                oi_adj,
+                                f"{oi_result['pcr']:.3f}" if oi_result.get("pcr") else "N/A",
+                                oi_result.get("atm_bias", "N/A"))
+                except Exception as e:
+                    logger.warning("[OI] Engine error (non-fatal): %s", e)
+
+                # Sentiment adjustment
+                try:
+                    sent_result = sentiment.get_score_adjustment(
+                        signal_direction=primary_direction,
+                    )
+                    sent_adj = sent_result.get("total_adjustment", 0)
+                    logger.info("[SENTIMENT] Adjustment: %+d (VIX=%s Futures=%s Mood=%s)",
+                                sent_adj,
+                                f"{sent_result['vix']:.1f}" if sent_result.get("vix") else "N/A",
+                                f"{sent_result['us_futures_pct']:+.2f}%" if sent_result.get("us_futures_pct") is not None else "N/A",
+                                sent_result.get("sentiment", "N/A"))
+                except Exception as e:
+                    logger.warning("[SENTIMENT] Engine error (non-fatal): %s", e)
+
+            # Apply adjustments and clamp to 0-100
+            adjusted_score = max(0, min(100, base_score + oi_adj + sent_adj))
+            sig["adjusted_confidence_score"] = adjusted_score
+
+            # Recalculate confidence level from adjusted score
+            from config.config import CONFIDENCE_HIGH_THRESHOLD, CONFIDENCE_MED_THRESHOLD
+            if adjusted_score >= CONFIDENCE_HIGH_THRESHOLD:
+                adjusted_level = CONFIDENCE_HIGH
+            elif adjusted_score >= CONFIDENCE_MED_THRESHOLD:
+                adjusted_level = CONFIDENCE_MEDIUM
+            else:
+                adjusted_level = CONFIDENCE_LOW
+
+            sig["confidence_level"] = adjusted_level
+            score = adjusted_score
+            level = adjusted_level
+
+            logger.info(
+                "[SCORE] base=%d  oi=%+d  sentiment=%+d  adjusted=%d  level=%s",
+                base_score, oi_adj, sent_adj, adjusted_score, adjusted_level
             )
 
             # =========================
@@ -447,44 +559,201 @@ def run():
             logger.info("[ASSISTANT] Trade OPENED: id=" + trade_id)
 
             # --- Telegram signal alert ---
-            msg = build_signal_msg(timestamp, sig, trade_id, sizing, risk_summary)
+            msg = build_signal_msg(timestamp, sig, trade_id, sizing, risk_summary,
+                                   oi_result=oi_result, sent_result=sent_result)
             print(msg)
             send_telegram(msg)
             logger.info("[TELEGRAM] Signal sent: " + trade_id)
 
-            # --- Excel entry row (includes confidence and MTF columns) ---
+            # --- Excel entry row (includes confidence, MTF, OI, sentiment columns) ---
             trade_row = {
-                "Date":            today,
-                "Time":            timestamp,
-                "Trend":           sig.get("trend", primary_direction),
-                "Current Price":   entry_price,
-                "VWAP":            vwap_entry,
-                "EMA9":            ema9_entry,
-                "Trade Signal":    sig["trade_signal"],
-                "Stop Loss":       sig.get("stop_loss", ""),
-                "Target 1":        sig.get("target1", ""),
-                "Target 2":        sig.get("target2", ""),
-                "Target 3":        sig.get("target3", ""),
-                "Lots":            sizing["lots"],
-                "Max Loss INR":    sizing["max_loss_inr"],
-                "MTF Alignment":   align_sum,
-                "Confidence Score": score,
-                "Confidence Level": level,
-                "TF 5m":           tf_data.get("5m", {}).get("direction", "N/A"),
-                "TF 15m":          tf_data.get("15m", {}).get("direction", "N/A"),
-                "TF 1h":           tf_data.get("1h", {}).get("direction", "N/A"),
-                "Trade ID":        trade_id,
-                "Trade Status":    TradeStateManager.OPEN,
-                "Outcome":         None,
-                "Points Result":   None,
-                "Exit Price":      None,
-                "Exit Time":       None,
+                "Date":              today,
+                "Time":              timestamp,
+                "Trend":             sig.get("trend", primary_direction),
+                "Current Price":     entry_price,
+                "VWAP":              vwap_entry,
+                "EMA9":              ema9_entry,
+                "Trade Signal":      sig["trade_signal"],
+                "Stop Loss":         sig.get("stop_loss", ""),
+                "Target 1":          sig.get("target1", ""),
+                "Target 2":          sig.get("target2", ""),
+                "Target 3":          sig.get("target3", ""),
+                "Lots":              sizing["lots"],
+                "Max Loss INR":      sizing["max_loss_inr"],
+                "MTF Alignment":     align_sum,
+                "Base Score":        base_score,
+                "OI Adjustment":     oi_adj,
+                "Sentiment Adj":     sent_adj,
+                "Confidence Score":  score,
+                "Confidence Level":  level,
+                "TF 5m":             tf_data.get("5m", {}).get("direction", "N/A"),
+                "TF 15m":            tf_data.get("15m", {}).get("direction", "N/A"),
+                "TF 1h":             tf_data.get("1h", {}).get("direction", "N/A"),
+                "PCR":               (oi_result or {}).get("pcr"),
+                "Max Pain":          (oi_result or {}).get("max_pain"),
+                "ATM OI Bias":       (oi_result or {}).get("atm_bias", "N/A"),
+                "India VIX":         (sent_result or {}).get("vix"),
+                "US Futures Pct":    (sent_result or {}).get("us_futures_pct"),
+                "News Sentiment":    (sent_result or {}).get("sentiment", "N/A"),
+                "Trade ID":          trade_id,
+                "Trade Status":      TradeStateManager.OPEN,
+                "Outcome":           None,
+                "Points Result":     None,
+                "Exit Price":        None,
+                "Exit Time":         None,
             }
             append_trade_log(trade_row)
             logger.info("[LOG] Entry row written: trade_id=" + trade_id)
 
             logger.info("[LOOP] Done. Sleeping " + str(SCAN_INTERVAL_SECONDS) + "s...")
             time.sleep(SCAN_INTERVAL_SECONDS)
+
+
+if __name__ == "__main__":
+    run()
+                        level=     level,
+                    ))
+                    last_sent_trend = current_trend
+                time.sleep(SCAN_INTERVAL_SECONDS)
+                continue
+
+            # =========================
+            # STEP 4B: CONFIDENCE GATE
+            # LOW confidence -> block trade, send alert, skip cycle.
+            # MEDIUM and HIGH -> proceed to risk check.
+            # =========================
+
+            if level == CONFIDENCE_LOW:
+                logger.warning(
+                    "[CONFIDENCE] Trade blocked -- LOW confidence: " +
+                    str(score) + "/100 | align=" + align_sum
+                )
+                send_telegram(build_low_confidence_msg(timestamp, sig))
+                time.sleep(SCAN_INTERVAL_SECONDS)
+                continue
+
+            logger.info(
+                "[CONFIDENCE] " + level + " confidence (" + str(score) +
+                "/100) -- proceeding to risk check"
+            )
+
+            # =========================
+            # STEP 4C: RISK GATE
+            # =========================
+
+            risk.reload()
+            risk_check = risk.check_trade_allowed()
+
+            if not risk_check["allowed"]:
+                logger.warning("[RISK] Trade rejected: " + risk_check["reason"])
+                msg = build_risk_rejected_msg(
+                    reason=    risk_check["reason"],
+                    sig_trend= sig.get("trend", "?"),
+                    score=     score,
+                    level=     level,
+                )
+                print(msg)
+                send_telegram(msg)
+                time.sleep(SCAN_INTERVAL_SECONDS)
+                continue
+
+            # =========================
+            # STEP 4D: POSITION SIZING
+            # =========================
+
+            sizing       = risk.calculate_position_size()
+            risk_summary = risk.get_summary()
+
+            logger.info(
+                "[RISK] Sizing: lots=" + str(sizing["lots"]) +
+                " | max_loss=Rs." + str(sizing["max_loss_inr"]) +
+                " | risk=" + str(sizing["risk_pct"]) + "%"
+            )
+
+            # =========================
+            # STEP 4E: OPEN TRADE
+            # =========================
+
+            # Resolve entry price from primary TF data
+            primary_data = tf_data.get(PRIMARY_TIMEFRAME, {})
+            entry_price  = primary_data.get("price", 0.0)
+            vwap_entry   = primary_data.get("vwap", 0.0)
+            ema9_entry   = primary_data.get("ema9", 0.0)
+
+            try:
+                trade_id = state.open_trade(
+                    signal=      sig["trade_signal"],
+                    entry_price= entry_price,
+                    trend=       sig.get("trend", primary_direction),
+                    vwap=        vwap_entry,
+                    ema9=        ema9_entry,
+                )
+            except RuntimeError as e:
+                logger.error("[ASSISTANT] open_trade rejected: " + str(e))
+                time.sleep(SCAN_INTERVAL_SECONDS)
+                continue
+
+            # Record trade opened in risk engine
+            risk.record_trade_opened()
+
+            # Reset dedup so post-close scan fires a fresh alert
+            last_sent_trend = None
+            logger.info("[ASSISTANT] Trade OPENED: id=" + trade_id)
+
+            # --- Telegram signal alert ---
+            msg = build_signal_msg(timestamp, sig, trade_id, sizing, risk_summary,
+                                   oi_result=oi_result, sent_result=sent_result)
+            print(msg)
+            send_telegram(msg)
+            logger.info("[TELEGRAM] Signal sent: " + trade_id)
+
+            # --- Excel entry row (confidence + MTF + OI + sentiment columns) ---
+            trade_row = {
+                "Date":             today,
+                "Time":             timestamp,
+                "Trend":            sig.get("trend", primary_direction),
+                "Current Price":    entry_price,
+                "VWAP":             vwap_entry,
+                "EMA9":             ema9_entry,
+                "Trade Signal":     sig["trade_signal"],
+                "Stop Loss":        sig.get("stop_loss", ""),
+                "Target 1":         sig.get("target1", ""),
+                "Target 2":         sig.get("target2", ""),
+                "Target 3":         sig.get("target3", ""),
+                "Lots":             sizing["lots"],
+                "Max Loss INR":     sizing["max_loss_inr"],
+                "MTF Alignment":    align_sum,
+                "Base Score":       base_score,
+                "OI Adjustment":    oi_adj,
+                "Sentiment Adj":    sent_adj,
+                "Confidence Score": score,
+                "Confidence Level": level,
+                "TF 5m":            tf_data.get("5m", {}).get("direction", "N/A"),
+                "TF 15m":           tf_data.get("15m", {}).get("direction", "N/A"),
+                "TF 1h":            tf_data.get("1h", {}).get("direction", "N/A"),
+                "PCR":              (oi_result or {}).get("pcr"),
+                "Max Pain":         (oi_result or {}).get("max_pain"),
+                "ATM OI Bias":      (oi_result or {}).get("atm_bias", "N/A"),
+                "India VIX":        (sent_result or {}).get("vix"),
+                "US Futures Pct":   (sent_result or {}).get("us_futures_pct"),
+                "News Sentiment":   (sent_result or {}).get("sentiment", "N/A"),
+                "Trade ID":         trade_id,
+                "Trade Status":     TradeStateManager.OPEN,
+                "Outcome":          None,
+                "Points Result":    None,
+                "Exit Price":       None,
+                "Exit Time":        None,
+            }
+            append_trade_log(trade_row)
+            logger.info("[LOG] Entry row written: trade_id=" + trade_id)
+
+            logger.info("[LOOP] Done. Sleeping " + str(SCAN_INTERVAL_SECONDS) + "s...")
+            time.sleep(SCAN_INTERVAL_SECONDS)
+
+
+if __name__ == "__main__":
+    run()
+)
 
 
 if __name__ == "__main__":

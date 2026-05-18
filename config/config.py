@@ -284,6 +284,104 @@ READINESS_MIN_AVG_CONFIDENCE:  float = 60.0   # Average confidence >= 60/100
 READINESS_MAX_CONSEC_LOSSES:   int   = 3      # Max consecutive losses < 3
 
 # =========================
+# OI ANALYSIS ENGINE
+# Option chain data pulled from NSE unofficial API, with scraping fallback.
+# PCR and max pain are the two primary signals.
+# =========================
+
+# NSE unofficial option chain API (no key required — requires session cookie)
+NSE_BASE_URL: str          = "https://www.nseindia.com"
+NSE_OPTION_CHAIN_URL: str  = "https://www.nseindia.com/api/option-chain-indices?symbol=NIFTY"
+NSE_INDEX_URL: str         = "https://www.nseindia.com/api/allIndices"
+
+# Browser-like headers required for NSE API (blocks bots without these)
+NSE_API_HEADERS: dict = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/124.0.0.0 Safari/537.36"
+    ),
+    "Accept":          "application/json, text/plain, */*",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer":         "https://www.nseindia.com/option-chain",
+}
+
+# PCR thresholds — Put-Call Ratio interpretation
+OI_PCR_BULLISH_THRESHOLD: float = 1.3   # PCR > 1.3 → market leans bullish
+OI_PCR_BEARISH_THRESHOLD: float = 0.7   # PCR < 0.7 → market leans bearish
+
+# Strikes to sum either side of ATM for PCR calculation
+OI_ATM_RANGE_STRIKES: int = 5
+
+# Score adjustments for OI confirmation / contradiction
+OI_SCORE_CONFIRM: int    =  8   # OI agrees with signal direction
+OI_SCORE_CONTRADICT: int = -15  # OI disagrees with signal direction
+
+# Max pain gravity: if current price is this far from max pain, apply penalty
+OI_MAX_PAIN_GRAVITY_POINTS: float = 200.0
+OI_MAX_PAIN_GRAVITY_PENALTY: int  = -5
+
+# Cache OI results for this many seconds (avoids hammering NSE API)
+OI_CACHE_SECONDS: int = 300
+
+# =========================
+# NEWS SENTIMENT ENGINE
+# VIX, RSS feeds, US Futures, Google News.
+# All adjustments applied to base confidence score before threshold check.
+# =========================
+
+# India VIX thresholds (NSE publishes live VIX)
+VIX_LOW_THRESHOLD:      float = 15.0   # Calm market  — slight bonus
+VIX_MODERATE_THRESHOLD: float = 20.0   # Elevated     — penalty
+VIX_HIGH_THRESHOLD:     float = 25.0   # High risk    — large penalty
+
+VIX_LOW_BONUS:        int =   5   # VIX < 15
+VIX_MODERATE_PENALTY: int = -10   # VIX 20-25
+VIX_HIGH_PENALTY:     int = -20   # VIX > 25
+
+# US Futures change thresholds (percentage)
+US_FUTURES_STRONG_UP_PCT:   float =  0.5   # Futures up > 0.5%
+US_FUTURES_STRONG_DOWN_PCT: float = -0.5   # Futures down > 0.5%
+US_FUTURES_CRASH_PCT:       float = -1.0   # Futures down > 1.0%
+
+US_FUTURES_UP_BONUS:      int =   5   # Up > 0.5%
+US_FUTURES_DOWN_PENALTY:  int = -10   # Down > 0.5%
+US_FUTURES_CRASH_PENALTY: int = -15   # Down > 1.0%
+
+# US Futures ticker (Yahoo Finance)
+US_FUTURES_TICKER: str = "ES=F"   # S&P 500 E-mini futures
+
+# News sentiment keyword scoring
+SENTIMENT_CONFIRM_BONUS:      int =  3   # Headlines support signal direction
+SENTIMENT_CONTRADICT_PENALTY: int = -5  # Headlines oppose signal direction
+
+# Cache sentiment results (seconds)
+SENTIMENT_CACHE_SECONDS: int = 300
+
+# RSS feed URLs — Indian financial news
+RSS_FEEDS: dict = {
+    "ET Markets":   "https://economictimes.indiatimes.com/markets/rss.cms",
+    "Moneycontrol": "https://www.moneycontrol.com/rss/marketreports.xml",
+    "CNBCTV18":     "https://www.cnbctv18.com/commonfeeds/v1/cne/rss/market.xml",
+}
+
+# Google News RSS for NIFTY headlines
+GOOGLE_NEWS_NIFTY_RSS: str = (
+    "https://news.google.com/rss/search"
+    "?q=NIFTY+stock+market&hl=en-IN&gl=IN&ceid=IN:en"
+)
+
+# Headline sentiment keyword lists
+SENTIMENT_BULLISH_KEYWORDS: list = [
+    "rally", "surge", "bullish", "gains", "rises", "climbs", "positive",
+    "buying", "upside", "breakout", "record high", "recover", "strong",
+]
+SENTIMENT_BEARISH_KEYWORDS: list = [
+    "fall", "drop", "bearish", "decline", "crash", "sell-off", "negative",
+    "selling", "downside", "breakdown", "record low", "weak", "correction",
+]
+
+# =========================
 # RUNTIME MANAGER
 # =========================
 # Chrome executable path (Windows default — override via .env CHROME_EXE_PATH)
@@ -342,3 +440,74 @@ SUPERVISED_MODULES: list = [
 
 # Windows Task Scheduler task name for startup integration
 STARTUP_TASK_NAME: str = "TradingBot_RuntimeManager"
+
+# =========================
+# OI ANALYSIS ENGINE
+# =========================
+
+NSE_BASE_URL          = "https://www.nseindia.com"
+NSE_OPTION_CHAIN_URL  = "https://www.nseindia.com/api/option-chain-indices?symbol=NIFTY"
+NSE_INDEX_URL         = "https://www.nseindia.com/api/allIndices"
+
+NSE_API_HEADERS = {
+    "User-Agent": (
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/124.0.0.0 Safari/537.36"
+    ),
+    "Accept":          "application/json, text/plain, */*",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer":         "https://www.nseindia.com/option-chain",
+}
+
+OI_PCR_BULLISH_THRESHOLD  = 1.3
+OI_PCR_BEARISH_THRESHOLD  = 0.7
+OI_ATM_RANGE_STRIKES      = 5
+OI_SCORE_CONFIRM          = 8
+OI_SCORE_CONTRADICT       = -15
+OI_MAX_PAIN_GRAVITY_POINTS = 200.0
+OI_MAX_PAIN_GRAVITY_PENALTY = -5
+OI_CACHE_SECONDS          = 300
+
+# =========================
+# NEWS SENTIMENT ENGINE
+# =========================
+
+VIX_LOW_THRESHOLD       = 15.0
+VIX_MODERATE_THRESHOLD  = 20.0
+VIX_HIGH_THRESHOLD      = 25.0
+VIX_LOW_BONUS           = 5
+VIX_MODERATE_PENALTY    = -10
+VIX_HIGH_PENALTY        = -20
+
+US_FUTURES_STRONG_UP_PCT   = 0.5
+US_FUTURES_STRONG_DOWN_PCT = -0.5
+US_FUTURES_CRASH_PCT       = -1.0
+US_FUTURES_UP_BONUS        = 5
+US_FUTURES_DOWN_PENALTY    = -10
+US_FUTURES_CRASH_PENALTY   = -15
+US_FUTURES_TICKER          = "ES=F"
+
+SENTIMENT_CONFIRM_BONUS      = 3
+SENTIMENT_CONTRADICT_PENALTY = -5
+SENTIMENT_CACHE_SECONDS      = 300
+
+RSS_FEEDS = {
+    "ET Markets":   "https://economictimes.indiatimes.com/markets/rss.cms",
+    "Moneycontrol": "https://www.moneycontrol.com/rss/marketreports.xml",
+    "CNBCTV18":     "https://www.cnbctv18.com/commonfeeds/v1/cne/rss/market.xml",
+}
+
+GOOGLE_NEWS_NIFTY_RSS = (
+    "https://news.google.com/rss/search"
+    "?q=NIFTY+stock+market&hl=en-IN&gl=IN&ceid=IN:en"
+)
+
+SENTIMENT_BULLISH_KEYWORDS = [
+    "rally", "surge", "bullish", "gains", "rises", "climbs", "positive",
+    "buying", "upside", "breakout", "record high", "recover", "strong",
+]
+SENTIMENT_BEARISH_KEYWORDS = [
+    "fall", "drop", "bearish", "decline", "crash", "sell-off", "negative",
+    "selling", "downside", "breakdown", "record low", "weak", "correction",
+]
