@@ -25,7 +25,8 @@ from config.config import BASE_DIR, STARTUP_TASK_NAME
 
 logger = logging.getLogger(__name__)
 
-DAILY_TASK_NAME: str = "TradingBot_DailyStart"
+DAILY_TASK_NAME:    str = "TradingBot_DailyStart"
+REMINDER_TASK_NAME: str = "TradingBot_MorningReminder"
 
 # =========================
 # SCHTASKS WRAPPER
@@ -128,22 +129,73 @@ def install_market_open_task(start_bat_path: str = None) -> bool:
 
 
 # =========================
+# TELEGRAM REMINDER TASK
+# =========================
+
+def install_reminder_task() -> bool:
+    """
+    Register a task that sends a Telegram reminder at 08:30 AM every weekday.
+    Runs runtime/telegram_reminder.py directly via Python.
+    Must be run as Administrator.
+    """
+    python_exe    = sys.executable
+    reminder_path = str(BASE_DIR / "runtime" / "telegram_reminder.py")
+    run_command   = f'"{python_exe}" "{reminder_path}"'
+
+    logger.info(f"[STARTUP] Installing reminder task: {REMINDER_TASK_NAME} at 08:30 Mon-Fri")
+
+    result = _schtasks(
+        "/Create",
+        "/TN", REMINDER_TASK_NAME,
+        "/TR", run_command,
+        "/SC", "WEEKLY",
+        "/D",  "MON,TUE,WED,THU,FRI",
+        "/ST", "08:30",
+        "/RL", "HIGHEST",
+        "/IT",
+        "/F",
+    )
+
+    if result.returncode == 0:
+        logger.info(f"[STARTUP] Reminder task installed: {REMINDER_TASK_NAME}")
+        print("  [OK] Reminder task installed -- Telegram message fires at 08:30 AM Mon-Fri.")
+        return True
+    else:
+        logger.error(f"[STARTUP] Reminder task failed: {result.stderr.strip()}")
+        if "Access is denied" in result.stderr or result.returncode == 1:
+            print("  [ERROR] Run as Administrator.")
+        return False
+
+
+def remove_reminder_task() -> bool:
+    result = _schtasks("/Delete", "/TN", REMINDER_TASK_NAME, "/F")
+    if result.returncode == 0:
+        logger.info(f"[STARTUP] Reminder task removed.")
+        print("  [OK] Reminder task removed.")
+        return True
+    logger.warning(f"[STARTUP] Could not remove reminder task: {result.stderr.strip()}")
+    return False
+
+
+# =========================
 # INSTALL ALL / REMOVE ALL
 # =========================
 
 def install_all_tasks(start_bat_path: str = None) -> bool:
-    """Install both the logon task and the daily 08:45 weekday task."""
+    """Install logon task, daily 08:45 start task, and 08:30 Telegram reminder."""
     print("\n[STARTUP] Installing all TradingBot scheduled tasks...\n")
     ok1 = install_startup_task()
     ok2 = install_market_open_task(start_bat_path)
-    if ok1 and ok2:
-        print("\n[STARTUP] Both tasks installed successfully.")
-        print("[STARTUP] TradingBot will now start automatically:")
-        print("           - At 08:45 AM every Mon-Fri")
-        print("           - At every Windows logon")
+    ok3 = install_reminder_task()
+    if ok1 and ok2 and ok3:
+        print("\n[STARTUP] All tasks installed successfully.")
+        print("[STARTUP] TradingBot schedule:")
+        print("           - 08:30 AM Mon-Fri: Telegram morning reminder")
+        print("           - 08:45 AM Mon-Fri: System auto-start")
+        print("           - At every Windows logon: Runtime watchdog")
     else:
         print("\n[STARTUP] One or more tasks failed -- check errors above.")
-    return ok1 and ok2
+    return ok1 and ok2 and ok3
 
 
 def remove_startup_task() -> bool:
@@ -170,7 +222,8 @@ def remove_all_tasks() -> bool:
     print("\n[STARTUP] Removing all TradingBot scheduled tasks...\n")
     ok1 = remove_startup_task()
     ok2 = remove_market_open_task()
-    return ok1 and ok2
+    ok3 = remove_reminder_task()
+    return ok1 and ok2 and ok3
 
 
 # =========================
@@ -182,8 +235,9 @@ def print_startup_status() -> None:
     print("  TradingBot -- Windows Scheduled Tasks Status")
     print(f"{'=' * 55}")
     for task_name, label in [
-        (STARTUP_TASK_NAME, "Logon task (runtime_manager.py)"),
-        (DAILY_TASK_NAME,   "Daily task (start.bat at 08:45)"),
+        (REMINDER_TASK_NAME, "Reminder task (Telegram at 08:30)"),
+        (STARTUP_TASK_NAME,  "Logon task   (runtime_manager.py)"),
+        (DAILY_TASK_NAME,    "Daily task   (start.bat at 08:45)"),
     ]:
         result = _schtasks("/Query", "/TN", task_name, "/FO", "LIST")
         if result.returncode == 0:
