@@ -32,7 +32,4 @@ cropped_debug.png
 # --- Windows ---
 Thumbs.db
 Desktop.ini
-runtime/heartbeats/ 
-data/ 
-temp/ 
-screenshots/ 
+runtime/heartbeats/
