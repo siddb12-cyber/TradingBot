@@ -17,11 +17,32 @@ echo.
 :: --- Move to project root (same folder as this .bat file) ---
 cd /d "%~dp0"
 
+:: --- Locate Python: try common install paths so Task Scheduler works too ---
+set PYTHON_EXE=
+if exist "%LOCALAPPDATA%\Programs\Python\Python312\python.exe" (
+    set PYTHON_EXE=%LOCALAPPDATA%\Programs\Python\Python312\python.exe
+) else if exist "%LOCALAPPDATA%\Programs\Python\Python311\python.exe" (
+    set PYTHON_EXE=%LOCALAPPDATA%\Programs\Python\Python311\python.exe
+) else if exist "%LOCALAPPDATA%\Programs\Python\Python310\python.exe" (
+    set PYTHON_EXE=%LOCALAPPDATA%\Programs\Python\Python310\python.exe
+) else if exist "C:\Python312\python.exe" (
+    set PYTHON_EXE=C:\Python312\python.exe
+) else if exist "C:\Python311\python.exe" (
+    set PYTHON_EXE=C:\Python311\python.exe
+) else (
+    :: Fall back to PATH (works in interactive sessions)
+    set PYTHON_EXE=python
+)
+
+echo [INFO] Using Python: %PYTHON_EXE%
+echo.
+
 :: --- Step 1: Install / update pip dependencies ---
 echo [1/3] Checking pip dependencies...
-python -m pip install -r requirements.txt --quiet
+"%PYTHON_EXE%" -m pip install -r requirements.txt --quiet
 if %ERRORLEVEL% NEQ 0 (
     echo [ERROR] pip install failed. Check your Python installation.
+    echo         Python found at: %PYTHON_EXE%
     pause
     exit /b 1
 )
@@ -30,7 +51,7 @@ echo.
 
 :: --- Step 2: Pre-flight check (auto-fixes ports, dirs, etc.) ---
 echo [2/3] Running pre-flight checks...
-python runtime/preflight_check.py
+"%PYTHON_EXE%" runtime/preflight_check.py
 if %ERRORLEVEL% NEQ 0 (
     echo.
     echo [BLOCKED] Pre-flight check failed. Fix the errors above and re-run.
@@ -46,11 +67,11 @@ echo       (Chrome will open automatically)
 echo       (Press Ctrl+C in this window to stop everything)
 echo.
 echo ============================================================
-echo   SYSTEM STARTING — Watch Telegram for confirmation
+echo   SYSTEM STARTING - Watch Telegram for confirmation
 echo ============================================================
 echo.
 
-python runtime/runtime_manager.py
+"%PYTHON_EXE%" runtime/runtime_manager.py
 
 :: --- If runtime_manager exits, pause so user can read error ---
 echo.

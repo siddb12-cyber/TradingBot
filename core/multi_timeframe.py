@@ -270,58 +270,73 @@ def _dismiss_ads(page) -> int:
 
 def _switch_timeframe(page, tf_label: str) -> bool:
     """
-    Click the TradingView timeframe toolbar button for the given label.
+    Switch TradingView chart to the specified timeframe.
 
-    TradingView renders timeframe buttons in a horizontal toolbar at the top
-    of the chart. The button text matches TF_SELECTOR_MAP values.
+    Strategy (in order of reliability):
+        1. URL navigation — replace interval= parameter in the TradingView URL.
+           This is the most reliable approach and does not depend on UI element
+           selectors, which break every time TradingView updates its React bundle.
+           The browser stays on the same domain so the session cookie is preserved.
+        2. data-value attribute click — fallback if navigation fails.
+        3. Role-based button click — last resort.
 
-    Strategy (in order):
-        1. Try page.get_by_role("button", name=label, exact=True) — cleanest
-        2. Try page.locator(f'[data-value="{label}"]') — TradingView data attribute
-        3. Try pressing keyboard shortcut via page.keyboard.press() — fallback
+    TradingView URL interval values:
+        5m  → interval=5
+        15m → interval=15
+        1h  → interval=60
 
-    Returns True if click succeeded, False otherwise.
+    Returns True if the switch succeeded (or probably succeeded), False otherwise.
     """
-    selector_label = TF_SELECTOR_MAP.get(tf_label, tf_label)
+    import re as _re
+    from config.config import TRADINGVIEW_URL
 
-    # --- Attempt 1: role-based button click ---
+    # Map tf_label → TradingView URL interval value
+    interval_map = {
+        "5m":  "5",
+        "15m": "15",
+        "1h":  "60",
+    }
+    interval = interval_map.get(tf_label)
+    if not interval:
+        logger.warning("[MTF] No interval mapping for tf=%s", tf_label)
+        return False
+
+    # --- Method 1: URL navigation (replace interval= in the configured URL) ---
+    try:
+        if "interval=" in TRADINGVIEW_URL:
+            new_url = _re.sub(r"interval=\d+", "interval=" + interval, TRADINGVIEW_URL)
+        else:
+            sep     = "&" if "?" in TRADINGVIEW_URL else "?"
+            new_url = TRADINGVIEW_URL + sep + "interval=" + interval
+
+        page.goto(new_url, wait_until="domcontentloaded", timeout=20_000)
+        logger.info("[MTF] Switched to %s via URL navigation (interval=%s)", tf_label, interval)
+        return True
+    except Exception as e:
+        logger.warning("[MTF] URL navigation failed for %s: %s", tf_label, e)
+
+    # --- Method 2: data-value attribute click ---
+    selector_label = TF_SELECTOR_MAP.get(tf_label, interval)
+    try:
+        locator = page.locator('[data-value="%s"]' % selector_label)
+        if locator.count() > 0:
+            locator.first.click()
+            logger.info("[MTF] Switched to %s via data-value click", tf_label)
+            return True
+    except Exception as e:
+        logger.debug("[MTF] data-value click failed for %s: %s", tf_label, e)
+
+    # --- Method 3: role-based button ---
     try:
         btn = page.get_by_role("button", name=selector_label, exact=True)
         if btn.count() > 0:
             btn.first.click()
-            logger.debug(f"[MTF] Switched to {tf_label} via role button (label={selector_label})")
+            logger.info("[MTF] Switched to %s via role button click", tf_label)
             return True
     except Exception as e:
-        logger.debug(f"[MTF] Role button click failed for {tf_label}: {e}")
+        logger.debug("[MTF] Role button click failed for %s: %s", tf_label, e)
 
-    # --- Attempt 2: data-value attribute selector ---
-    try:
-        locator = page.locator(f'[data-value="{selector_label}"]')
-        if locator.count() > 0:
-            locator.first.click()
-            logger.debug(f"[MTF] Switched to {tf_label} via data-value selector")
-            return True
-    except Exception as e:
-        logger.debug(f"[MTF] data-value click failed for {tf_label}: {e}")
-
-    # --- Attempt 3: keyboard shortcut (TradingView standard: Alt+number or direct) ---
-    # TradingView shortcuts for timeframes (works when chart is focused):
-    # These vary by TradingView version — using keyboard as last resort only
-    shortcut_map = {
-        "5m":  "5",
-        "15m": "5",   # no direct key for 15m — handled by data-value above
-        "1h":  "6",   # TradingView key "6" = 1H in some versions
-    }
-    shortcut = shortcut_map.get(tf_label)
-    if shortcut:
-        try:
-            page.keyboard.press(shortcut)
-            logger.debug(f"[MTF] Switched to {tf_label} via keyboard shortcut: {shortcut}")
-            return True
-        except Exception as e:
-            logger.debug(f"[MTF] Keyboard shortcut failed for {tf_label}: {e}")
-
-    logger.warning(f"[MTF] All switch methods failed for timeframe: {tf_label}")
+    logger.warning("[MTF] All switch methods failed for %s", tf_label)
     return False
 
 
