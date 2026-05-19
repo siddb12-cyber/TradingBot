@@ -12,6 +12,12 @@ Priority 4 additions:
     - RiskEngine.record_trade_closed() called after every close (T3, SL, EOD)
       to update daily P&L, consecutive losses, and cooldown state
 
+Priority 5 additions (current):
+    - Trailing SL: after T1 hit → SL moves to breakeven (0 pts)
+                   after T2 hit → SL moves to +T1_POINTS (locks in T1 profit)
+    - Financial details in all Telegram messages:
+        lots traded, capital at risk (Rs.), current P&L (Rs.)
+
 Paper Trading Only.
 """
 
@@ -27,6 +33,7 @@ from config.config import (
     BOT_TOKEN, CHAT_ID, CHROME_DEBUG_URL,
     TEMP_DIR, TRACKER_INTERVAL_SECONDS,
     STOP_LOSS_POINTS, TARGET_1_POINTS, TARGET_2_POINTS, TARGET_3_POINTS,
+    NIFTY_LOT_SIZE, OPTION_DELTA,
 )
 from extraction.ocr_engine import extract_live_price
 from core.trade_state import TradeStateManager
@@ -63,6 +70,20 @@ def send_telegram(message):
 
 
 # =========================
+# FINANCIAL HELPERS
+# =========================
+
+def calc_pnl_inr(points: float, lots: int) -> float:
+    """Convert NIFTY index points to approximate INR P&L across all lots."""
+    return round(points * OPTION_DELTA * NIFTY_LOT_SIZE * lots, 2)
+
+
+def calc_capital_at_risk(lots: int) -> float:
+    """Maximum capital at risk (Rs.) if original SL is hit — before any trailing."""
+    return round(STOP_LOSS_POINTS * OPTION_DELTA * NIFTY_LOT_SIZE * lots, 2)
+
+
+# =========================
 # POINTS + STATUS
 # =========================
 
@@ -74,8 +95,37 @@ def calc_points(entry, live, direction):
     return 0.0
 
 
-def get_live_status(points):
-    if points <= -STOP_LOSS_POINTS:
+def get_live_status(points: float, milestones_hit: list = None) -> str:
+    """
+    Determine current trade status with trailing SL logic.
+
+    Trailing SL ladder (activated by milestones already hit):
+        No milestone  : SL at -STOP_LOSS_POINTS  (e.g. -10 pts — original fixed stop)
+        After T1 hit  : SL trails to 0            (breakeven — protect capital)
+        After T2 hit  : SL trails to +TARGET_1_POINTS (e.g. +15 pts — lock T1 profit)
+
+    Args:
+        points:        Current unrealised P&L in NIFTY index points.
+        milestones_hit: List of milestone status strings already recorded for this trade.
+
+    Returns:
+        One of TradeStateManager status constants (SL_HIT, TARGET1_HIT, etc., or OPEN).
+    """
+    milestones_hit = milestones_hit or []
+
+    # Determine effective SL threshold based on milestones
+    if TradeStateManager.TARGET2_HIT in milestones_hit:
+        # T2 was hit — SL trails up to lock in T1 profit
+        effective_sl = TARGET_1_POINTS          # e.g. +15 pts
+    elif TradeStateManager.TARGET1_HIT in milestones_hit:
+        # T1 was hit — SL trails to breakeven
+        effective_sl = 0
+    else:
+        # No milestone yet — original fixed stop loss (below entry)
+        effective_sl = -STOP_LOSS_POINTS        # e.g. -10 pts
+
+    # Evaluate in priority order: SL → T3 → T2 → T1 → OPEN
+    if points <= effective_sl:
         return TradeStateManager.SL_HIT
     elif points >= TARGET_3_POINTS:
         return TradeStateManager.TARGET3_HIT
@@ -90,31 +140,73 @@ def get_live_status(points):
 # TELEGRAM MESSAGES
 # =========================
 
-def build_milestone_msg(signal, entry, live, points, milestone, trade_id, milestones_hit):
+def build_active_msg(signal, entry, live, points, trade_id, lots):
+    """Initial 'trade is now active' alert with financial snapshot."""
+    arrow       = "UP" if points >= 0 else "DOWN"
+    pnl_inr     = calc_pnl_inr(points, lots)
+    at_risk_inr = calc_capital_at_risk(lots)
+    pnl_sign    = "+" if pnl_inr >= 0 else ""
+    sep         = "--" * 16
+    return (
+        "TRADE ACTIVE\n" + sep + "\n"
+        "Trade      : " + signal + "\n"
+        "Entry      : " + "{:.2f}".format(entry) + "\n"
+        "Live       : " + "{:.2f}".format(live) + "\n"
+        "Move       : " + arrow + " " + "{:.2f}".format(abs(points)) + " pts\n"
+        "Trade ID   : " + trade_id + "\n" + sep + "\n"
+        "Lots       : " + str(lots) + "\n"
+        "Capital Risk : Rs." + "{:.0f}".format(at_risk_inr) + "\n"
+        "P&L (Live) : Rs." + pnl_sign + "{:.0f}".format(pnl_inr) + "\n"
+        "[Paper Trading Mode]"
+    )
+
+
+def build_milestone_msg(signal, entry, live, points, milestone, trade_id,
+                        milestones_hit, lots):
+    """T1 or T2 milestone alert showing current financial position."""
     labels = {
-        TradeStateManager.TARGET1_HIT: "TARGET 1 HIT (+" + str(TARGET_1_POINTS) + " pts)",
-        TradeStateManager.TARGET2_HIT: "TARGET 2 HIT (+" + str(TARGET_2_POINTS) + " pts) -- watching T3",
+        TradeStateManager.TARGET1_HIT: (
+            "TARGET 1 HIT (+" + str(TARGET_1_POINTS) + " pts) "
+            "-- SL now trails to BREAKEVEN"
+        ),
+        TradeStateManager.TARGET2_HIT: (
+            "TARGET 2 HIT (+" + str(TARGET_2_POINTS) + " pts) "
+            "-- SL now locks in T1 profit (+" + str(TARGET_1_POINTS) + " pts)"
+        ),
     }
-    label = labels.get(milestone, milestone)
-    arrow = "UP" if points >= 0 else "DOWN"
-    sep   = "--" * 16
+    label       = labels.get(milestone, milestone)
+    arrow       = "UP" if points >= 0 else "DOWN"
+    pnl_inr     = calc_pnl_inr(points, lots)
+    pnl_sign    = "+" if pnl_inr >= 0 else ""
+    sep         = "--" * 16
     return (
         "MILESTONE ALERT\n" + sep + "\n"
-        "Trade    : " + signal + "\n"
-        "Entry    : " + "{:.2f}".format(entry) + "\n"
-        "Live     : " + "{:.2f}".format(live) + "\n"
-        "Move     : " + arrow + " " + "{:.2f}".format(abs(points)) + " pts\n" + sep + "\n" +
+        "Trade      : " + signal + "\n"
+        "Entry      : " + "{:.2f}".format(entry) + "\n"
+        "Live       : " + "{:.2f}".format(live) + "\n"
+        "Move       : " + arrow + " " + "{:.2f}".format(abs(points)) + " pts\n" + sep + "\n" +
         label + "\n"
-        "Trade ID : " + trade_id + "\n"
+        "Trade ID   : " + trade_id + "\n" + sep + "\n"
+        "Lots       : " + str(lots) + "\n"
+        "P&L (Now)  : Rs." + pnl_sign + "{:.0f}".format(pnl_inr) + "\n"
         "Still monitoring -- SL & T3 active\n"
         "[Paper Trading Mode]"
     )
 
 
-def build_close_msg(signal, entry, exit_p, points, outcome, trade_id, milestones, risk_summary):
-    arrow = "UP" if points >= 0 else "DOWN"
-    mstr  = " -> ".join(milestones) if milestones else "None"
-    sep   = "--" * 16
+def build_close_msg(signal, entry, exit_p, points, outcome, trade_id,
+                    milestones, risk_summary, lots):
+    """Trade closed (T3 or SL) with full financial breakdown."""
+    arrow       = "UP" if points >= 0 else "DOWN"
+    mstr        = " -> ".join(milestones) if milestones else "None"
+    pnl_inr     = calc_pnl_inr(points, lots)
+    at_risk_inr = calc_capital_at_risk(lots)
+    pnl_sign    = "+" if pnl_inr >= 0 else ""
+    daily_pnl_inr = round(
+        risk_summary["daily_pnl_points"] * OPTION_DELTA * NIFTY_LOT_SIZE, 2
+    )
+    daily_sign  = "+" if daily_pnl_inr >= 0 else ""
+    sep         = "--" * 16
     return (
         "TRADE CLOSED\n" + sep + "\n"
         "Trade      : " + signal + "\n"
@@ -124,17 +216,30 @@ def build_close_msg(signal, entry, exit_p, points, outcome, trade_id, milestones
         "Outcome    : " + outcome + "\n"
         "Milestones : " + mstr + "\n"
         "Trade ID   : " + trade_id + "\n" + sep + "\n"
-        "Daily P&L  : " + str(risk_summary["daily_pnl_points"]) + " pts" +
+        "Lots       : " + str(lots) + "\n"
+        "Capital Risk : Rs." + "{:.0f}".format(at_risk_inr) + "\n"
+        "Trade P&L  : Rs." + pnl_sign + "{:.0f}".format(pnl_inr) + "\n" + sep + "\n"
+        "Daily P&L  : " + str(risk_summary["daily_pnl_points"]) + " pts"
+        "  (Rs." + daily_sign + "{:.0f}".format(daily_pnl_inr) + ")"
         "  |  Trades: " + str(risk_summary["trades_today"]) + "/" + str(risk_summary["max_trades"]) + "\n"
         "Trade closed. Ready for next signal.\n"
         "[Paper Trading Mode]"
     )
 
 
-def build_eod_close_msg(signal, entry, exit_p, points, trade_id, milestones, risk_summary):
-    arrow = "UP" if points >= 0 else "DOWN"
-    mstr  = " -> ".join(milestones) if milestones else "None"
-    sep   = "--" * 16
+def build_eod_close_msg(signal, entry, exit_p, points, trade_id,
+                        milestones, risk_summary, lots):
+    """EOD force-close message with financial summary."""
+    arrow       = "UP" if points >= 0 else "DOWN"
+    mstr        = " -> ".join(milestones) if milestones else "None"
+    pnl_inr     = calc_pnl_inr(points, lots)
+    at_risk_inr = calc_capital_at_risk(lots)
+    pnl_sign    = "+" if pnl_inr >= 0 else ""
+    daily_pnl_inr = round(
+        risk_summary["daily_pnl_points"] * OPTION_DELTA * NIFTY_LOT_SIZE, 2
+    )
+    daily_sign  = "+" if daily_pnl_inr >= 0 else ""
+    sep         = "--" * 16
     return (
         "EOD TRADE CLOSED\n" + sep + "\n"
         "Trade      : " + signal + "\n"
@@ -144,23 +249,13 @@ def build_eod_close_msg(signal, entry, exit_p, points, trade_id, milestones, ris
         "Outcome    : EOD CLOSE (market closing)\n"
         "Milestones : " + mstr + "\n"
         "Trade ID   : " + trade_id + "\n" + sep + "\n"
-        "Daily P&L  : " + str(risk_summary["daily_pnl_points"]) + " pts" +
+        "Lots       : " + str(lots) + "\n"
+        "Capital Risk : Rs." + "{:.0f}".format(at_risk_inr) + "\n"
+        "Trade P&L  : Rs." + pnl_sign + "{:.0f}".format(pnl_inr) + "\n" + sep + "\n"
+        "Daily P&L  : " + str(risk_summary["daily_pnl_points"]) + " pts"
+        "  (Rs." + daily_sign + "{:.0f}".format(daily_pnl_inr) + ")"
         "  |  Trades: " + str(risk_summary["trades_today"]) + "/" + str(risk_summary["max_trades"]) + "\n"
         "Market closing at 15:30. Trade force-closed.\n"
-        "[Paper Trading Mode]"
-    )
-
-
-def build_active_msg(signal, entry, live, points, trade_id):
-    arrow = "UP" if points >= 0 else "DOWN"
-    sep   = "--" * 16
-    return (
-        "TRADE ACTIVE\n" + sep + "\n"
-        "Trade    : " + signal + "\n"
-        "Entry    : " + "{:.2f}".format(entry) + "\n"
-        "Live     : " + "{:.2f}".format(live) + "\n"
-        "Move     : " + arrow + " " + "{:.2f}".format(abs(points)) + " pts\n"
-        "Trade ID : " + trade_id + "\n"
         "[Paper Trading Mode]"
     )
 
@@ -175,6 +270,7 @@ def run():
     logger.info("Tracker interval : " + str(TRACKER_INTERVAL_SECONDS) + "s")
     logger.info("Market hours     : 09:15-15:30 IST (Mon-Fri)")
     logger.info("EOD auto-close   : 15:29 IST")
+    logger.info("Trailing SL      : T1 → breakeven | T2 → lock T1 profit")
     logger.info("=" * 52)
 
     state = TradeStateManager()
@@ -266,19 +362,22 @@ def run():
                     points_result= points_result,
                 )
 
-                # Update risk engine daily state
-                risk.record_trade_closed(eod_outcome, points_result)
-                rs = risk.get_summary()
+                # Update risk engine daily state (pass direction for smart cooldown override)
+                trade_direction = "BULLISH" if "CE" in signal else "BEARISH"
+                risk.record_trade_closed(eod_outcome, points_result, direction=trade_direction)
+                rs   = risk.get_summary()
+                lots = rs.get("suggested_lots", 1)
 
                 # Telegram EOD alert
                 msg = build_eod_close_msg(
-                    signal=    signal,
-                    entry=     entry_price,
-                    exit_p=    exit_price,
-                    points=    points_result,
-                    trade_id=  trade_id,
-                    milestones=milestones,
+                    signal=      signal,
+                    entry=       entry_price,
+                    exit_p=      exit_price,
+                    points=      points_result,
+                    trade_id=    trade_id,
+                    milestones=  milestones,
                     risk_summary=rs,
+                    lots=        lots,
                 )
                 print(msg)
                 send_telegram(msg)
@@ -309,9 +408,14 @@ def run():
             milestones  = active.get("milestones_hit", [])
             last_sent   = state.get_last_tracker_result()
 
+            # --- Financial context (lots, capital at risk) ---
+            risk_summary = risk.get_summary()
+            lots         = risk_summary.get("suggested_lots", 1)
+
             logger.info(
                 "[TRACKER] Monitoring | id=" + trade_id +
                 " | entry=" + "{:.2f}".format(entry_price) +
+                " | lots=" + str(lots) +
                 " | status=" + str(active["status"])
             )
 
@@ -335,9 +439,13 @@ def run():
             logger.info("[TRACKER] live_price=" + "{:.2f}".format(live_price))
 
             points      = calc_points(entry_price, live_price, direction)
-            live_status = get_live_status(points)
+            live_status = get_live_status(points, milestones)   # trailing SL aware
 
-            logger.info("[TRACKER] points=" + "{:+.2f}".format(points) + "  status=" + live_status)
+            logger.info(
+                "[TRACKER] points=" + "{:+.2f}".format(points) +
+                "  pnl=Rs." + "{:+.0f}".format(calc_pnl_inr(points, lots)) +
+                "  status=" + live_status
+            )
 
             # =========================
             # HANDLE STATUS
@@ -357,8 +465,9 @@ def run():
                     points_result= points_result,
                 )
 
-                # Update risk engine
-                risk.record_trade_closed(outcome, points_result)
+                # Update risk engine (pass direction for smart cooldown override)
+                trade_direction = "BULLISH" if "CE" in signal else "BEARISH"
+                risk.record_trade_closed(outcome, points_result, direction=trade_direction)
                 rs = risk.get_summary()
 
                 msg = build_close_msg(
@@ -370,6 +479,7 @@ def run():
                     trade_id=    trade_id,
                     milestones=  milestones,
                     risk_summary=rs,
+                    lots=        lots,
                 )
                 print(msg)
                 send_telegram(msg)
@@ -392,6 +502,7 @@ def run():
                         milestone=     live_status,
                         trade_id=      trade_id,
                         milestones_hit=milestones,
+                        lots=          lots,
                     )
                     print(msg)
                     send_telegram(msg)
@@ -400,7 +511,7 @@ def run():
             else:
                 # --- ACTIVE: no change ---
                 if last_sent is None:
-                    msg = build_active_msg(signal, entry_price, live_price, points, trade_id)
+                    msg = build_active_msg(signal, entry_price, live_price, points, trade_id, lots)
                     print(msg)
                     send_telegram(msg)
                     state.set_last_tracker_result(TradeStateManager.OPEN)
@@ -408,6 +519,7 @@ def run():
                 else:
                     logger.debug(
                         "[TRACKER] OPEN -- pts=" + "{:+.2f}".format(points) +
+                        " pnl=Rs." + "{:+.0f}".format(calc_pnl_inr(points, lots)) +
                         " | last_sent=" + str(last_sent)
                     )
 
