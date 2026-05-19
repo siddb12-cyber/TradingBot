@@ -818,22 +818,16 @@ class MultiTimeframeAnalyzer:
         )
 
         if is_trade:
-            # Round to nearest NIFTY strike interval
-            strike = round(primary_price / NIFTY_STRIKE_INTERVAL) * NIFTY_STRIKE_INTERVAL
-            option_type = "CE" if primary_direction == DIR_BULLISH else "PE"
-            trade_signal = f"BUY {int(strike)} {option_type}"
-
-            result["trade_signal"] = trade_signal
-            result["is_trade"]     = True
-
+            sig_dict = _build_trade_signal(primary_direction, primary_price)
+            result.update(sig_dict)
             logger.info(
-                "[MTF] Trade signal: %s | SL=%.0f pts | T1=%.0f T2=%.0f T3=%.0f",
-                trade_signal, STOP_LOSS_POINTS,
-                TARGET_1_POINTS, TARGET_2_POINTS, TARGET_3_POINTS,
+                "[MTF] Trade signal: %s | SL=%s | T1=%s T2=%s T3=%s",
+                result["trade_signal"], result["stop_loss"],
+                result["target1"], result["target2"], result["target3"],
             )
         else:
-            result["trade_signal"] = "NO TRADE"
-            result["is_trade"]     = False
+            sig_dict = _build_trade_signal("SIDEWAYS", primary_price)
+            result.update(sig_dict)
             logger.info(
                 "[MTF] No trade: direction=%s confidence=%s (%d/100)",
                 primary_direction, confidence_level, score,
