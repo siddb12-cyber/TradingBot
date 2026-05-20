@@ -309,7 +309,7 @@ def _switch_timeframe(page, tf_label: str) -> bool:
             sep     = "&" if "?" in TRADINGVIEW_URL else "?"
             new_url = TRADINGVIEW_URL + sep + "interval=" + interval
 
-        page.goto(new_url, wait_until="domcontentloaded", timeout=20_000)
+        page.goto(new_url, wait_until="domcontentloaded", timeout=45_000)
         logger.info("[MTF] Switched to %s via URL navigation (interval=%s)", tf_label, interval)
         return True
     except Exception as e:

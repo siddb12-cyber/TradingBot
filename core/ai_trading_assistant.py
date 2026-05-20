@@ -43,7 +43,10 @@ from config.config import (
     NIFTY_STRIKE_INTERVAL, STOP_LOSS_POINTS,
     TARGET_1_POINTS, TARGET_2_POINTS, TARGET_3_POINTS,
     TIMEFRAMES, PRIMARY_TIMEFRAME,
-    CONFIDENCE_HIGH_THRESHOLD, CONFIDENCE_MED_THRESHOLD,
+    CONFIDENCE_VERY_HIGH_THRESHOLD, CONFIDENCE_HIGH_THRESHOLD, CONFIDENCE_MED_THRESHOLD,
+    SCALE_UP_MULTIPLIER, SCALE_UP_MAX_LOTS,
+    NIFTY_LOT_SIZE, OPTION_DELTA, ACCOUNT_CAPITAL,
+    TRADINGVIEW_URL,
 )
 from extraction.ocr_engine import extract_market_values
 from core.trade_state import TradeStateManager
@@ -68,6 +71,63 @@ from core.news_sentiment import NewsSentimentEngine
 
 configure_logging()
 logger = logging.getLogger(__name__)
+
+
+# =========================
+# BROWSER HELPERS
+# =========================
+
+def _page_is_alive(page) -> bool:
+    """
+    Return True if the Playwright page is still connected to its browser.
+    Accessing page.url throws TargetClosedError when the browser was killed/relaunched.
+    """
+    if page is None:
+        return False
+    try:
+        _ = page.url
+        return True
+    except Exception:
+        return False
+
+
+def _connect_and_navigate(p, chrome_url: str, tradingview_url: str, max_attempts: int = 10):
+    """
+    Connect to Chrome CDP, get the first page, and ensure it is showing the
+    TradingView chart (navigates there if on a blank tab).
+
+    Returns the ready page, or None if all attempts fail.
+    """
+    for attempt in range(1, max_attempts + 1):
+        try:
+            browser = p.chromium.connect_over_cdp(chrome_url)
+            context = browser.contexts[0]
+            page    = context.pages[0]
+
+            # If blank tab / wrong page, navigate to TradingView chart
+            current = ""
+            try:
+                current = page.url
+            except Exception:
+                pass
+
+            if "tradingview.com/chart" not in current:
+                logger.info(
+                    "[PLAYWRIGHT] Page is not on TradingView ('%s') — navigating...",
+                    current[:60] if current else "unknown"
+                )
+                page.goto(tradingview_url, wait_until="domcontentloaded", timeout=45_000)
+                page.wait_for_timeout(3_000)   # Let chart fully render
+
+            logger.info("[PLAYWRIGHT] Connected to TradingView (attempt %d)", attempt)
+            return page
+
+        except Exception as e:
+            logger.warning("[PLAYWRIGHT] Connect attempt %d failed: %s", attempt, e)
+            time.sleep(5)
+
+    logger.error("[PLAYWRIGHT] Could not connect to Chrome after %d attempts", max_attempts)
+    return None
 
 
 # =========================
@@ -188,6 +248,27 @@ def build_signal_msg(ts, sig, trade_id, sizing, risk_summary, oi_result=None, se
         base_score, oi_adj_val, s_adj_val, score
     )
 
+    # Scale-up suggestion block (VERY HIGH confidence only)
+    scale_block = ""
+    if score >= CONFIDENCE_VERY_HIGH_THRESHOLD:
+        import math
+        std_lots    = sizing["lots"]
+        scaled_lots = min(int(math.floor(std_lots * SCALE_UP_MULTIPLIER)), SCALE_UP_MAX_LOTS)
+        sl_per_lot  = STOP_LOSS_POINTS * OPTION_DELTA * NIFTY_LOT_SIZE
+        scaled_risk = round(scaled_lots * sl_per_lot, 0)
+        scaled_risk_pct = round((scaled_lots * sl_per_lot / ACCOUNT_CAPITAL) * 100, 1)
+        scale_block = (
+            sep + "\n"
+            "*** SCALE-UP SUGGESTION ***\n"
+            "Score " + str(score) + "/100 — VERY HIGH conviction signal\n"
+            "Standard : " + str(std_lots) + " lot(s)  →  Rs." + str(int(sizing["max_loss_inr"])) + " at risk\n"
+            "Scaled   : " + str(scaled_lots) + " lot(s)  →  Rs." + str(int(scaled_risk)) +
+            " at risk (" + str(scaled_risk_pct) + "% capital)\n"
+            "All three timeframes aligned. Consider increasing size\n"
+            "if you have high conviction in current market conditions.\n"
+            "NOTE: Manual decision only — no auto-execution.\n"
+        )
+
     return (
         "NIFTY AI TRADE SIGNAL\n" + sep + "\n"
         "Time        : " + ts + "\n"
@@ -207,7 +288,8 @@ def build_signal_msg(ts, sig, trade_id, sizing, risk_summary, oi_result=None, se
         "Confidence  : " + score_line + "  [" + level + "]\n" + sep + "\n"
         "Qty (Lots)  : " + str(sizing["lots"]) + " lot(s)\n"
         "Max Loss    : Rs." + str(sizing["max_loss_inr"]) + " (" + str(sizing["risk_pct"]) + "% capital)\n"
-        "Trade No.   : " + str(risk_summary["trades_today"]) + "/" + str(risk_summary["max_trades"]) + " today\n" + sep + "\n"
+        "Trade No.   : " + str(risk_summary["trades_today"]) + "/" + str(risk_summary["max_trades"]) + " today\n" +
+        scale_block + sep + "\n"
         "Trade ID    : " + trade_id + "\n"
         "[Paper Trading Mode]"
     )
@@ -299,13 +381,9 @@ def run():
 
     with sync_playwright() as p:
 
-        try:
-            browser = p.chromium.connect_over_cdp(CHROME_DEBUG_URL)
-            context = browser.contexts[0]
-            page    = context.pages[0]
-            logger.info("[PLAYWRIGHT] Connected to TradingView")
-        except Exception as e:
-            logger.critical(f"[PLAYWRIGHT] Cannot connect: {e}")
+        page = _connect_and_navigate(p, CHROME_DEBUG_URL, TRADINGVIEW_URL)
+        if page is None:
+            logger.critical("[PLAYWRIGHT] Cannot connect to Chrome — aborting.")
             return
 
         # =========================
@@ -354,7 +432,30 @@ def run():
             logger.info("[ASSISTANT] State=IDLE -- running MTF scan")
 
             # =========================
-            # STEP 2: SCREENSHOT FOLDER
+            # STEP 2: BROWSER HEALTH CHECK
+            # If the watchdog relaunched Chrome, the page object is stale.
+            # Reconnect before every scan so we never analyse a dead page.
+            # =========================
+
+            if not _page_is_alive(page):
+                logger.warning(
+                    "[PLAYWRIGHT] Page connection lost (browser was relaunched). "
+                    "Reconnecting..."
+                )
+                page = _connect_and_navigate(p, CHROME_DEBUG_URL, TRADINGVIEW_URL)
+                if page is None:
+                    logger.error(
+                        "[PLAYWRIGHT] Could not reconnect — sleeping %ds before retry.",
+                        SCAN_INTERVAL_SECONDS,
+                    )
+                    time.sleep(SCAN_INTERVAL_SECONDS)
+                    continue
+                # Allow TradingView to fully settle after a fresh connection
+                logger.info("[PLAYWRIGHT] Reconnect OK — waiting 5s for chart to settle...")
+                time.sleep(5)
+
+            # =========================
+            # STEP 3: SCREENSHOT FOLDER
             # =========================
 
             today_folder = SCREENSHOT_DIR / today
@@ -362,11 +463,25 @@ def run():
             ts_file = now.strftime("%H-%M-%S")
 
             # =========================
-            # STEP 3: MULTI-TIMEFRAME ANALYSIS
+            # STEP 4: MULTI-TIMEFRAME ANALYSIS
             # MTF analyzer handles its own screenshots per timeframe.
             # =========================
 
-            mtf = analyzer.analyze(page, today_folder, ts_file)
+            try:
+                mtf = analyzer.analyze(page, today_folder, ts_file)
+            except Exception as _e:
+                _err = str(_e)
+                if "TargetClosedError" in type(_e).__name__ or "Target page" in _err or "browser has been closed" in _err:
+                    # Browser died mid-scan — mark page dead, retry next cycle
+                    logger.warning(
+                        "[PLAYWRIGHT] Browser died during MTF analysis (%s). "
+                        "Will reconnect on next cycle.", _err[:120]
+                    )
+                    page = None   # Forces reconnect at top of next scan cycle
+                else:
+                    logger.error("[ASSISTANT] Unexpected error in MTF analysis: %s", _e)
+                time.sleep(SCAN_INTERVAL_SECONDS)
+                continue
 
             if not mtf["valid"]:
                 logger.warning("[MTF] Analysis invalid: " + str(mtf.get("error")))
@@ -499,7 +614,10 @@ def run():
             # =========================
 
             risk.reload()
-            risk_check = risk.check_trade_allowed()
+            risk_check = risk.check_trade_allowed(
+                signal_direction=primary_direction,
+                adjusted_score=score,
+            )
 
             if not risk_check["allowed"]:
                 logger.warning("[RISK] Trade rejected: " + risk_check["reason"])

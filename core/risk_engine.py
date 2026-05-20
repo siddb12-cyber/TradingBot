@@ -10,6 +10,14 @@ Responsibilities:
     - Persist daily state across process restarts (resets each new trading day)
     - Provide rejection reasons for blocked trades
 
+Smart Cooldown Override (Priority 6 upgrade):
+    After an SL hit the system enters a 30-min cooldown, but does NOT block blindly.
+    Overrides are evaluated on every new signal:
+      - HIGH confidence (>=CONFIDENCE_HIGH_THRESHOLD): always bypasses cooldown
+      - Opposite-direction signal with MEDIUM+ confidence: bypasses cooldown (market reversed)
+      - Same direction + MEDIUM confidence: cooldown respected (revenge-trade protection)
+    Daily loss limit and consecutive-loss lockout are HARD stops — never overridden.
+
 Persistence:
     - data/daily_risk_state.json (atomic writes, auto-resets on date change)
     - Both assistant and tracker share this file; call reload() before each use
@@ -31,7 +39,7 @@ Usage:
     risk = RiskEngine()
     risk.reload()
 
-    check = risk.check_trade_allowed()
+    check = risk.check_trade_allowed(signal_direction="BULLISH", adjusted_score=72)
     if not check["allowed"]:
         print(check["reason"])
         return
@@ -39,8 +47,8 @@ Usage:
     sizing = risk.calculate_position_size()
     # sizing = {"lots": 2, "max_loss_inr": 750.0, "risk_pct": 15.0}
 
-    risk.record_trade_opened()   # call after open_trade() succeeds
-    risk.record_trade_closed("SL HIT", -10.0)  # call after close_trade()
+    risk.record_trade_opened()
+    risk.record_trade_closed("SL HIT", -10.0, direction="BULLISH")
 """
 
 import json
@@ -56,6 +64,8 @@ from config.config import (
     ACCOUNT_CAPITAL, MAX_RISK_PCT, MAX_DAILY_LOSS_PCT,
     MAX_TRADES_PER_DAY, COOLDOWN_AFTER_SL_MINUTES, MAX_CONSECUTIVE_LOSSES,
     NIFTY_LOT_SIZE, OPTION_DELTA, STOP_LOSS_POINTS,
+    COOLDOWN_HIGH_CONF_OVERRIDE, COOLDOWN_REVERSAL_OVERRIDE,
+    CONFIDENCE_HIGH_THRESHOLD,
 )
 
 # =========================
@@ -84,6 +94,7 @@ def _empty_state(today: str) -> dict:
         "daily_pnl_points":   0.0,
         "consecutive_losses": 0,
         "cooldown_until":     None,
+        "last_sl_direction":  None,   # BULLISH or BEARISH — direction of last SL-hit trade
         "last_updated":       None,
     }
 
@@ -133,7 +144,18 @@ class RiskEngine:
                     "[RISK] New trading day (" + today + ") — resetting daily counters. "
                     "Previous: " + str(loaded.get("date"))
                 )
-                return _empty_state(today)
+                new_state = _empty_state(today)
+                # Persist immediately so subsequent reload() calls find today's date
+                # and do NOT re-trigger this reset on every call (infinite reset bug).
+                try:
+                    self._state_file.parent.mkdir(parents=True, exist_ok=True)
+                    with open(self._tmp_file, "w", encoding="utf-8") as _f:
+                        json.dump(new_state, _f, indent=2)
+                    os.replace(str(self._tmp_file), str(self._state_file))
+                    logger.debug("[RISK] New-day state persisted to disk")
+                except IOError as _exc:
+                    logger.warning("[RISK] Could not persist new-day state: " + str(_exc))
+                return new_state
 
             # Merge with defaults for forward compatibility
             merged = _empty_state(today)
@@ -169,9 +191,9 @@ class RiskEngine:
 
         Returns:
             dict with keys:
-                lots        (int)   — suggested number of lots
-                max_loss_inr (float) — estimated max loss if SL is hit
-                risk_pct    (float) — actual risk % of capital
+                lots         (int)   -- suggested number of lots
+                max_loss_inr (float) -- estimated max loss if SL is hit
+                risk_pct     (float) -- actual risk % of capital
         """
         max_risk_inr    = ACCOUNT_CAPITAL * MAX_RISK_PCT / 100
         sl_loss_per_lot = STOP_LOSS_POINTS * OPTION_DELTA * NIFTY_LOT_SIZE
@@ -200,13 +222,26 @@ class RiskEngine:
     # TRADE VALIDATION
     # =========================
 
-    def check_trade_allowed(self) -> dict:
+    def check_trade_allowed(
+        self,
+        signal_direction: Optional[str] = None,
+        adjusted_score: int = 0,
+    ) -> dict:
         """
         Check all daily risk rules before allowing a new trade.
 
+        Smart cooldown override logic (replaces blanket 30-min block):
+          - HIGH confidence (>=CONFIDENCE_HIGH_THRESHOLD): bypass cooldown entirely
+          - Opposite direction to last SL trade + MEDIUM+ confidence: bypass (market reversed)
+          - Same direction as last SL trade + MEDIUM confidence: respect cooldown
+
+        Args:
+            signal_direction: "BULLISH" or "BEARISH" -- current signal direction
+            adjusted_score:   Final confidence score after OI + sentiment adjustments
+
         Returns:
-            {"allowed": True, "reason": ""}          — trade permitted
-            {"allowed": False, "reason": "<why>"}    — trade blocked
+            {"allowed": True,  "reason": ""}         -- trade permitted
+            {"allowed": False, "reason": "<why>"}    -- trade blocked
         """
         now = datetime.now()
 
@@ -219,9 +254,9 @@ class RiskEngine:
             logger.warning("[RISK] BLOCKED — " + reason)
             return {"allowed": False, "reason": reason}
 
-        # 2. Max daily loss
-        max_loss_inr    = ACCOUNT_CAPITAL * MAX_DAILY_LOSS_PCT / 100
-        daily_loss_inr  = abs(self.state["daily_pnl_points"]) * OPTION_DELTA * NIFTY_LOT_SIZE
+        # 2. Max daily loss (hard stop — cannot be overridden)
+        max_loss_inr   = ACCOUNT_CAPITAL * MAX_DAILY_LOSS_PCT / 100
+        daily_loss_inr = abs(self.state["daily_pnl_points"]) * OPTION_DELTA * NIFTY_LOT_SIZE
         if self.state["daily_pnl_points"] < 0 and daily_loss_inr >= max_loss_inr:
             reason = (
                 "Daily loss limit hit: Rs." + str(round(daily_loss_inr, 0)) +
@@ -231,27 +266,60 @@ class RiskEngine:
             logger.warning("[RISK] BLOCKED — " + reason)
             return {"allowed": False, "reason": reason}
 
-        # 3. SL cooldown
+        # 3. SL cooldown — with smart direction-aware override
         if self.state["cooldown_until"] is not None:
             try:
                 cooldown_dt = datetime.fromisoformat(self.state["cooldown_until"])
                 if now < cooldown_dt:
-                    remaining = max(1, int((cooldown_dt - now).total_seconds() / 60))
-                    reason = (
-                        "SL cooldown active: " + str(remaining) + "m remaining. "
-                        "Wait before re-entering."
-                    )
-                    logger.warning("[RISK] BLOCKED — " + reason)
-                    return {"allowed": False, "reason": reason}
+                    remaining       = max(1, int((cooldown_dt - now).total_seconds() / 60))
+                    last_sl_dir     = self.state.get("last_sl_direction")
+                    override        = False
+                    override_reason = ""
+
+                    # Override A: HIGH confidence signal overrides cooldown entirely
+                    if (COOLDOWN_HIGH_CONF_OVERRIDE
+                            and adjusted_score >= CONFIDENCE_HIGH_THRESHOLD):
+                        override        = True
+                        override_reason = (
+                            "HIGH confidence (" + str(adjusted_score) + "/100) "
+                            "overrides " + str(remaining) + "m cooldown"
+                        )
+
+                    # Override B: opposite-direction signal overrides cooldown (market reversed)
+                    elif (COOLDOWN_REVERSAL_OVERRIDE
+                            and signal_direction
+                            and last_sl_dir
+                            and signal_direction != last_sl_dir):
+                        override        = True
+                        override_reason = (
+                            "Direction reversal " + str(last_sl_dir) +
+                            " -> " + str(signal_direction) +
+                            " overrides " + str(remaining) + "m cooldown"
+                        )
+
+                    if override:
+                        logger.info("[RISK] Cooldown OVERRIDDEN — " + override_reason)
+                        self.state["cooldown_until"] = None
+                        self._save()
+                        # Fall through to remaining checks
+                    else:
+                        # Same direction + not high confidence — respect cooldown
+                        reason = (
+                            "SL cooldown active: " + str(remaining) + "m remaining "
+                            "(same direction as last SL). "
+                            "HIGH confidence or direction reversal will bypass this."
+                        )
+                        logger.warning("[RISK] BLOCKED — " + reason)
+                        return {"allowed": False, "reason": reason}
                 else:
-                    # Cooldown expired — clear it
+                    # Cooldown expired naturally — clear it
                     self.state["cooldown_until"] = None
                     self._save()
             except ValueError:
                 self.state["cooldown_until"] = None
                 self._save()
 
-        # 4. Consecutive loss lockout
+        # 4. Consecutive loss lockout (hard stop — cannot be overridden)
         if self.state["consecutive_losses"] >= MAX_CONSECUTIVE_LOSSES:
             reason = (
                 "Consecutive loss lockout: " + str(self.state["consecutive_losses"]) +
@@ -280,13 +348,20 @@ class RiskEngine:
             str(self.state["trades_today"]) + "/" + str(MAX_TRADES_PER_DAY) + " trades"
         )
 
-    def record_trade_closed(self, outcome: str, points_result: float) -> None:
+    def record_trade_closed(
+        self,
+        outcome: str,
+        points_result: float,
+        direction: Optional[str] = None,
+    ) -> None:
         """
         Update daily P&L, consecutive loss counter, and cooldown after a trade closes.
 
         Args:
             outcome:       Human-readable outcome string (e.g. "SL HIT", "TARGET 3 HIT")
             points_result: NIFTY index points gained (+) or lost (-)
+            direction:     "BULLISH" or "BEARISH" -- direction of the closed trade
+                           (stored so next scan can apply smart override if market reverses)
         """
         # Update daily P&L
         self.state["daily_pnl_points"] = round(
@@ -302,17 +377,21 @@ class RiskEngine:
 
         if is_loss:
             self.state["consecutive_losses"] = self.state.get("consecutive_losses", 0) + 1
-            # Set cooldown (only for SL HIT, not EOD)
+            # Set cooldown (only for SL HIT, not EOD) and save the SL direction
             if outcome == "SL HIT":
                 cooldown_dt = datetime.now() + timedelta(minutes=COOLDOWN_AFTER_SL_MINUTES)
-                self.state["cooldown_until"] = cooldown_dt.isoformat()
+                self.state["cooldown_until"]    = cooldown_dt.isoformat()
+                self.state["last_sl_direction"] = direction  # enables smart override
                 logger.info(
                     "[RISK] SL hit — cooldown set until " +
-                    cooldown_dt.strftime("%H:%M")
+                    cooldown_dt.strftime("%H:%M") +
+                    " | direction=" + str(direction) +
+                    " | HIGH conf or reversal will bypass"
                 )
         else:
-            # Win or neutral — reset consecutive loss streak
+            # Win or neutral — reset consecutive loss streak and clear SL direction
             self.state["consecutive_losses"] = 0
+            self.state["last_sl_direction"]  = None
 
         self._save()
 
