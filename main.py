@@ -1,32 +1,59 @@
 """
 main.py
 =======
-TradingBot system orchestrator.
+TradingBot — single entry point.
 
-Launches the two primary processes:
-    1. core.ai_trading_assistant — signal generation every 5 minutes
-    2. core.live_trade_tracker   — trade monitoring every 1 minute
+Architecture (new, as of 2026-05-20)
+-------------------------------------
+Single-process, 3-thread engine — no browser, no OCR, no subprocess spawning.
 
-Both processes share the same Chrome CDP connection and trade log directory.
-Graceful shutdown on Ctrl+C terminates both child processes cleanly.
+  Thread 1: signal_loop     — yfinance + NSE API signals every 5 min
+  Thread 2: tracker_loop    — live price monitoring every 60s
+  Thread 3: telegram_poller — inline keyboard callbacks every 3s
 
-Usage:
-    python main.py
+All trade approvals go through Telegram inline keyboards (APPROVE/REJECT/SCALE).
 
-Prerequisites:
-    1. Chrome must be running with remote debugging enabled:
-       chrome.exe --remote-debugging-port=9222
-                  --user-data-dir="C:\\Users\\siddh\\AppData\\Local\\Google\\Chrome\\User Data\\Profile 7"
-    2. TradingView must be open in that Chrome window on the NIFTY 5m chart
-    3. .env file must be configured (copy from .env.example)
+Usage
+-----
+  Normal (with terminal):
+      python main.py
+
+  Hidden (no terminal window) — RECOMMENDED:
+      Double-click: start_hidden.vbs
+
+  Stop bot:
+      Double-click: stop_bot.vbs
+      OR: Ctrl+C in terminal
+
+Prerequisites
+-------------
+  1. .env file configured (copy .env.example → .env, fill BOT_TOKEN + CHAT_ID)
+  2. pip install -r requirements.txt  (includes yfinance, pandas)
+  3. Chrome NOT required — all data comes from yfinance + NSE API
+
+Logs
+----
+  logs/trading.log   — full session log (when started via start_hidden.vbs)
+  trade_logs/        — per-day Excel decision journals + trade records
+
+Previous architecture (deprecated)
+-----------------------------------
+The old main.py launched two subprocesses:
+  - core.ai_trading_assistant  (screenshots + OCR + Playwright)
+  - core.live_trade_tracker    (monitoring loop)
+
+This caused crashes because:
+  - Chrome + TradingView had to be running 24/7
+  - Two subprocesses sharing state via JSON file
+  - Any browser crash killed the entire system
+
+The new trading_engine.py replaces both with a robust single-process design.
 """
 
 import logging
-import subprocess
 import sys
-import time
 
-from config.config import configure_logging, BASE_DIR
+from config.config import configure_logging, BASE_DIR, PAPER_TRADING_MODE
 
 # =========================
 # LOGGING
@@ -35,35 +62,20 @@ from config.config import configure_logging, BASE_DIR
 configure_logging()
 logger = logging.getLogger(__name__)
 
+
 # =========================
 # STARTUP BANNER
 # =========================
 
-def print_banner() -> None:
-    print("\n" + "=" * 50)
-    print("   AI INTRADAY TRADING SYSTEM — PAPER MODE")
-    print("=" * 50)
-    print(f"   Project root : {BASE_DIR}")
-    print("   Mode         : PAPER TRADING ONLY")
-    print("   Modules      : ai_trading_assistant + live_trade_tracker")
-    print("=" * 50 + "\n")
-
-
-# =========================
-# PROCESS LAUNCHER
-# =========================
-
-def launch_process(module: str) -> subprocess.Popen:
-    """
-    Launch a Python module as a subprocess using the current interpreter.
-    Uses python -m <module> from the project BASE_DIR.
-    """
-    process = subprocess.Popen(
-        [sys.executable, "-m", module],
-        cwd=str(BASE_DIR),
-    )
-    logger.info(f"[MAIN] Launched: {module} (PID {process.pid})")
-    return process
+def _print_banner() -> None:
+    mode = "📄 PAPER TRADING" if PAPER_TRADING_MODE else "⚠️  LIVE TRADING"
+    print("\n" + "=" * 58)
+    print("   AI INTRADAY TRADING SYSTEM")
+    print(f"   Mode   : {mode}")
+    print(f"   Root   : {BASE_DIR}")
+    print("   Data   : yfinance + NSE API (no browser required)")
+    print("   UX     : Telegram inline keyboard approvals")
+    print("=" * 58 + "\n")
 
 
 # =========================
@@ -71,59 +83,22 @@ def launch_process(module: str) -> subprocess.Popen:
 # =========================
 
 def main() -> None:
-    print_banner()
+    _print_banner()
 
-    # --- Launch AI Trading Assistant ---
-    logger.info("[MAIN] Starting ai_trading_assistant...")
-    assistant_process = launch_process("core.ai_trading_assistant")
+    logger.info("[MAIN] Starting TradingEngine (single-process, 3-thread)")
+    logger.info("[MAIN] Mode: %s", "PAPER" if PAPER_TRADING_MODE else "LIVE")
+    logger.info("[MAIN] Base directory: %s", BASE_DIR)
 
-    # --- Brief delay to allow assistant to write first screenshot ---
-    logger.info("[MAIN] Waiting 10s before starting live tracker...")
-    time.sleep(10)
-
-    # --- Launch Live Trade Tracker ---
-    logger.info("[MAIN] Starting live_trade_tracker...")
-    tracker_process = launch_process("core.live_trade_tracker")
-
-    logger.info("[MAIN] Both processes running. Press Ctrl+C to stop.")
-    print("\n" + "=" * 50)
-    print("   SYSTEM RUNNING — CTRL+C TO STOP")
-    print("=" * 50 + "\n")
-
-    # =========================
-    # KEEP ALIVE + HEALTH MONITOR
-    # =========================
-
+    # ---- Import and run the new unified engine ----
     try:
-        while True:
-            time.sleep(60)
-
-            # Basic health check — log if a process dies unexpectedly
-            if assistant_process.poll() is not None:
-                logger.error(
-                    f"[MAIN] ⚠️  ai_trading_assistant exited unexpectedly "
-                    f"(code: {assistant_process.returncode}). "
-                    "Restart main.py to recover."
-                )
-
-            if tracker_process.poll() is not None:
-                logger.error(
-                    f"[MAIN] ⚠️  live_trade_tracker exited unexpectedly "
-                    f"(code: {tracker_process.returncode}). "
-                    "Restart main.py to recover."
-                )
-
+        from core.trading_engine import run
+        run()   # Blocks until stopped (Ctrl+C or stop_bot.vbs)
     except KeyboardInterrupt:
-        print("\n")
-        logger.info("[MAIN] Shutdown signal received (Ctrl+C)")
-        logger.info("[MAIN] Terminating ai_trading_assistant...")
-        assistant_process.terminate()
-        logger.info("[MAIN] Terminating live_trade_tracker...")
-        tracker_process.terminate()
-        logger.info("[MAIN] System stopped cleanly.")
-        print("\n" + "=" * 50)
-        print("   SYSTEM STOPPED")
-        print("=" * 50 + "\n")
+        logger.info("[MAIN] Keyboard interrupt — shutting down")
+        sys.exit(0)
+    except Exception as exc:
+        logger.critical("[MAIN] Unhandled startup error: %s", exc, exc_info=True)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

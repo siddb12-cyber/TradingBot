@@ -113,7 +113,9 @@ ACCOUNT_CAPITAL: float          = 5_000.0   # Starting paper trading capital (IN
 MAX_RISK_PCT: float             = 20.0      # Max % of capital at risk per trade
 MAX_DAILY_LOSS_PCT: float       = 30.0      # Max % of capital as total daily loss
 MAX_TRADES_PER_DAY: int         = 3         # Hard limit on signals per session
-COOLDOWN_AFTER_SL_MINUTES: int  = 30        # Minutes to wait after an SL hit
+COOLDOWN_AFTER_SL_MINUTES: int  = 30        # Minutes to wait after an SL hit (same-direction only)
+COOLDOWN_HIGH_CONF_OVERRIDE: bool = True    # HIGH confidence (>=70) bypasses SL cooldown entirely
+COOLDOWN_REVERSAL_OVERRIDE: bool  = True    # Opposite-direction signal with MEDIUM+ bypasses cooldown
 MAX_CONSECUTIVE_LOSSES: int     = 2         # Lockout after this many losses in a row
 NIFTY_LOT_SIZE: int             = 75        # NSE NIFTY options contract lot size
 OPTION_DELTA: float             = 0.5       # Assumed ATM delta for premium P&L estimate
@@ -207,9 +209,16 @@ TF_SELECTOR_MAP: dict = {
 # =========================
 
 # Minimum confidence to open a trade (trades below this are blocked entirely)
-CONFIDENCE_HIGH_THRESHOLD: int  = 70   # >= 70 → HIGH → trade allowed
-CONFIDENCE_MED_THRESHOLD: int   = 45   # 45–69 → MEDIUM → optional trade (allowed)
+CONFIDENCE_VERY_HIGH_THRESHOLD: int = 85   # >= 85 → VERY HIGH → scale-up suggestion triggered
+CONFIDENCE_HIGH_THRESHOLD: int      = 70   # >= 70 → HIGH → trade allowed
+CONFIDENCE_MED_THRESHOLD: int       = 45   # 45–69 → MEDIUM → optional trade (allowed)
 # < 45 → LOW → trade rejected
+
+# Scale-up suggestion when confidence is VERY HIGH
+# This is a Telegram suggestion only — no auto-execution ever occurs.
+# Suggested lots = floor(standard_lots * SCALE_UP_MULTIPLIER), capped at SCALE_UP_MAX_LOTS.
+SCALE_UP_MULTIPLIER: float = 2.0    # 2x standard lots suggested at VERY HIGH confidence
+SCALE_UP_MAX_LOTS: int     = 5      # Hard cap on suggested lots (safety guardrail)
 
 # Weight applied to each scoring component (must sum to 100)
 # Timeframe alignment: how many TFs agree with the primary signal direction
@@ -380,6 +389,37 @@ SENTIMENT_BEARISH_KEYWORDS: list = [
     "fall", "drop", "bearish", "decline", "crash", "sell-off", "negative",
     "selling", "downside", "breakdown", "record low", "weak", "correction",
 ]
+
+# =========================
+# API-BASED DATA ENGINE
+# Replaces TradingView + Playwright + OCR pipeline.
+# Uses yfinance for OHLCV and NSE API for live price.
+# =========================
+
+# Yahoo Finance ticker symbol for NIFTY 50 Index
+NIFTY_TICKER: str = "^NSEI"
+
+# Cache duration for OHLCV data (seconds). Prevents hammering yfinance.
+# Signal loop runs every 5 minutes, so 60s cache is safe.
+DATA_CACHE_SECONDS: int = 60
+
+# Cache duration for live price (shorter TTL — tracker needs fresh price)
+LIVE_PRICE_CACHE_SECONDS: int = 10
+
+# yfinance period and interval per timeframe.
+# Format: {timeframe: (period, interval)}
+# "7d" + "5m"  = ~7 days of 5-minute candles (Yahoo limit for intraday)
+# "60d" + "15m" = 60 days of 15-minute candles
+# "60d" + "1h"  = 60 days of hourly candles
+YFINANCE_TF_PARAMS: dict = {
+    "5m":  ("7d",  "5m"),
+    "15m": ("60d", "15m"),
+    "1h":  ("60d", "1h"),
+}
+
+# Minimum candles required for a timeframe to be considered valid
+# (EMA9 needs at least 9 candles to be meaningful)
+DATA_MIN_CANDLES: int = 15
 
 # =========================
 # RUNTIME MANAGER

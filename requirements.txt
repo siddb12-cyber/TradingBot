@@ -1,27 +1,51 @@
 # TradingBot — Python Dependencies
-# Run once: pip install -r requirements.txt
+# Install: pip install -r requirements.txt --break-system-packages
 
-# Playwright (browser automation + CDP)
+# =========================
+# MARKET DATA (API-based — replaces TradingView + OCR)
+# =========================
+yfinance>=0.2.38
+pandas>=2.0.0
+
+# =========================
+# BROWSER AUTOMATION (Groww execution only — not required in paper mode)
+# =========================
 playwright>=1.40.0
 
-# OCR
+# =========================
+# OCR (backward compat — not used in new trading_engine.py pipeline)
+# =========================
 pytesseract>=0.3.10
 Pillow>=10.0.0
 
-# Excel / trade logs
+# =========================
+# EXCEL / TRADE LOGS
+# =========================
 openpyxl>=3.1.0
 
-# HTTP (CDP health checks, Telegram)
+# =========================
+# HTTP (NSE API, Telegram inline keyboard)
+# =========================
 requests>=2.31.0
 
-# Environment config
+# =========================
+# ENVIRONMENT CONFIGURATION
+# =========================
 python-dotenv>=1.0.0
 
-# Telegram Bot API
+# =========================
+# TELEGRAM BOT
+# =========================
 pyTelegramBotAPI>=4.14.0
 
-# Scheduling (used in some automation scripts)
+# =========================
+# RSS / NEWS SENTIMENT ENGINE
+# =========================
+feedparser>=6.0.0
+
+# =========================
+# SCHEDULING
+# =========================
 schedule>=1.2.0
 
-# Standard lib only below this line — listed for documentation
-# subprocess, threading, signal, json, pathlib, datetime, logging, dataclasses
+# Standard lib: subprocess, threading, json, pathlib, datetime, logging, dataclasses, enum
