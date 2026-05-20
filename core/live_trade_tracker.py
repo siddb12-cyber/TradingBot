@@ -31,7 +31,7 @@ from playwright.sync_api import sync_playwright
 from config.config import (
     configure_logging,
     BOT_TOKEN, CHAT_ID, CHROME_DEBUG_URL,
-    TEMP_DIR, TRACKER_INTERVAL_SECONDS,
+    TEMP_DIR, TRADE_LOG_DIR, TRACKER_INTERVAL_SECONDS,
     STOP_LOSS_POINTS, TARGET_1_POINTS, TARGET_2_POINTS, TARGET_3_POINTS,
     NIFTY_LOT_SIZE, OPTION_DELTA,
 )
@@ -43,6 +43,7 @@ from core.market_hours import (
     log_market_closed_reason,
 )
 from core.risk_engine import RiskEngine
+from analytics.weekly_report import generate_and_send as generate_weekly_report
 
 # =========================
 # LOGGING
@@ -261,6 +262,61 @@ def build_eod_close_msg(signal, entry, exit_p, points, trade_id,
 
 
 # =========================
+# WEEKLY REPORT TRIGGER
+# =========================
+
+def _maybe_trigger_weekly_report(now: datetime, fired_dates: set) -> set:
+    """
+    Fire the weekly report generator once on Friday after 15:30 IST.
+
+    The fired_dates set (in-memory) prevents duplicate runs within the
+    same process session.  A sentinel file is also written so that a
+    process restart on the same Friday does not re-send the report.
+
+    Parameters
+    ----------
+    now         : Current datetime (must be IST — system clock set to IST)
+    fired_dates : Set of date strings ("YYYY-MM-DD") already processed
+
+    Returns
+    -------
+    Updated fired_dates set.
+    """
+    # Only on Fridays (weekday 4) at or after 15:30 IST
+    if now.weekday() != 4:
+        return fired_dates
+    if not (now.hour == 15 and now.minute >= 30):
+        return fired_dates
+
+    today_str  = now.strftime("%Y-%m-%d")
+    if today_str in fired_dates:
+        return fired_dates   # Already run this session
+
+    # Sentinel file: prevents re-run after process restart on same Friday
+    sentinel = TRADE_LOG_DIR / "weekly" / f"weekly_report_sent_{today_str}.flag"
+    if sentinel.exists():
+        fired_dates.add(today_str)
+        logger.debug("[WEEKLY] Already sent today (%s) — skipping.", today_str)
+        return fired_dates
+
+    logger.info("[WEEKLY] Friday 15:30+ IST — generating weekly report...")
+    try:
+        report_path = generate_weekly_report(ref_date=now)
+        if report_path:
+            logger.info("[WEEKLY] Report generated: %s", report_path.name)
+            # Write sentinel to prevent duplicate runs
+            sentinel.parent.mkdir(parents=True, exist_ok=True)
+            sentinel.touch()
+        else:
+            logger.warning("[WEEKLY] Report generation returned None — check logs for errors.")
+    except Exception as exc:
+        logger.error("[WEEKLY] Report generation failed: %s", exc)
+
+    fired_dates.add(today_str)
+    return fired_dates
+
+
+# =========================
 # MAIN LOOP
 # =========================
 
@@ -300,12 +356,23 @@ def run():
         # TRACKER LOOP
         # =========================
 
+        # In-memory set of dates for which weekly report was already fired
+        _weekly_fired: set = set()
+
         while True:
 
             now       = datetime.now()
             timestamp = now.strftime("%H:%M:%S")
             logger.info("--" * 22)
             logger.info("[TRACKER] Tick | " + timestamp)
+
+            # =========================
+            # WEEKLY REPORT TRIGGER (Friday ≥ 15:30 IST)
+            # Runs after market close — checked every tick so it fires
+            # regardless of whether an active trade is open.
+            # =========================
+
+            _weekly_fired = _maybe_trigger_weekly_report(now, _weekly_fired)
 
             # =========================
             # STEP 0: MARKET HOURS GUARD

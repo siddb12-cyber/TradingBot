@@ -64,6 +64,7 @@ from core.multi_timeframe import (
 )
 from core.oi_analysis import OIAnalysis
 from core.news_sentiment import NewsSentimentEngine
+from analytics.decision_logger import DecisionLogger
 
 # =========================
 # LOGGING
@@ -363,6 +364,7 @@ def run():
     analyzer  = MultiTimeframeAnalyzer()
     oi_engine = OIAnalysis()
     sentiment = NewsSentimentEngine()
+    dlogger   = DecisionLogger()   # Decision journal logger
 
     if state.has_active_trade():
         logger.info(
@@ -393,6 +395,9 @@ def run():
         # last_sent_trend: sideways alerts only fire on trend change.
         # Reset to None on trade open so post-close scan always alerts.
         last_sent_trend: Optional[str] = None
+
+        # Global scan counter — incremented each IDLE cycle, used by decision logger
+        scan_n: int = 0
 
         while True:
 
@@ -426,10 +431,19 @@ def run():
                     "[ASSISTANT] Trade active -- skipping scan. id=" +
                     str(a["trade_id"]) + " status=" + str(a["status"])
                 )
+                # Decision Point 1: trade already open, no scan performed
+                dlogger.log(
+                    decision     = "ACTIVE TRADE",
+                    reason       = "Trade already open: id=" + str(a.get("trade_id", "")) +
+                                   " status=" + str(a.get("status", "")),
+                    trade_id     = str(a.get("trade_id", "")),
+                    scan_number  = scan_n,
+                )
                 time.sleep(SCAN_INTERVAL_SECONDS)
                 continue
 
             logger.info("[ASSISTANT] State=IDLE -- running MTF scan")
+            scan_n += 1
 
             # =========================
             # STEP 2: BROWSER HEALTH CHECK
@@ -485,6 +499,13 @@ def run():
 
             if not mtf["valid"]:
                 logger.warning("[MTF] Analysis invalid: " + str(mtf.get("error")))
+                # Decision Point 2: OCR failed, cannot extract chart values
+                dlogger.log(
+                    decision    = "OCR ERROR",
+                    reason      = "MTF analysis invalid: " + str(mtf.get("error", "unknown")),
+                    mtf         = mtf,
+                    scan_number = scan_n,
+                )
                 time.sleep(SCAN_INTERVAL_SECONDS)
                 continue
 
@@ -586,6 +607,19 @@ def run():
                         level=     level,
                     ))
                     last_sent_trend = current_trend
+                # Decision Point 3: no tradeable bias — price between VWAP and EMA9
+                dlogger.log(
+                    decision         = "SIDEWAYS",
+                    reason           = "No clear directional bias. Align=" + str(align_sum) +
+                                       " Trend=" + str(current_trend),
+                    mtf              = sig,
+                    oi_result        = oi_result,
+                    sent_result      = sent_result,
+                    base_score       = base_score,
+                    adjusted_score   = score,
+                    confidence_level = level,
+                    scan_number      = scan_n,
+                )
                 time.sleep(SCAN_INTERVAL_SECONDS)
                 continue
 
@@ -601,6 +635,19 @@ def run():
                     str(score) + "/100 | align=" + align_sum
                 )
                 send_telegram(build_low_confidence_msg(timestamp, sig))
+                # Decision Point 4: signal exists but confidence too low to trade
+                dlogger.log(
+                    decision         = "LOW CONFIDENCE",
+                    reason           = "Score " + str(score) + "/100 below threshold " +
+                                       str(CONFIDENCE_MED_THRESHOLD) + ". Align=" + str(align_sum),
+                    mtf              = sig,
+                    oi_result        = oi_result,
+                    sent_result      = sent_result,
+                    base_score       = base_score,
+                    adjusted_score   = score,
+                    confidence_level = level,
+                    scan_number      = scan_n,
+                )
                 time.sleep(SCAN_INTERVAL_SECONDS)
                 continue
 
@@ -629,6 +676,18 @@ def run():
                 )
                 print(msg)
                 send_telegram(msg)
+                # Decision Point 5: risk engine blocked the trade
+                dlogger.log(
+                    decision         = "BLOCKED",
+                    reason           = risk_check["reason"],
+                    mtf              = sig,
+                    oi_result        = oi_result,
+                    sent_result      = sent_result,
+                    base_score       = base_score,
+                    adjusted_score   = score,
+                    confidence_level = level,
+                    scan_number      = scan_n,
+                )
                 time.sleep(SCAN_INTERVAL_SECONDS)
                 continue
 
@@ -670,6 +729,23 @@ def run():
 
             # Record trade opened in risk engine
             risk.record_trade_opened()
+
+            # Decision Point 6: trade signal accepted and opened
+            dlogger.log(
+                decision         = "TRADE SIGNAL",
+                reason           = "Trade opened: " + sig.get("trade_signal", "") +
+                                   " | Trend=" + sig.get("trend", "") +
+                                   " | Align=" + str(align_sum) +
+                                   " | Lots=" + str(sizing["lots"]),
+                trade_id         = trade_id,
+                mtf              = sig,
+                oi_result        = oi_result,
+                sent_result      = sent_result,
+                base_score       = base_score,
+                adjusted_score   = score,
+                confidence_level = level,
+                scan_number      = scan_n,
+            )
 
             # Reset dedup so post-close scan fires a fresh alert
             last_sent_trend = None
