@@ -3,332 +3,521 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TradingBot Dashboard — Haus & Kinder</title>
+<title>TradingBot Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg: #0f1117; --surface: #1a1d27; --surface2: #22263a;
-    --border: #2d3148; --text: #e8eaf6; --muted: #7986cb;
-    --green: #22c55e; --red: #ef4444; --blue: #6366f1;
-    --yellow: #f59e0b; --purple: #a855f7;
-    --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --bg:#0f1117; --surface:#1a1d27; --surface2:#22263a; --surface3:#2a2f47;
+    --border:#2d3148; --text:#e8eaf6; --muted:#7986cb;
+    --green:#22c55e; --red:#ef4444; --blue:#6366f1;
+    --yellow:#f59e0b; --purple:#a855f7; --cyan:#06b6d4;
+    --font:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; min-height: 100vh; }
-  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 18px 28px; display: flex; align-items: center; justify-content: space-between; }
-  .header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
-  .header .meta { font-size: 12px; color: var(--muted); }
-  .badge { background: #1e3a5f; color: #60a5fa; border-radius: 6px; padding: 3px 10px; font-size: 11px; font-weight: 600; }
-  .main { padding: 24px 28px; max-width: 1400px; margin: 0 auto; }
-  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
-  .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; }
-  .kpi .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
-  .kpi .value { font-size: 26px; font-weight: 700; line-height: 1; }
-  .kpi .sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
-  .green { color: var(--green); } .red { color: var(--red); } .blue { color: var(--blue); }
-  .yellow { color: var(--yellow); } .purple { color: var(--purple); }
-  .charts { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
-  .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
-  .chart-card h3 { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.6px; }
-  .section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
-  .section h3 { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.6px; display: flex; align-items: center; gap: 8px; }
-  .tabs { display: flex; gap: 4px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 0; }
-  .tab { padding: 8px 18px; border-radius: 8px 8px 0 0; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--muted); border: 1px solid transparent; border-bottom: none; transition: all 0.15s; }
-  .tab.active { background: var(--surface); border-color: var(--border); color: var(--text); margin-bottom: -1px; }
-  .tab-content { display: none; } .tab-content.active { display: block; }
-  table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  th { text-align: left; padding: 8px 12px; color: var(--muted); font-weight: 500; text-transform: uppercase; font-size: 10px; letter-spacing: 0.8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
-  td { padding: 10px 12px; border-bottom: 1px solid rgba(45,49,72,0.6); vertical-align: middle; }
-  tr:hover td { background: var(--surface2); }
-  .pill { display: inline-block; padding: 2px 8px; border-radius: 100px; font-size: 10px; font-weight: 600; }
-  .pill-green { background: rgba(34,197,94,0.15); color: var(--green); }
-  .pill-red { background: rgba(239,68,68,0.15); color: var(--red); }
-  .pill-blue { background: rgba(99,102,241,0.15); color: var(--blue); }
-  .pill-yellow { background: rgba(245,158,11,0.15); color: var(--yellow); }
-  .pill-gray { background: rgba(121,134,203,0.15); color: var(--muted); }
-  .search { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 8px 14px; color: var(--text); font-size: 13px; width: 240px; outline: none; }
-  .search:focus { border-color: var(--blue); }
-  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-  .empty { text-align: center; padding: 40px; color: var(--muted); font-size: 13px; }
-  .conf-bar { height: 4px; border-radius: 2px; background: var(--surface2); overflow: hidden; width: 80px; display: inline-block; vertical-align: middle; }
-  .conf-fill { height: 100%; border-radius: 2px; background: var(--blue); }
-  @media(max-width:768px) { .charts{ grid-template-columns:1fr; } .main{ padding:16px; } }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--text); font-family:var(--font); font-size:14px; min-height:100vh; }
+  .header { background:var(--surface); border-bottom:1px solid var(--border);
+            padding:14px 28px; display:flex; align-items:center; justify-content:space-between; }
+  .header h1 { font-size:17px; font-weight:700; letter-spacing:-0.3px; }
+  .header .meta { font-size:11px; color:var(--muted); margin-top:2px; }
+  .badge { border-radius:6px; padding:3px 10px; font-size:11px; font-weight:600; background:#1e3a5f; color:#60a5fa; }
+  .period-bar { background:var(--surface); border-bottom:1px solid var(--border);
+                padding:0 28px; display:flex; gap:0; overflow-x:auto; }
+  .period-btn { padding:10px 22px; cursor:pointer; font-size:13px; font-weight:500;
+                color:var(--muted); border-bottom:2px solid transparent;
+                transition:all 0.15s; user-select:none; white-space:nowrap; }
+  .period-btn:hover { color:var(--text); }
+  .period-btn.active { color:var(--blue); border-bottom-color:var(--blue); }
+  .main { padding:20px 28px; max-width:1440px; margin:0 auto; }
+  .section-label { font-size:10px; font-weight:600; color:var(--muted); text-transform:uppercase;
+                   letter-spacing:1px; margin:8px 0 12px; }
+  .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
+              gap:12px; margin-bottom:20px; }
+  .kpi { background:var(--surface); border:1px solid var(--border); border-radius:12px;
+         padding:16px 18px; position:relative; overflow:hidden; }
+  .kpi::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+  .kpi.c-cyan::before   { background:var(--cyan); }
+  .kpi.c-green::before  { background:var(--green); }
+  .kpi.c-red::before    { background:var(--red); }
+  .kpi.c-blue::before   { background:var(--blue); }
+  .kpi.c-purple::before { background:var(--purple); }
+  .kpi.c-yellow::before { background:var(--yellow); }
+  .kpi .label { font-size:10px; color:var(--muted); text-transform:uppercase;
+                letter-spacing:0.8px; margin-bottom:7px; }
+  .kpi .value { font-size:22px; font-weight:700; line-height:1; }
+  .kpi .sub   { font-size:10px; color:var(--muted); margin-top:5px; }
+  .charts-row { display:grid; grid-template-columns:2fr 1fr 1fr; gap:14px; margin-bottom:20px; }
+  .chart-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px; }
+  .chart-card h3 { font-size:10px; font-weight:600; color:var(--muted); margin-bottom:14px;
+                   text-transform:uppercase; letter-spacing:0.6px; }
+  .period-summary { background:var(--surface); border:1px solid var(--border); border-radius:12px;
+                    padding:18px; margin-bottom:20px; }
+  .period-summary h3 { font-size:10px; font-weight:600; color:var(--muted); margin-bottom:14px;
+                       text-transform:uppercase; letter-spacing:0.6px; }
+  .section { background:var(--surface); border:1px solid var(--border); border-radius:12px;
+             padding:18px; margin-bottom:16px; }
+  .tabs { display:flex; gap:4px; margin-bottom:16px; border-bottom:1px solid var(--border); }
+  .tab { padding:7px 16px; border-radius:8px 8px 0 0; cursor:pointer; font-size:13px;
+         font-weight:500; color:var(--muted); border:1px solid transparent;
+         border-bottom:none; transition:all 0.15s; }
+  .tab.active { background:var(--surface2); border-color:var(--border); color:var(--text); margin-bottom:-1px; }
+  .tab-content { display:none; } .tab-content.active { display:block; }
+  table { width:100%; border-collapse:collapse; font-size:12px; }
+  th { text-align:left; padding:8px 10px; color:var(--muted); font-weight:500;
+       text-transform:uppercase; font-size:10px; letter-spacing:0.7px;
+       border-bottom:1px solid var(--border); white-space:nowrap; }
+  td { padding:9px 10px; border-bottom:1px solid rgba(45,49,72,0.5); vertical-align:middle; }
+  tr:hover td { background:var(--surface2); }
+  .pill { display:inline-block; padding:2px 8px; border-radius:100px; font-size:10px; font-weight:600; }
+  .pg { background:rgba(34,197,94,0.15);  color:var(--green); }
+  .pr { background:rgba(239,68,68,0.15);  color:var(--red); }
+  .pb { background:rgba(99,102,241,0.15); color:var(--blue); }
+  .py { background:rgba(245,158,11,0.15); color:var(--yellow); }
+  .pm { background:rgba(121,134,203,0.15);color:var(--muted); }
+  .search { background:var(--surface2); border:1px solid var(--border); border-radius:8px;
+            padding:6px 12px; color:var(--text); font-size:12px; width:210px; outline:none; }
+  .search:focus { border-color:var(--blue); }
+  .section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .empty { text-align:center; padding:36px; color:var(--muted); font-size:13px; }
+  .cbar { height:3px; border-radius:2px; background:var(--surface2); overflow:hidden;
+          width:55px; display:inline-block; vertical-align:middle; margin-right:4px; }
+  .cfill { height:100%; border-radius:2px; }
+  @media(max-width:900px) {
+    .charts-row { grid-template-columns:1fr; }
+    .kpi-grid { grid-template-columns:repeat(2,1fr); }
+    .main { padding:14px; }
+  }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div style="display:flex;align-items:center;gap:12px;">
-    <div>
-      <h1>TradingBot Dashboard</h1>
-      <div class="meta">Haus &amp; Kinder · Samara Retail India · Paper Trading</div>
-    </div>
+  <div>
+    <h1>TradingBot &middot; Dashboard</h1>
+    <div class="meta">Haus &amp; Kinder &middot; Samara Retail India &middot; NIFTY F&amp;O</div>
   </div>
   <div style="display:flex;align-items:center;gap:10px;">
     <span class="badge">PAPER MODE</span>
-    <span class="meta">Updated: 21 May 2026, 02:47</span>
+    <span style="font-size:11px;color:var(--muted)">Refreshed: 21 May 2026, 03:01</span>
   </div>
+</div>
+
+<div class="period-bar">
+  <div class="period-btn active" onclick="setPeriod('all')">All Time</div>
+  <div class="period-btn" onclick="setPeriod('month')">This Month</div>
+  <div class="period-btn" onclick="setPeriod('week')">This Week</div>
+  <div class="period-btn" onclick="setPeriod('today')">Today</div>
 </div>
 
 <div class="main">
 
-  <!-- KPI CARDS -->
+  <div class="section-label">Financial Summary</div>
   <div class="kpi-grid">
-    <div class="kpi">
-      <div class="label">Total Trades</div>
-      <div class="value blue">1</div>
-      <div class="sub">1W / 0L</div>
+    <div class="kpi c-cyan">
+      <div class="label">Capital Deployed</div>
+      <div class="value" style="color:var(--cyan)" id="k-inv">&#8212;</div>
+      <div class="sub">Total capital at risk</div>
     </div>
-    <div class="kpi">
+    <div class="kpi c-green">
+      <div class="label">Total Won</div>
+      <div class="value" style="color:var(--green)" id="k-won">&#8212;</div>
+      <div class="sub" id="k-wins">0 winning trades</div>
+    </div>
+    <div class="kpi c-red">
+      <div class="label">Total Lost</div>
+      <div class="value" style="color:var(--red)" id="k-lost">&#8212;</div>
+      <div class="sub" id="k-losses">0 losing trades</div>
+    </div>
+    <div class="kpi c-blue">
+      <div class="label">Net P&amp;L</div>
+      <div class="value" id="k-net">&#8212;</div>
+      <div class="sub" id="k-roi">ROI: &#8212;</div>
+    </div>
+    <div class="kpi c-blue">
       <div class="label">Win Rate</div>
-      <div class="value green">100.0%</div>
-      <div class="sub">Target: 55%+</div>
+      <div class="value" style="color:var(--blue)" id="k-wr">&#8212;</div>
+      <div class="sub" id="k-tc">0 trades</div>
     </div>
-    <div class="kpi">
-      <div class="label">Total P&amp;L</div>
-      <div class="value" style="color:#22c55e">+1589.8 pts</div>
-      <div class="sub">Cumulative NIFTY points</div>
-    </div>
-    <div class="kpi">
+    <div class="kpi c-green">
       <div class="label">Best Trade</div>
-      <div class="value green">+1589.8 pts</div>
-      <div class="sub">Single trade high</div>
+      <div class="value" style="color:var(--green)" id="k-best">&#8212;</div>
+      <div class="sub">Highest single trade</div>
     </div>
-    <div class="kpi">
+    <div class="kpi c-red">
       <div class="label">Worst Trade</div>
-      <div class="value red">+1589.8 pts</div>
-      <div class="sub">Single trade low</div>
+      <div class="value" style="color:var(--red)" id="k-worst">&#8212;</div>
+      <div class="sub">Lowest single trade</div>
     </div>
-    <div class="kpi">
+    <div class="kpi c-purple">
       <div class="label">Avg Confidence</div>
-      <div class="value purple">56/100</div>
+      <div class="value" style="color:var(--purple)" id="k-conf">&#8212;</div>
       <div class="sub">Signal strength avg</div>
     </div>
   </div>
 
-  <!-- CHARTS ROW -->
-  <div class="charts">
+  <div class="section-label">Performance Charts</div>
+  <div class="charts-row">
     <div class="chart-card">
-      <h3>Equity Curve — Cumulative NIFTY Points</h3>
-      <canvas id="equityChart" height="120"></canvas>
+      <h3>Equity Curve &mdash; Cumulative P&amp;L (INR)</h3>
+      <canvas id="eqChart" height="110"></canvas>
     </div>
     <div class="chart-card">
-      <h3>Daily P&amp;L</h3>
-      <canvas id="dailyChart" height="120"></canvas>
+      <h3>Period P&amp;L (INR)</h3>
+      <canvas id="perChart" height="110"></canvas>
+    </div>
+    <div class="chart-card">
+      <h3>Win / Loss Split</h3>
+      <canvas id="pieChart" height="110"></canvas>
     </div>
   </div>
 
-  <!-- TABS: TRADES / DECISIONS -->
+  <div class="period-summary">
+    <h3 id="ptTitle">Period Breakdown</h3>
+    <div style="overflow-x:auto;">
+    <table id="ptTable">
+      <thead id="ptHead"></thead>
+      <tbody id="ptBody"></tbody>
+    </table>
+    </div>
+  </div>
+
   <div class="section">
     <div class="tabs">
-      <div class="tab active" onclick="switchTab('trades')">Trade Journal (7)</div>
-      <div class="tab" onclick="switchTab('decisions')">Decision Log (8)</div>
+      <div class="tab active" onclick="switchTab('trades')">Trade Journal (<span id="tcnt">0</span>)</div>
+      <div class="tab" onclick="switchTab('decisions')">Decision Log (<span id="dcnt">0</span>)</div>
     </div>
 
-    <!-- TRADE TABLE -->
     <div id="tab-trades" class="tab-content active">
       <div class="section-header">
-        <div style="font-size:12px;color:var(--muted)">Every trade, every decision recorded.</div>
-        <input class="search" id="tradeSearch" oninput="filterTable('tradeTable','tradeSearch')" placeholder="Search trades...">
+        <div style="font-size:11px;color:var(--muted)">Every trade recorded. INR = Points x 37.5 x Lots (estimated).</div>
+        <input class="search" id="ts" oninput="ft('tt','ts')" placeholder="Search trades...">
       </div>
       <div style="overflow-x:auto;">
-      <table id="tradeTable">
+      <table id="tt">
         <thead><tr>
-          <th>Date</th><th>Time</th><th>Signal</th><th>Direction</th>
-          <th>Entry</th><th>Exit</th><th>P&L (pts)</th><th>Outcome</th>
-          <th>Conf Score</th><th>Conf Level</th><th>MTF</th><th>Lots</th><th>Trade ID</th>
+          <th>Date</th><th>Time</th><th>Signal</th><th>Dir</th>
+          <th>Outcome</th><th>Points</th><th>P&amp;L (INR)</th>
+          <th>Invested</th><th>Lots</th><th>Conf</th><th>Level</th><th>MTF</th>
         </tr></thead>
-        <tbody id="tradeBody"></tbody>
+        <tbody id="tb"></tbody>
       </table>
       </div>
     </div>
 
-    <!-- DECISION TABLE -->
     <div id="tab-decisions" class="tab-content">
       <div class="section-header">
-        <div style="font-size:12px;color:var(--muted)">Every scan cycle logged — not just trades.</div>
-        <input class="search" id="decSearch" oninput="filterTable('decTable','decSearch')" placeholder="Search decisions...">
+        <div style="font-size:11px;color:var(--muted)">Every scan cycle logged &mdash; not just trades.</div>
+        <input class="search" id="ds" oninput="ft('dt','ds')" placeholder="Search decisions...">
       </div>
       <div style="overflow-x:auto;">
-      <table id="decTable">
+      <table id="dt">
         <thead><tr>
           <th>Date</th><th>Time</th><th>Scan#</th><th>Decision</th>
           <th>5m</th><th>15m</th><th>1h</th><th>Price</th><th>vs VWAP</th>
           <th>Base</th><th>OI Adj</th><th>Sent Adj</th><th>Final</th><th>Confidence</th><th>Reason</th>
         </tr></thead>
-        <tbody id="decBody"></tbody>
+        <tbody id="db"></tbody>
       </table>
       </div>
     </div>
   </div>
-
 </div>
 
 <script>
-const TRADES    = [{"Time": "14-51-28", "Trend": "BEARISH / PE BIAS", "Current Price": 23625.95, "VWAP": 23752.27, "EMA9": 23674.21, "Trade Signal": "BUY 23650 PE", "Stop Loss": "10 Points", "Target 1": "15 Points", "Target 2": "25 Points", "Target 3": "40 Points", "_file": "trade_log_2026-05-15.xlsx", "Date": null, "Lots": null, "Max Loss INR": null, "MTF Alignment": null, "Base Score": null, "OI Adjustment": null, "Sentiment Adj": null, "Confidence Score": null, "Confidence Level": null, "TF 5m": null, "TF 15m": null, "TF 1h": null, "PCR": null, "Max Pain": null, "ATM OI Bias": null, "India VIX": null, "US Futures Pct": null, "News Sentiment": null, "Trade ID": null, "Trade Status": null, "Outcome": null, "Points Result": null, "Exit Price": null, "Exit Time": null}, {"Time": "15-48-10", "Trend": "BEARISH / PE BIAS", "Current Price": 23632.85, "VWAP": 23731.13, "EMA9": 23652.83, "Trade Signal": "BUY 23650 PE", "Stop Loss": "10 Points", "Target 1": "15 Points", "Target 2": "25 Points", "Target 3": "40 Points", "_file": "trade_log_2026-05-15.xlsx", "Date": null, "Lots": null, "Max Loss INR": null, "MTF Alignment": null, "Base Score": null, "OI Adjustment": null, "Sentiment Adj": null, "Confidence Score": null, "Confidence Level": null, "TF 5m": null, "TF 15m": null, "TF 1h": null, "PCR": null, "Max Pain": null, "ATM OI Bias": null, "India VIX": null, "US Futures Pct": null, "News Sentiment": null, "Trade ID": null, "Trade Status": null, "Outcome": null, "Points Result": null, "Exit Price": null, "Exit Time": null}, {"Time": "15-53-12", "Trend": "BEARISH / PE BIAS", "Current Price": 23632.85, "VWAP": 23731.13, "EMA9": 23652.83, "Trade Signal": "BUY 23650 PE", "Stop Loss": "10 Points", "Target 1": "15 Points", "Target 2": "25 Points", "Target 3": "40 Points", "_file": "trade_log_2026-05-15.xlsx", "Date": null, "Lots": null, "Max Loss INR": null, "MTF Alignment": null, "Base Score": null, "OI Adjustment": null, "Sentiment Adj": null, "Confidence Score": null, "Confidence Level": null, "TF 5m": null, "TF 15m": null, "TF 1h": null, "PCR": null, "Max Pain": null, "ATM OI Bias": null, "India VIX": null, "US Futures Pct": null, "News Sentiment": null, "Trade ID": null, "Trade Status": null, "Outcome": null, "Points Result": null, "Exit Price": null, "Exit Time": null}, {"Time": "15-58-15", "Trend": "BEARISH / PE BIAS", "Current Price": 23632.85, "VWAP": 23731.13, "EMA9": 23652.83, "Trade Signal": "BUY 23650 PE", "Stop Loss": "10 Points", "Target 1": "15 Points", "Target 2": "25 Points", "Target 3": "40 Points", "_file": "trade_log_2026-05-15.xlsx", "Date": null, "Lots": null, "Max Loss INR": null, "MTF Alignment": null, "Base Score": null, "OI Adjustment": null, "Sentiment Adj": null, "Confidence Score": null, "Confidence Level": null, "TF 5m": null, "TF 15m": null, "TF 1h": null, "PCR": null, "Max Pain": null, "ATM OI Bias": null, "India VIX": null, "US Futures Pct": null, "News Sentiment": null, "Trade ID": null, "Trade Status": null, "Outcome": null, "Points Result": null, "Exit Price": null, "Exit Time": null}, {"Time": "16-03-27", "Trend": "BEARISH / PE BIAS", "Current Price": 23632.85, "VWAP": 23731.13, "EMA9": 23652.83, "Trade Signal": "BUY 23650 PE", "Stop Loss": "10 Points", "Target 1": "15 Points", "Target 2": "25 Points", "Target 3": "40 Points", "_file": "trade_log_2026-05-15.xlsx", "Date": null, "Lots": null, "Max Loss INR": null, "MTF Alignment": null, "Base Score": null, "OI Adjustment": null, "Sentiment Adj": null, "Confidence Score": null, "Confidence Level": null, "TF 5m": null, "TF 15m": null, "TF 1h": null, "PCR": null, "Max Pain": null, "ATM OI Bias": null, "India VIX": null, "US Futures Pct": null, "News Sentiment": null, "Trade ID": null, "Trade Status": null, "Outcome": null, "Points Result": null, "Exit Price": null, "Exit Time": null}, {"Time": "16-08-29", "Trend": "BEARISH / PE BIAS", "Current Price": 23632.85, "VWAP": 23731.13, "EMA9": 23652.83, "Trade Signal": "BUY 23650 PE", "Stop Loss": "10 Points", "Target 1": "15 Points", "Target 2": "25 Points", "Target 3": "40 Points", "_file": "trade_log_2026-05-15.xlsx", "Date": null, "Lots": null, "Max Loss INR": null, "MTF Alignment": null, "Base Score": null, "OI Adjustment": null, "Sentiment Adj": null, "Confidence Score": null, "Confidence Level": null, "TF 5m": null, "TF 15m": null, "TF 1h": null, "PCR": null, "Max Pain": null, "ATM OI Bias": null, "India VIX": null, "US Futures Pct": null, "News Sentiment": null, "Trade ID": null, "Trade Status": null, "Outcome": null, "Points Result": null, "Exit Price": null, "Exit Time": null}, {"Time": "10:47:04", "Trend": "BULLISH / CE BIAS", "Current Price": 23532.7, "VWAP": 23498.3, "EMA9": 23527.63, "Trade Signal": "BUY 23550 CE", "Stop Loss": "10 Points", "Target 1": "15 Points", "Target 2": "25 Points", "Target 3": "40 Points", "_file": "trade_log_2026-05-20.xlsx", "Date": "2026-05-20", "Lots": 2.0, "Max Loss INR": 750.0, "MTF Alignment": "2/3 BULLISH", "Base Score": 61.0, "OI Adjustment": 0.0, "Sentiment Adj": -5.0, "Confidence Score": 56.0, "Confidence Level": "MEDIUM", "TF 5m": "BULLISH", "TF 15m": "BULLISH", "TF 1h": "SIDEWAYS", "PCR": null, "Max Pain": null, "ATM OI Bias": "NEUTRAL", "India VIX": 19.02, "US Futures Pct": -0.09, "News Sentiment": "BEARISH", "Trade ID": "20260520_104738", "Trade Status": "CLOSED", "Outcome": "TARGET 3 HIT", "Points Result": 1589.82, "Exit Price": 25122.516, "Exit Time": "10:48:09"}];
-const DECISIONS = [{"Time": "10:25:13", "Scan #": 1, "Price 5m": null, "VWAP 5m": null, "EMA9 5m": null, "vs VWAP": null, "vs EMA9": null, "5m Dir": null, "15m Dir": null, "1h Dir": null, "TF Align": "0/0", "Base Score": null, "PCR": null, "Max Pain": null, "ATM Bias": null, "OI Adj": null, "VIX": null, "ES/F %": null, "Mood": null, "Sent Adj": null, "Final Score": null, "Confidence": null, "Decision": "OCR ERROR", "Reason": "MTF analysis invalid: Primary timeframe (5m) OCR failed \u2014 cannot determine trade direction", "Trade ID": null, "_date": "2026-05-20"}, {"Time": "10:30:50", "Scan #": 2, "Price 5m": 23521.6, "VWAP 5m": 23489.67, "EMA9 5m": 23512.56, "vs VWAP": 31.93, "vs EMA9": 9.04, "5m Dir": "BULLISH", "15m Dir": "SIDEWAYS", "1h Dir": "SIDEWAYS", "TF Align": "1/3 BULLISH", "Base Score": 36.0, "PCR": null, "Max Pain": null, "ATM Bias": null, "OI Adj": null, "VIX": null, "ES/F %": null, "Mood": null, "Sent Adj": null, "Final Score": 36.0, "Confidence": "LOW", "Decision": "SIDEWAYS", "Reason": "No clear directional bias. Align=1/3 BULLISH Trend=SIDEWAYS", "Trade ID": null, "_date": "2026-05-20"}, {"Time": "10:36:33", "Scan #": 3, "Price 5m": 23562.55, "VWAP 5m": 23493.78, "EMA9 5m": 23530.05, "vs VWAP": 68.77, "vs EMA9": 32.5, "5m Dir": "BULLISH", "15m Dir": "SIDEWAYS", "1h Dir": "SIDEWAYS", "TF Align": "1/3 BULLISH", "Base Score": 30.0, "PCR": null, "Max Pain": null, "ATM Bias": null, "OI Adj": null, "VIX": null, "ES/F %": null, "Mood": null, "Sent Adj": null, "Final Score": 30.0, "Confidence": "LOW", "Decision": "SIDEWAYS", "Reason": "No clear directional bias. Align=1/3 BULLISH Trend=SIDEWAYS", "Trade ID": null, "_date": "2026-05-20"}, {"Time": "10:42:04", "Scan #": 4, "Price 5m": 23562.65, "VWAP 5m": 23496.97, "EMA9 5m": 23534.24, "vs VWAP": 65.68, "vs EMA9": 28.41, "5m Dir": "BULLISH", "15m Dir": "SIDEWAYS", "1h Dir": "SIDEWAYS", "TF Align": "1/3 BULLISH", "Base Score": 30.0, "PCR": null, "Max Pain": null, "ATM Bias": null, "OI Adj": null, "VIX": null, "ES/F %": null, "Mood": null, "Sent Adj": null, "Final Score": 30.0, "Confidence": "LOW", "Decision": "SIDEWAYS", "Reason": "No clear directional bias. Align=1/3 BULLISH Trend=SIDEWAYS", "Trade ID": null, "_date": "2026-05-20"}, {"Time": "10:47:38", "Scan #": 5, "Price 5m": 23532.7, "VWAP 5m": 23498.3, "EMA9 5m": 23527.63, "vs VWAP": 34.4, "vs EMA9": 5.07, "5m Dir": "BULLISH", "15m Dir": "BULLISH", "1h Dir": "SIDEWAYS", "TF Align": "2/3 BULLISH", "Base Score": 61.0, "PCR": null, "Max Pain": null, "ATM Bias": "NEUTRAL", "OI Adj": null, "VIX": 19.02, "ES/F %": -0.09, "Mood": "BEARISH", "Sent Adj": -5.0, "Final Score": 56.0, "Confidence": "MEDIUM", "Decision": "TRADE SIGNAL", "Reason": "Trade opened: BUY 23550 CE | Trend=BULLISH / CE BIAS | Align=2/3 BULLISH | Lots=2", "Trade ID": "20260520_104738", "_date": "2026-05-20"}, {"Time": "10:53:12", "Scan #": 6, "Price 5m": 23506.45, "VWAP 5m": 23498.81, "EMA9 5m": 23526.46, "vs VWAP": 7.64, "vs EMA9": -20.01, "5m Dir": "SIDEWAYS", "15m Dir": "SIDEWAYS", "1h Dir": "SIDEWAYS", "TF Align": "3/3 SIDEWAYS", "Base Score": 75.0, "PCR": null, "Max Pain": null, "ATM Bias": null, "OI Adj": null, "VIX": null, "ES/F %": null, "Mood": null, "Sent Adj": null, "Final Score": 75.0, "Confidence": "HIGH", "Decision": "SIDEWAYS", "Reason": "No clear directional bias. Align=3/3 SIDEWAYS Trend=SIDEWAYS", "Trade ID": null, "_date": "2026-05-20"}, {"Time": "10:58:54", "Scan #": 7, "Price 5m": 23546.3, "VWAP 5m": 23501.01, "EMA9 5m": 23531.68, "vs VWAP": 45.29, "vs EMA9": 14.62, "5m Dir": "BULLISH", "15m Dir": "SIDEWAYS", "1h Dir": "SIDEWAYS", "TF Align": "1/3 BULLISH", "Base Score": 36.0, "PCR": null, "Max Pain": null, "ATM Bias": null, "OI Adj": null, "VIX": null, "ES/F %": null, "Mood": null, "Sent Adj": null, "Final Score": 36.0, "Confidence": "LOW", "Decision": "SIDEWAYS", "Reason": "No clear directional bias. Align=1/3 BULLISH Trend=SIDEWAYS", "Trade ID": null, "_date": "2026-05-20"}, {"Time": "11:04:37", "Scan #": 8, "Price 5m": 23546.4, "VWAP 5m": 23504.05, "EMA9 5m": 23538.38, "vs VWAP": 42.35, "vs EMA9": 8.02, "5m Dir": "BULLISH", "15m Dir": "SIDEWAYS", "1h Dir": "BEARISH", "TF Align": "1/3 BULLISH", "Base Score": 36.0, "PCR": null, "Max Pain": null, "ATM Bias": null, "OI Adj": null, "VIX": null, "ES/F %": null, "Mood": null, "Sent Adj": null, "Final Score": 36.0, "Confidence": "LOW", "Decision": "SIDEWAYS", "Reason": "No clear directional bias. Align=1/3 BULLISH Trend=SIDEWAYS", "Trade ID": null, "_date": "2026-05-20"}];
-const EQUITY    = [{"date": "2026-05-20", "pts": 1589.82}];
-const DAILY     = [{"date": "2026-05-20", "pts": 1589.82}];
+const AT = [{"Time": "14-51-28", "Trend": "BEARISH / PE BIAS", "Current Price": 23625.95, "VWAP": 23752.27, "EMA9": 23674.21, "Trade Signal": "BUY 23650 PE", "Stop Loss": "10 Points", "Target 1": "15 Points", "Target 2": "25 Points", "Target 3": "40 Points", "_file": "trade_log_2026-05-15.xlsx", "_date": "2026-05-15", "Date": null, "Lots": NaN, "Max Loss INR": NaN, "MTF Alignment": null, "Base Score": NaN, "OI Adjustment": NaN, "Sentiment Adj": NaN, "Confidence Score": NaN, "Confidence Level": null, "TF 5m": null, "TF 15m": null, "TF 1h": null, "PCR": NaN, "Max Pain": NaN, "ATM OI Bias": null, "India VIX": NaN, "US Futures Pct": NaN, "News Sentiment": null, "Trade ID": null, "Trade Status": null, "Outcome": null, "Points Result": NaN, "Exit Price": NaN, "Exit Time": null, "_pnl_inr": null, "_invested_inr": 375.0, "_date_str": "2026-05-15", "_week": "2026-W19", "_month": "2026-05"}, {"Time": "15-48-10", "Trend": "BEARISH / PE BIAS", "Current Price": 23632.85, "VWAP": 23731.13, "EMA9": 23652.83, "Trade Signal": "BUY 23650 PE", "Stop Loss": "10 Points", "Target 1": "15 Points", "Target 2": "25 Points", "Target 3": "40 Points", "_file": "trade_log_2026-05-15.xlsx", "_date": "2026-05-15", "Date": null, "Lots": NaN, "Max Loss INR": NaN, "MTF Alignment": null, "Base Score": NaN, "OI Adjustment": NaN, "Sentiment Adj": NaN, "Confidence Score": NaN, "Confidence Level": null, "TF 5m": null, "TF 15m": null, "TF 1h": null, "PCR": NaN, "Max Pain": NaN, "ATM OI Bias": null, "India VIX": NaN, "US Futures Pct": NaN, "News Sentiment": null, "Trade ID": null, "Trade Status": null, "Outcome": null, "Points Result": NaN, "Exit Price": NaN, "Exit Time": null, "_pnl_inr": null, "_invested_inr": 375.0, "_date_str": "2026-05-15", "_week": "2026-W19", "_month": "2026-05"}, {"Time": "15-53-12", "Trend": "BEARISH / PE BIAS", "Current Price": 23632.85, "VWAP": 23731.13, "EMA9": 23652.83, "Trade Signal": "BUY 23650 PE", "Stop Loss": "10 Points", "Target 1": "15 Points", "Target 2": "25 Points", "Target 3": "40 Points", "_file": "trade_log_2026-05-15.xlsx", "_date": "2026-05-15", "Date": null, "Lots": NaN, "Max Loss INR": NaN, "MTF Alignment": null, "Base Score": NaN, "OI Adjustment": NaN, "Sentiment Adj": NaN, "Confidence Score": NaN, "Confidence Level": null, "TF 5m": null, "TF 15m": null, "TF 1h": null, "PCR": NaN, "Max Pain": NaN, "ATM OI Bias": null, "India VIX": NaN, "US Futures Pct": NaN, "News Sentiment": null, "Trade ID": null, "Trade Status": null, "Outcome": null, "Points Result": NaN, "Exit Price": NaN, "Exit Time": null, "_pnl_inr": null, "_invested_inr": 375.0, "_date_str": "2026-05-15", "_week": "2026-W19", "_month": "2026-05"}, {"Time": "15-58-15", "Trend": "BEARISH / PE BIAS", "Current Price": 23632.85, "VWAP": 23731.13, "EMA9": 23652.83, "Trade Signal": "BUY 23650 PE", "Stop Loss": "10 Points", "Target 1": "15 Points", "Target 2": "25 Points", "Target 3": "40 Points", "_file": "trade_log_2026-05-15.xlsx", "_date": "2026-05-15", "Date": null, "Lots": NaN, "Max Loss INR": NaN, "MTF Alignment": null, "Base Score": NaN, "OI Adjustment": NaN, "Sentiment Adj": NaN, "Confidence Score": NaN, "Confidence Level": null, "TF 5m": null, "TF 15m": null, "TF 1h": null, "PCR": NaN, "Max Pain": NaN, "ATM OI Bias": null, "India VIX": NaN, "US Futures Pct": NaN, "News Sentiment": null, "Trade ID": null, "Trade Status": null, "Outcome": null, "Points Result": NaN, "Exit Price": NaN, "Exit Time": null, "_pnl_inr": null, "_invested_inr": 375.0, "_date_str": "2026-05-15", "_week": "2026-W19", "_month": "2026-05"}, {"Time": "16-03-27", "Trend": "BEARISH / PE BIAS", "Current Price": 23632.85, "VWAP": 23731.13, "EMA9": 23652.83, "Trade Signal": "BUY 23650 PE", "Stop Loss": "10 Points", "Target 1": "15 Points", "Target 2": "25 Points", "Target 3": "40 Points", "_file": "trade_log_2026-05-15.xlsx", "_date": "2026-05-15", "Date": null, "Lots": NaN, "Max Loss INR": NaN, "MTF Alignment": null, "Base Score": NaN, "OI Adjustment": NaN, "Sentiment Adj": NaN, "Confidence Score": NaN, "Confidence Level": null, "TF 5m": null, "TF 15m": null, "TF 1h": null, "PCR": NaN, "Max Pain": NaN, "ATM OI Bias": null, "India VIX": NaN, "US Futures Pct": NaN, "News Sentiment": null, "Trade ID": null, "Trade Status": null, "Outcome": null, "Points Result": NaN, "Exit Price": NaN, "Exit Time": null, "_pnl_inr": null, "_invested_inr": 375.0, "_date_str": "2026-05-15", "_week": "2026-W19", "_month": "2026-05"}, {"Time": "16-08-29", "Trend": "BEARISH / PE BIAS", "Current Price": 23632.85, "VWAP": 23731.13, "EMA9": 23652.83, "Trade Signal": "BUY 23650 PE", "Stop Loss": "10 Points", "Target 1": "15 Points", "Target 2": "25 Points", "Target 3": "40 Points", "_file": "trade_log_2026-05-15.xlsx", "_date": "2026-05-15", "Date": null, "Lots": NaN, "Max Loss INR": NaN, "MTF Alignment": null, "Base Score": NaN, "OI Adjustment": NaN, "Sentiment Adj": NaN, "Confidence Score": NaN, "Confidence Level": null, "TF 5m": null, "TF 15m": null, "TF 1h": null, "PCR": NaN, "Max Pain": NaN, "ATM OI Bias": null, "India VIX": NaN, "US Futures Pct": NaN, "News Sentiment": null, "Trade ID": null, "Trade Status": null, "Outcome": null, "Points Result": NaN, "Exit Price": NaN, "Exit Time": null, "_pnl_inr": null, "_invested_inr": 375.0, "_date_str": "2026-05-15", "_week": "2026-W19", "_month": "2026-05"}, {"Time": "10:47:04", "Trend": "BULLISH / CE BIAS", "Current Price": 23532.7, "VWAP": 23498.3, "EMA9": 23527.63, "Trade Signal": "BUY 23550 CE", "Stop Loss": "10 Points", "Target 1": "15 Points", "Target 2": "25 Points", "Target 3": "40 Points", "_file": "trade_log_2026-05-20.xlsx", "_date": "2026-05-20", "Date": "2026-05-20", "Lots": 2.0, "Max Loss INR": 750.0, "MTF Alignment": "2/3 BULLISH", "Base Score": 61.0, "OI Adjustment": 0.0, "Sentiment Adj": -5.0, "Confidence Score": 56.0, "Confidence Level": "MEDIUM", "TF 5m": "BULLISH", "TF 15m": "BULLISH", "TF 1h": "SIDEWAYS", "PCR": NaN, "Max Pain": NaN, "ATM OI Bias": "NEUTRAL", "India VIX": 19.02, "US Futures Pct": -0.09, "News Sentiment": "BEARISH", "Trade ID": "20260520_104738", "Trade Status": "CLOSED", "Outcome": "TARGET 3 HIT", "Points Result": 1589.82, "Exit Price": 25122.516, "Exit Time": "10:48:09", "_pnl_inr": 119236.5, "_invested_inr": 750.0, "_date_str": "2026-05-20", "_week": "2026-W20", "_month": "2026-05"}];
+const AD = [{"Time": "10:25:13", "Scan #": 1, "Price 5m": NaN, "VWAP 5m": NaN, "EMA9 5m": NaN, "vs VWAP": NaN, "vs EMA9": NaN, "5m Dir": null, "15m Dir": null, "1h Dir": null, "TF Align": "0/0", "Base Score": NaN, "PCR": NaN, "Max Pain": NaN, "ATM Bias": null, "OI Adj": NaN, "VIX": NaN, "ES/F %": NaN, "Mood": null, "Sent Adj": NaN, "Final Score": NaN, "Confidence": null, "Decision": "OCR ERROR", "Reason": "MTF analysis invalid: Primary timeframe (5m) OCR failed \u2014 cannot determine trade direction", "Trade ID": null, "_date": "2026-05-20"}, {"Time": "10:30:50", "Scan #": 2, "Price 5m": 23521.6, "VWAP 5m": 23489.67, "EMA9 5m": 23512.56, "vs VWAP": 31.93, "vs EMA9": 9.04, "5m Dir": "BULLISH", "15m Dir": "SIDEWAYS", "1h Dir": "SIDEWAYS", "TF Align": "1/3 BULLISH", "Base Score": 36.0, "PCR": NaN, "Max Pain": NaN, "ATM Bias": null, "OI Adj": NaN, "VIX": NaN, "ES/F %": NaN, "Mood": null, "Sent Adj": NaN, "Final Score": 36.0, "Confidence": "LOW", "Decision": "SIDEWAYS", "Reason": "No clear directional bias. Align=1/3 BULLISH Trend=SIDEWAYS", "Trade ID": null, "_date": "2026-05-20"}, {"Time": "10:36:33", "Scan #": 3, "Price 5m": 23562.55, "VWAP 5m": 23493.78, "EMA9 5m": 23530.05, "vs VWAP": 68.77, "vs EMA9": 32.5, "5m Dir": "BULLISH", "15m Dir": "SIDEWAYS", "1h Dir": "SIDEWAYS", "TF Align": "1/3 BULLISH", "Base Score": 30.0, "PCR": NaN, "Max Pain": NaN, "ATM Bias": null, "OI Adj": NaN, "VIX": NaN, "ES/F %": NaN, "Mood": null, "Sent Adj": NaN, "Final Score": 30.0, "Confidence": "LOW", "Decision": "SIDEWAYS", "Reason": "No clear directional bias. Align=1/3 BULLISH Trend=SIDEWAYS", "Trade ID": null, "_date": "2026-05-20"}, {"Time": "10:42:04", "Scan #": 4, "Price 5m": 23562.65, "VWAP 5m": 23496.97, "EMA9 5m": 23534.24, "vs VWAP": 65.68, "vs EMA9": 28.41, "5m Dir": "BULLISH", "15m Dir": "SIDEWAYS", "1h Dir": "SIDEWAYS", "TF Align": "1/3 BULLISH", "Base Score": 30.0, "PCR": NaN, "Max Pain": NaN, "ATM Bias": null, "OI Adj": NaN, "VIX": NaN, "ES/F %": NaN, "Mood": null, "Sent Adj": NaN, "Final Score": 30.0, "Confidence": "LOW", "Decision": "SIDEWAYS", "Reason": "No clear directional bias. Align=1/3 BULLISH Trend=SIDEWAYS", "Trade ID": null, "_date": "2026-05-20"}, {"Time": "10:47:38", "Scan #": 5, "Price 5m": 23532.7, "VWAP 5m": 23498.3, "EMA9 5m": 23527.63, "vs VWAP": 34.4, "vs EMA9": 5.07, "5m Dir": "BULLISH", "15m Dir": "BULLISH", "1h Dir": "SIDEWAYS", "TF Align": "2/3 BULLISH", "Base Score": 61.0, "PCR": NaN, "Max Pain": NaN, "ATM Bias": "NEUTRAL", "OI Adj": NaN, "VIX": 19.02, "ES/F %": -0.09, "Mood": "BEARISH", "Sent Adj": -5.0, "Final Score": 56.0, "Confidence": "MEDIUM", "Decision": "TRADE SIGNAL", "Reason": "Trade opened: BUY 23550 CE | Trend=BULLISH / CE BIAS | Align=2/3 BULLISH | Lots=2", "Trade ID": "20260520_104738", "_date": "2026-05-20"}, {"Time": "10:53:12", "Scan #": 6, "Price 5m": 23506.45, "VWAP 5m": 23498.81, "EMA9 5m": 23526.46, "vs VWAP": 7.64, "vs EMA9": -20.01, "5m Dir": "SIDEWAYS", "15m Dir": "SIDEWAYS", "1h Dir": "SIDEWAYS", "TF Align": "3/3 SIDEWAYS", "Base Score": 75.0, "PCR": NaN, "Max Pain": NaN, "ATM Bias": null, "OI Adj": NaN, "VIX": NaN, "ES/F %": NaN, "Mood": null, "Sent Adj": NaN, "Final Score": 75.0, "Confidence": "HIGH", "Decision": "SIDEWAYS", "Reason": "No clear directional bias. Align=3/3 SIDEWAYS Trend=SIDEWAYS", "Trade ID": null, "_date": "2026-05-20"}, {"Time": "10:58:54", "Scan #": 7, "Price 5m": 23546.3, "VWAP 5m": 23501.01, "EMA9 5m": 23531.68, "vs VWAP": 45.29, "vs EMA9": 14.62, "5m Dir": "BULLISH", "15m Dir": "SIDEWAYS", "1h Dir": "SIDEWAYS", "TF Align": "1/3 BULLISH", "Base Score": 36.0, "PCR": NaN, "Max Pain": NaN, "ATM Bias": null, "OI Adj": NaN, "VIX": NaN, "ES/F %": NaN, "Mood": null, "Sent Adj": NaN, "Final Score": 36.0, "Confidence": "LOW", "Decision": "SIDEWAYS", "Reason": "No clear directional bias. Align=1/3 BULLISH Trend=SIDEWAYS", "Trade ID": null, "_date": "2026-05-20"}, {"Time": "11:04:37", "Scan #": 8, "Price 5m": 23546.4, "VWAP 5m": 23504.05, "EMA9 5m": 23538.38, "vs VWAP": 42.35, "vs EMA9": 8.02, "5m Dir": "BULLISH", "15m Dir": "SIDEWAYS", "1h Dir": "BEARISH", "TF Align": "1/3 BULLISH", "Base Score": 36.0, "PCR": NaN, "Max Pain": NaN, "ATM Bias": null, "OI Adj": NaN, "VIX": NaN, "ES/F %": NaN, "Mood": null, "Sent Adj": NaN, "Final Score": 36.0, "Confidence": "LOW", "Decision": "SIDEWAYS", "Reason": "No clear directional bias. Align=1/3 BULLISH Trend=SIDEWAYS", "Trade ID": null, "_date": "2026-05-20"}];
+const DD = [{"date": "2026-05-15", "pnl": 0.0, "invested": 2250.0, "trades": 6, "wins": 0, "cumulative": 0.0}, {"date": "2026-05-20", "pnl": 119236.5, "invested": 750.0, "trades": 1, "wins": 1, "cumulative": 119236.5}];
+const WD = [{"week": "2026-W19", "pnl": 0.0, "invested": 2250.0, "trades": 6, "wins": 0}, {"week": "2026-W20", "pnl": 119236.5, "invested": 750.0, "trades": 1, "wins": 1}];
+const MD = [{"month": "2026-05", "pnl": 119236.5, "invested": 3000.0, "trades": 7, "wins": 1}];
 
-// ---- OUTCOME PILLS ----
-function outcomePill(v) {
-  if (!v) return '<span class="pill pill-gray">OPEN</span>';
-  v = String(v).toUpperCase();
-  if (v.includes('TARGET 3') || v.includes('T3')) return '<span class="pill pill-green">T3 HIT</span>';
-  if (v.includes('TARGET 2') || v.includes('T2')) return '<span class="pill pill-green">T2 HIT</span>';
-  if (v.includes('TARGET 1') || v.includes('T1')) return '<span class="pill pill-blue">T1 HIT</span>';
-  if (v.includes('SL') || v.includes('LOSS'))     return '<span class="pill pill-red">SL HIT</span>';
-  if (v.includes('EOD'))                           return '<span class="pill pill-yellow">EOD</span>';
-  if (v.includes('WIN'))                           return '<span class="pill pill-green">WIN</span>';
-  return `<span class="pill pill-gray">${v}</span>`;
+let period='all', eqC, perC, pieC;
+
+function inr(v,abs) {
+  if(v===null||v===undefined) return '&#8212;';
+  const n=parseFloat(v), sign=n>=0?'+':'-';
+  const s='&#8377;'+Math.abs(n).toLocaleString('en-IN',{maximumFractionDigits:0});
+  return abs? '&#8377;'+Math.abs(n).toLocaleString('en-IN',{maximumFractionDigits:0}) : sign+s;
 }
-
-function decisionPill(v) {
-  if (!v) return '';
-  v = String(v).toUpperCase();
-  if (v === 'TRADE SIGNAL')   return '<span class="pill pill-green">SIGNAL</span>';
-  if (v === 'ACTIVE TRADE')   return '<span class="pill pill-blue">ACTIVE</span>';
-  if (v === 'SIDEWAYS')       return '<span class="pill pill-yellow">SIDEWAYS</span>';
-  if (v === 'LOW CONFIDENCE') return '<span class="pill pill-yellow">LOW CONF</span>';
-  if (v === 'BLOCKED')        return '<span class="pill pill-red">BLOCKED</span>';
-  if (v === 'OCR ERROR')      return '<span class="pill pill-gray">ERROR</span>';
-  return `<span class="pill pill-gray">${v}</span>`;
+function inrCell(v) {
+  if(v===null||v===undefined) return '<span style="color:var(--muted)">&#8212;</span>';
+  const n=parseFloat(v),col=n>0?'var(--green)':n<0?'var(--red)':'var(--muted)';
+  return '<span style="color:'+col+';font-weight:600">'+inr(n)+'</span>';
 }
-
+function ptsCell(v) {
+  if(v===null||v===undefined) return '<span style="color:var(--muted)">&#8212;</span>';
+  const n=parseFloat(v),col=n>0?'var(--green)':n<0?'var(--red)':'var(--muted)';
+  return '<span style="color:'+col+';font-weight:600">'+(n>=0?'+':'')+n.toFixed(1)+' pts</span>';
+}
+function outPill(v) {
+  if(!v) return '<span class="pill pb">OPEN</span>';
+  v=String(v).toUpperCase();
+  if(v.includes('TARGET 3')||v.includes('T3')) return '<span class="pill pg">T3</span>';
+  if(v.includes('TARGET 2')||v.includes('T2')) return '<span class="pill pg">T2</span>';
+  if(v.includes('TARGET 1')||v.includes('T1')) return '<span class="pill pb">T1</span>';
+  if(v.includes('SL')||v.includes('LOSS'))     return '<span class="pill pr">SL</span>';
+  if(v.includes('EOD'))                         return '<span class="pill py">EOD</span>';
+  return '<span class="pill pm">'+v.slice(0,8)+'</span>';
+}
+function decPill(v) {
+  if(!v) return '';
+  v=String(v).toUpperCase();
+  if(v==='TRADE SIGNAL')   return '<span class="pill pg">SIGNAL</span>';
+  if(v==='ACTIVE TRADE')   return '<span class="pill pb">ACTIVE</span>';
+  if(v==='SIDEWAYS')       return '<span class="pill py">SIDE</span>';
+  if(v==='LOW CONFIDENCE') return '<span class="pill py">LOW</span>';
+  if(v==='BLOCKED')        return '<span class="pill pr">BLOCKED</span>';
+  if(v.includes('ERROR'))  return '<span class="pill pm">ERR</span>';
+  return '<span class="pill pm">'+v.slice(0,8)+'</span>';
+}
 function dirPill(v) {
-  if (!v) return '';
-  v = String(v).toUpperCase();
-  if (v === 'BULLISH') return '<span class="pill pill-green">BULL</span>';
-  if (v === 'BEARISH') return '<span class="pill pill-red">BEAR</span>';
-  return '<span class="pill pill-gray">SIDE</span>';
+  if(!v) return '&#8212;';
+  v=String(v).toUpperCase();
+  if(v==='BULLISH') return '<span class="pill pg">BULL</span>';
+  if(v==='BEARISH') return '<span class="pill pr">BEAR</span>';
+  return '<span class="pill pm">SIDE</span>';
+}
+function confBar(s) {
+  if(!s) return '&#8212;';
+  const p=Math.min(100,Math.max(0,parseFloat(s)));
+  const c=p>=70?'#22c55e':p>=45?'#f59e0b':'#ef4444';
+  return '<div class="cbar"><div class="cfill" style="width:'+p+'%;background:'+c+'"></div></div>'+s;
 }
 
-function confBar(score) {
-  if (!score) return '';
-  const pct = Math.min(100, Math.max(0, score));
-  const col = pct >= 70 ? '#22c55e' : pct >= 45 ? '#f59e0b' : '#ef4444';
-  return `<div class="conf-bar"><div class="conf-fill" style="width:${pct}%;background:${col}"></div></div> ${score}`;
+function today() { return new Date().toISOString().slice(0,10); }
+function weekStart() {
+  const d=new Date(),day=d.getDay()||7;
+  d.setDate(d.getDate()-day+1); return d.toISOString().slice(0,10);
+}
+function monthStart() {
+  const d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-01';
 }
 
-function pnlCell(v) {
-  if (v === null || v === undefined) return '-';
-  const n = parseFloat(v);
-  const col = n > 0 ? 'var(--green)' : n < 0 ? 'var(--red)' : 'var(--muted)';
-  return `<span style="color:${col};font-weight:600">${n >= 0 ? '+' : ''}${n.toFixed(2)}</span>`;
+function filterP(arr,p) {
+  if(p==='all') return arr;
+  const t=today(),w=weekStart(),m=monthStart();
+  return arr.filter(x=>{
+    const d=x._date_str||x._date||'';
+    if(p==='today') return d===t;
+    if(p==='week')  return d>=w;
+    if(p==='month') return d>=m;
+    return true;
+  });
 }
 
-// ---- RENDER TRADES ----
-function renderTrades() {
-  const tbody = document.getElementById('tradeBody');
-  if (!TRADES.length) { tbody.innerHTML = '<tr><td colspan="13"><div class="empty">No trades yet. Signals will appear here when the market opens.</div></td></tr>'; return; }
-  tbody.innerHTML = TRADES.map(t => `<tr>
-    <td>${t.Date || ''}</td>
-    <td>${t.Time || ''}</td>
-    <td style="font-weight:600;white-space:nowrap">${t['Trade Signal'] || ''}</td>
-    <td>${dirPill(t.Trend || t.direction)}</td>
-    <td>${t['Current Price'] ? parseFloat(t['Current Price']).toFixed(2) : '-'}</td>
-    <td>${t['Exit Price'] ? parseFloat(t['Exit Price']).toFixed(2) : '-'}</td>
-    <td>${pnlCell(t['Points Result'])}</td>
-    <td>${outcomePill(t.Outcome)}</td>
+function kpisFrom(trades) {
+  const v=trades.filter(t=>t._pnl_inr!==null&&t._pnl_inr!==undefined);
+  const wins=v.filter(t=>parseFloat(t._pnl_inr)>0);
+  const loss=v.filter(t=>parseFloat(t._pnl_inr)<0);
+  const inv=v.reduce((s,t)=>s+(parseFloat(t._invested_inr)||0),0);
+  const won=wins.reduce((s,t)=>s+parseFloat(t._pnl_inr),0);
+  const lost=loss.reduce((s,t)=>s+Math.abs(parseFloat(t._pnl_inr)),0);
+  const net=won-lost, roi=inv?net/inv*100:0;
+  const pnls=v.map(t=>parseFloat(t._pnl_inr));
+  const confs=trades.filter(t=>t['Confidence Score']).map(t=>parseFloat(t['Confidence Score']));
+  return {
+    total:trades.length, valid:v.length,
+    wins:wins.length, losses:loss.length,
+    wr: v.length?(wins.length/v.length*100).toFixed(1):0,
+    inv,won,lost,net,roi,
+    best:  pnls.length?Math.max(...pnls):0,
+    worst: pnls.length?Math.min(...pnls):0,
+    conf:  confs.length?(confs.reduce((a,b)=>a+b,0)/confs.length).toFixed(1):0,
+  };
+}
+
+function renderKpis(k) {
+  document.getElementById('k-inv').innerHTML   = inr(k.inv,true);
+  document.getElementById('k-won').innerHTML   = inr(k.won,true);
+  document.getElementById('k-lost').innerHTML  = inr(k.lost,true);
+  const netEl=document.getElementById('k-net');
+  netEl.innerHTML=inr(k.net); netEl.style.color=k.net>=0?'var(--green)':'var(--red)';
+  document.getElementById('k-roi').textContent = 'ROI: '+(k.roi>=0?'+':'')+parseFloat(k.roi).toFixed(1)+'%';
+  document.getElementById('k-wins').textContent   = k.wins+' winning trade'+(k.wins!==1?'s':'');
+  document.getElementById('k-losses').textContent = k.losses+' losing trade'+(k.losses!==1?'s':'');
+  document.getElementById('k-wr').textContent  = k.wr+'%';
+  document.getElementById('k-tc').textContent  = k.total+' trade'+(k.total!==1?'s':'');
+  document.getElementById('k-best').innerHTML  = inr(k.best);
+  document.getElementById('k-worst').innerHTML = inr(k.worst);
+  document.getElementById('k-conf').textContent= k.conf+'/100';
+  document.getElementById('tcnt').textContent  = k.total;
+}
+
+const CO = {
+  responsive:true,
+  plugins:{legend:{display:false}},
+  scales:{
+    x:{grid:{color:'rgba(45,49,72,0.5)'},ticks:{color:'#7986cb',maxTicksLimit:8}},
+    y:{grid:{color:'rgba(45,49,72,0.5)'},ticks:{color:'#7986cb'}}
+  }
+};
+
+function buildEq(daily) {
+  const ctx=document.getElementById('eqChart');
+  if(eqC) eqC.destroy();
+  eqC=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:daily.map(d=>d.date.slice(5)),
+      datasets:[{
+        data:daily.map(d=>d.cumulative),
+        borderColor:'#6366f1',
+        backgroundColor:'rgba(99,102,241,0.07)',
+        borderWidth:2, pointRadius:5, fill:true, tension:0.3,
+        pointBackgroundColor:daily.map(d=>d.cumulative>=0?'#22c55e':'#ef4444'),
+      }]
+    },
+    options:{...CO}
+  });
+}
+
+function buildPer(rows,lk) {
+  const ctx=document.getElementById('perChart');
+  if(perC) perC.destroy();
+  perC=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:rows.map(r=>r[lk].slice(-7)),
+      datasets:[{
+        data:rows.map(r=>r.pnl),
+        backgroundColor:rows.map(r=>r.pnl>=0?'rgba(34,197,94,0.7)':'rgba(239,68,68,0.7)'),
+        borderRadius:4,
+      }]
+    },
+    options:{...CO}
+  });
+}
+
+function buildPie(k) {
+  const ctx=document.getElementById('pieChart');
+  if(pieC) pieC.destroy();
+  const empty=k.wins===0&&k.losses===0;
+  pieC=new Chart(ctx,{
+    type:'doughnut',
+    data:{
+      labels:empty?['No Data']:['Won','Lost'],
+      datasets:[{
+        data:empty?[1]:[k.wins,Math.max(k.losses,0)],
+        backgroundColor:empty?['rgba(121,134,203,0.2)']:['rgba(34,197,94,0.7)','rgba(239,68,68,0.7)'],
+        borderWidth:0,
+      }]
+    },
+    options:{
+      responsive:true, cutout:'65%',
+      plugins:{legend:{display:true,position:'bottom',labels:{color:'#7986cb',font:{size:11}}}}
+    }
+  });
+}
+
+function renderPT(rows,lk,title) {
+  document.getElementById('ptTitle').textContent=title;
+  document.getElementById('ptHead').innerHTML=`<tr>
+    <th>${lk==='date'?'Date':lk==='week'?'Week':'Month'}</th>
+    <th>Trades</th><th>Wins</th><th>Win Rate</th>
+    <th>Invested</th><th>P&L (INR)</th><th>Cumulative</th>
+  </tr>`;
+  const body=document.getElementById('ptBody');
+  if(!rows.length){body.innerHTML='<tr><td colspan="7"><div class="empty">No data for this period.</div></td></tr>';return;}
+  let cum=0;
+  body.innerHTML=rows.map(r=>{
+    cum+=r.pnl;
+    const wr=r.trades?(r.wins/r.trades*100).toFixed(0):0;
+    return `<tr>
+      <td style="font-weight:600">${r[lk]}</td>
+      <td>${r.trades}</td>
+      <td style="color:var(--green)">${r.wins}</td>
+      <td>${wr}%</td>
+      <td style="color:var(--cyan)">${inr(r.invested,true)}</td>
+      <td>${inrCell(r.pnl)}</td>
+      <td style="color:${cum>=0?'var(--green)':'var(--red)'};font-weight:600">${inr(cum)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderTrades(trades) {
+  const b=document.getElementById('tb');
+  document.getElementById('tcnt').textContent=trades.length;
+  if(!trades.length){b.innerHTML='<tr><td colspan="12"><div class="empty">No trades in this period.</div></td></tr>';return;}
+  b.innerHTML=[...trades].reverse().map(t=>`<tr>
+    <td style="font-size:11px">${t._date_str||''}</td>
+    <td style="font-size:11px">${t.Time||''}</td>
+    <td style="font-weight:600;white-space:nowrap">${t['Trade Signal']||''}</td>
+    <td>${dirPill(t.Trend||t.direction)}</td>
+    <td>${outPill(t.Outcome)}</td>
+    <td>${ptsCell(t['Points Result'])}</td>
+    <td>${inrCell(t._pnl_inr)}</td>
+    <td style="color:var(--cyan)">${inr(t._invested_inr,true)}</td>
+    <td>${t.Lots||1}</td>
     <td>${confBar(t['Confidence Score'])}</td>
-    <td>${t['Confidence Level'] || '-'}</td>
-    <td style="font-size:11px">${t['MTF Alignment'] || ''}</td>
-    <td>${t.Lots || 1}</td>
-    <td style="font-size:10px;color:var(--muted)">${(t['Trade ID'] || '').toString().slice(-12)}</td>
+    <td style="font-size:10px">${t['Confidence Level']||'&#8212;'}</td>
+    <td style="font-size:10px;color:var(--muted)">${t['MTF Alignment']||''}</td>
   </tr>`).join('');
 }
 
-// ---- RENDER DECISIONS ----
-function renderDecisions() {
-  const tbody = document.getElementById('decBody');
-  if (!DECISIONS.length) { tbody.innerHTML = '<tr><td colspan="15"><div class="empty">No decisions logged yet.</div></td></tr>'; return; }
-  tbody.innerHTML = DECISIONS.map(d => `<tr>
-    <td style="font-size:11px">${d._date || ''}</td>
-    <td>${d.Time || ''}</td>
-    <td style="color:var(--muted)">${d['Scan #'] || ''}</td>
-    <td>${decisionPill(d.Decision)}</td>
+function renderDecisions(decs) {
+  const b=document.getElementById('db');
+  document.getElementById('dcnt').textContent=decs.length;
+  if(!decs.length){b.innerHTML='<tr><td colspan="15"><div class="empty">No decisions in this period.</div></td></tr>';return;}
+  b.innerHTML=[...decs].reverse().map(d=>`<tr>
+    <td style="font-size:11px">${d._date||''}</td>
+    <td>${d.Time||''}</td>
+    <td style="color:var(--muted)">${d['Scan #']||''}</td>
+    <td>${decPill(d.Decision)}</td>
     <td>${dirPill(d['5m Dir'])}</td>
     <td>${dirPill(d['15m Dir'])}</td>
     <td>${dirPill(d['1h Dir'])}</td>
-    <td>${d['Price 5m'] ? parseFloat(d['Price 5m']).toFixed(2) : '-'}</td>
-    <td>${d['vs VWAP'] !== null && d['vs VWAP'] !== undefined ? (parseFloat(d['vs VWAP']) >= 0 ? '+' : '') + parseFloat(d['vs VWAP']).toFixed(2) : '-'}</td>
-    <td>${d['Base Score'] || '-'}</td>
-    <td>${d['OI Adj'] !== null && d['OI Adj'] !== undefined ? (parseFloat(d['OI Adj']) >= 0 ? '+' : '') + d['OI Adj'] : '-'}</td>
-    <td>${d['Sent Adj'] !== null && d['Sent Adj'] !== undefined ? (parseFloat(d['Sent Adj']) >= 0 ? '+' : '') + d['Sent Adj'] : '-'}</td>
-    <td style="font-weight:600">${d['Final Score'] || '-'}</td>
-    <td>${d.Confidence || '-'}</td>
-    <td style="font-size:11px;color:var(--muted);max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${d.Reason || ''}">${d.Reason || ''}</td>
+    <td>${d['Price 5m']?parseFloat(d['Price 5m']).toFixed(2):'&#8212;'}</td>
+    <td>${d['vs VWAP']!=null?(parseFloat(d['vs VWAP'])>=0?'+':'')+parseFloat(d['vs VWAP']).toFixed(1):'&#8212;'}</td>
+    <td>${d['Base Score']||'&#8212;'}</td>
+    <td>${d['OI Adj']!=null?(parseFloat(d['OI Adj'])>=0?'+':'')+d['OI Adj']:'&#8212;'}</td>
+    <td>${d['Sent Adj']!=null?(parseFloat(d['Sent Adj'])>=0?'+':'')+d['Sent Adj']:'&#8212;'}</td>
+    <td style="font-weight:600">${d['Final Score']||'&#8212;'}</td>
+    <td>${d.Confidence||'&#8212;'}</td>
+    <td style="font-size:11px;color:var(--muted);max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${d.Reason||''}">${d.Reason||''}</td>
   </tr>`).join('');
 }
 
-// ---- CHARTS ----
-function buildCharts() {
-  // Equity curve
-  new Chart(document.getElementById('equityChart'), {
-    type: 'line',
-    data: {
-      labels: EQUITY.map(e => e.date),
-      datasets: [{
-        label: 'Cumulative P&L (pts)',
-        data: EQUITY.map(e => e.pts),
-        borderColor: '#6366f1',
-        backgroundColor: 'rgba(99,102,241,0.08)',
-        borderWidth: 2,
-        pointRadius: 4,
-        pointBackgroundColor: EQUITY.map(e => e.pts >= 0 ? '#22c55e' : '#ef4444'),
-        fill: true, tension: 0.3,
-      }]
-    },
-    options: {
-      responsive: true, plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { color: 'rgba(45,49,72,0.6)' }, ticks: { color: '#7986cb', maxTicksLimit: 8 } },
-        y: { grid: { color: 'rgba(45,49,72,0.6)' }, ticks: { color: '#7986cb' }, beginAtZero: false }
-      }
-    }
-  });
+function update() {
+  const trades = filterP(AT, period);
+  const decs   = filterP(AD, period);
+  const k      = kpisFrom(trades);
+  renderKpis(k);
+  renderTrades(trades);
+  renderDecisions(decs);
+  buildEq(DD);
+  buildPie(k);
+  if(period==='week') {
+    buildPer(WD,'week'); renderPT(WD,'week','Weekly Breakdown');
+  } else if(period==='today') {
+    buildPer(DD,'date'); renderPT(DD,'date','Daily Breakdown');
+  } else if(period==='month') {
+    buildPer(MD,'month'); renderPT(MD,'month','Monthly Breakdown');
+  } else {
+    buildPer(MD,'month'); renderPT(MD,'month','Monthly Breakdown');
+  }
+}
 
-  // Daily bar
-  new Chart(document.getElementById('dailyChart'), {
-    type: 'bar',
-    data: {
-      labels: DAILY.map(d => d.date.slice(5)),
-      datasets: [{
-        label: 'Daily P&L',
-        data: DAILY.map(d => d.pts),
-        backgroundColor: DAILY.map(d => d.pts >= 0 ? 'rgba(34,197,94,0.7)' : 'rgba(239,68,68,0.7)'),
-        borderRadius: 4,
-      }]
-    },
-    options: {
-      responsive: true, plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { color: 'rgba(45,49,72,0.6)' }, ticks: { color: '#7986cb' } },
-        y: { grid: { color: 'rgba(45,49,72,0.6)' }, ticks: { color: '#7986cb' } }
-      }
-    }
+function setPeriod(p) {
+  period=p;
+  document.querySelectorAll('.period-btn').forEach((b,i)=>{
+    b.classList.toggle('active',['all','month','week','today'][i]===p);
+  });
+  update();
+}
+
+function switchTab(n) {
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['trades','decisions'][i]===n));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+n).classList.add('active');
+}
+
+function ft(tid,sid) {
+  const q=document.getElementById(sid).value.toLowerCase();
+  document.querySelectorAll('#'+tid+' tbody tr').forEach(r=>{
+    r.style.display=r.textContent.toLowerCase().includes(q)?'':'none';
   });
 }
 
-// ---- TABS ----
-function switchTab(name) {
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['trades','decisions'][i] === name));
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-}
-
-// ---- SEARCH FILTER ----
-function filterTable(tableId, searchId) {
-  const q = document.getElementById(searchId).value.toLowerCase();
-  document.querySelectorAll('#' + tableId + ' tbody tr').forEach(row => {
-    row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
-  });
-}
-
-// ---- INIT ----
-renderTrades();
-renderDecisions();
-buildCharts();
+update();
 </script>
 </body>
 </html>
