@@ -452,8 +452,11 @@ class TradingEngine:
                 trend       = sig["trend"],
                 vwap        = vwap,
                 ema9        = ema9,
+                lots        = lots,
             )
             self._risk.record_trade_opened()
+            # Write opening row to trade_log_YYYY-MM-DD.xlsx
+            self._state.create_excel_row(sig, lots=lots)
         except Exception as exc:
             logger.error("[SignalLoop] Failed to open trade state: %s", exc)
             self._set_engine_state(EngineState.IDLE)
@@ -500,10 +503,10 @@ class TradingEngine:
             f"━━━━━━━━━━━━━━━━━━━━━━\n"
             f"<b>Signal:</b> {sig['trade_signal']}\n"
             f"<b>Entry:</b> ₹{price:,.2f}\n"
-            f"<b>SL:</b> {STOP_LOSS_POINTS} pts | "
+            f"<b>SL:</b> {STOP_LOSS_POINTS} pts (₹{_sl_inr:,.0f} risk) | "
             f"<b>T1:</b> {TARGET_1_POINTS} pts | "
             f"<b>T2:</b> {TARGET_2_POINTS} pts | "
-            f"<b>T3:</b> {TARGET_3_POINTS} pts\n"
+            f"<b>T3:</b> {TARGET_3_POINTS} pts (₹{_t3_inr:,.0f} gain)\n"
             f"<b>MTF:</b> {sig.get('alignment_summary', '?')}\n"
             f"<b>Confidence:</b> {sig.get('confidence_level', '?')} ({sig.get('adjusted_score', 0)}/100)\n"
             f"<b>Mode:</b> {'📄 Paper' if PAPER_TRADING_MODE else '💰 Live'}\n"
@@ -685,14 +688,18 @@ class TradingEngine:
         self._current_trade_id = None
 
         # ---- Telegram notification ----
-        emoji = "✅" if pts_pnl > 0 else ("❌" if pts_pnl < 0 else "⚪")
+        emoji    = "✅" if pts_pnl > 0 else ("❌" if pts_pnl < 0 else "⚪")
+        _lots    = trade.get('lots', 1)
+        _inr_pnl = pts_pnl * _lots * 75 * 0.5
+        _inr_str = f"₹{abs(_inr_pnl):,.0f}"
+        _sign    = '+' if _inr_pnl >= 0 else '-'
         self._tgbot.send_trade_update(
             f"{emoji} <b>TRADE CLOSED — {outcome}</b>\n"
             f"━━━━━━━━━━━━━━━━━━━━━━\n"
-            f"<b>Trade:</b> {trade.get('signal', '?')}\n"
+            f"<b>Trade:</b> {trade.get('signal', '?')} | Lots: {_lots}\n"
             f"<b>Entry:</b> ₹{trade.get('entry_price', 0):,.2f} → "
             f"<b>Exit:</b> ₹{current_price:,.2f}\n"
-            f"<b>P&L:</b> {pts_pnl:+.2f} pts | {pnl_outcome}\n"
+            f"<b>P&L:</b> {pts_pnl:+.2f} pts | {_sign}{_inr_str} | {pnl_outcome}\n"
             f"<b>Reason:</b> {reason}\n"
             f"<b>Trade ID:</b> <code>{trade_id}</code>"
         )

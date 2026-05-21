@@ -50,6 +50,7 @@ _DEFAULT_STATE: dict = {
     "trade_id":            None,
     "signal":              None,
     "direction":           None,
+    "lots":                 1,
     "entry_price":         None,
     "entry_time":          None,
     "entry_date":          None,
@@ -193,6 +194,7 @@ class TradeStateManager:
         trend:       str,
         vwap:        float,
         ema9:        float,
+        lots:        int = 1,
     ) -> str:
         if self.has_active_trade():
             raise RuntimeError(
@@ -209,6 +211,7 @@ class TradeStateManager:
             "trade_id":       trade_id,
             "signal":         signal,
             "direction":      direction,
+            "lots":           lots,
             "entry_price":    entry_price,
             "entry_time":     now.strftime("%H:%M:%S"),
             "entry_date":     now.strftime("%Y-%m-%d"),
@@ -221,7 +224,7 @@ class TradeStateManager:
         self._save()
         logger.info(
             f"[STATE] Trade OPENED | id={trade_id} | signal={signal} | "
-            f"entry={entry_price:.2f} | direction={direction}"
+            f"entry={entry_price:.2f} | direction={direction} | lots={lots}"
         )
         return trade_id
 
@@ -292,6 +295,93 @@ class TradeStateManager:
         )
         self.state = dict(_DEFAULT_STATE)
         self._save()
+
+
+    # =========================
+    # EXCEL ROW CREATE (PRIVATE)
+    # Called by trading_engine._open_trade() to stamp the initial row.
+    # Close/milestone updates use _update_excel_row() below.
+    # =========================
+
+    def create_excel_row(self, sig: dict, lots: int = 1) -> None:
+        """
+        Write the opening row to trade_log_YYYY-MM-DD.xlsx.
+        Called once at trade open with the full signal dict from SignalEngine.
+        The row is later updated by _update_excel_row() on close/milestone.
+        """
+        from config.config import (
+            STOP_LOSS_POINTS, TARGET_1_POINTS, TARGET_2_POINTS, TARGET_3_POINTS,
+        )
+        entry_date = self.state.get("entry_date")
+        trade_id   = self.state.get("trade_id")
+        if entry_date is None:
+            logger.error("[STATE] create_excel_row: entry_date is None — skipping")
+            return
+
+        now = datetime.now()
+        tf_data = sig.get("timeframe_data", {})
+        oi      = sig.get("oi_result",   {})
+        sent    = sig.get("sent_result", {})
+
+        # Estimated max loss in INR (SL pts × 37.5 per point per lot)
+        max_loss_inr = round(STOP_LOSS_POINTS * lots * 75 * 0.5, 2)
+
+        row = {
+            "Date":             entry_date,
+            "Time":             now.strftime("%H:%M:%S"),
+            "Trend":            sig.get("trend", ""),
+            "Current Price":    sig.get("price", 0),
+            "VWAP":             sig.get("vwap", 0),
+            "EMA9":             sig.get("ema9", 0),
+            "Trade Signal":     sig.get("trade_signal", ""),
+            "Stop Loss":        f"{STOP_LOSS_POINTS} Points",
+            "Target 1":         f"{TARGET_1_POINTS} Points",
+            "Target 2":         f"{TARGET_2_POINTS} Points",
+            "Target 3":         f"{TARGET_3_POINTS} Points",
+            "Lots":             lots,
+            "Max Loss INR":     max_loss_inr,
+            "MTF Alignment":    sig.get("alignment_summary", ""),
+            "Base Score":       sig.get("base_score", None),
+            "OI Adjustment":    oi.get("score_adjustment", None),
+            "Sentiment Adj":    sent.get("score_adjustment", None),
+            "Confidence Score": sig.get("adjusted_score", None),
+            "Confidence Level": sig.get("confidence_level", ""),
+            "TF 5m":            tf_data.get("5m", {}).get("direction", ""),
+            "TF 15m":           tf_data.get("15m", {}).get("direction", ""),
+            "TF 1h":            tf_data.get("1h", {}).get("direction", ""),
+            "PCR":              oi.get("pcr", None),
+            "Max Pain":         oi.get("max_pain", None),
+            "ATM OI Bias":      oi.get("atm_bias", None),
+            "India VIX":        sent.get("vix", None),
+            "US Futures Pct":   sent.get("us_futures_pct", None),
+            "News Sentiment":   sent.get("mood", None),
+            "Trade ID":         trade_id,
+            "Trade Status":     "OPEN",
+            "Outcome":          None,
+            "Points Result":    None,
+            "Exit Price":       None,
+            "Exit Time":        None,
+        }
+
+        log_file = TRADE_LOG_DIR / f"trade_log_{entry_date}.xlsx"
+        tmp_file = log_file.with_suffix(".tmp.xlsx")
+        try:
+            import pandas as pd
+            if log_file.exists():
+                df_existing = pd.read_excel(log_file, engine="openpyxl")
+                df_new      = pd.concat(
+                    [df_existing, pd.DataFrame([row])], ignore_index=True
+                )
+            else:
+                df_new = pd.DataFrame([row])
+            df_new.to_excel(tmp_file, index=False, engine="openpyxl")
+            import os
+            os.replace(str(tmp_file), str(log_file))
+            logger.info(
+                f"[STATE] Excel row created | id={trade_id} | file={log_file.name}"
+            )
+        except Exception as exc:
+            logger.error(f"[STATE] Failed to create Excel row: {exc}")
 
     # =========================
     # EXCEL ROW UPDATE (PRIVATE)
