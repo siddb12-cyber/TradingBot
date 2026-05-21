@@ -116,28 +116,55 @@ class _PendingRequest:
 # TELEGRAM HTTP HELPERS
 # =========================
 
-def _tg_post(method: str, payload: dict) -> Optional[dict]:
-    """POST to Telegram Bot API. Returns response JSON or None on error."""
+def _tg_post(method: str, payload: dict, retries: int = 3) -> Optional[dict]:
+    """
+    POST to Telegram Bot API with retry on DNS/connection failures.
+    Retries up to 3 times with 2s backoff. Returns response JSON or None.
+    """
     url = f"{_TG_BASE}/{method}"
-    try:
-        resp = requests.post(url, json=payload, timeout=_TIMEOUT_S)
-        resp.raise_for_status()
-        return resp.json()
-    except Exception as exc:
-        logger.error("[TGBot] API call %s failed: %s", method, exc)
-        return None
+    for attempt in range(1, retries + 1):
+        try:
+            resp = requests.post(url, json=payload, timeout=_TIMEOUT_S)
+            resp.raise_for_status()
+            return resp.json()
+        except Exception as exc:
+            if attempt < retries:
+                logger.warning(
+                    "[TGBot] API call %s failed (attempt %d/%d): %s — retrying in 2s",
+                    method, attempt, retries, exc,
+                )
+                time.sleep(2)
+            else:
+                logger.error("[TGBot] API call %s failed after %d attempts: %s", method, retries, exc)
+    return None
 
 
-def _tg_get(method: str, params: dict) -> Optional[dict]:
-    """GET from Telegram Bot API. Returns response JSON or None on error."""
+def _tg_get(method: str, params: dict, retries: int = 2) -> Optional[dict]:
+    """
+    GET from Telegram Bot API with retry on DNS/connection failures.
+    Poller uses retries=2 (fast cycle). Critical sends use retries=3.
+    Returns response JSON or None.
+    """
     url = f"{_TG_BASE}/{method}"
-    try:
-        resp = requests.get(url, params=params, timeout=_TIMEOUT_S)
-        resp.raise_for_status()
-        return resp.json()
-    except Exception as exc:
-        logger.error("[TGBot] API call %s failed: %s", method, exc)
-        return None
+    for attempt in range(1, retries + 1):
+        try:
+            resp = requests.get(url, params=params, timeout=_TIMEOUT_S)
+            resp.raise_for_status()
+            return resp.json()
+        except Exception as exc:
+            if attempt < retries:
+                logger.debug(
+                    "[TGBot] GET %s failed (attempt %d/%d): %s — retrying",
+                    method, attempt, retries, exc,
+                )
+                time.sleep(1)
+            else:
+                # Only log as ERROR if it's not a routine poller DNS blip
+                if "getUpdates" not in method:
+                    logger.error("[TGBot] API call %s failed after %d attempts: %s", method, retries, exc)
+                else:
+                    logger.debug("[TGBot] getUpdates DNS blip — will retry next poll cycle")
+    return None
 
 
 def _send_message(text: str, reply_markup: Optional[dict] = None) -> Optional[int]:
