@@ -14,9 +14,14 @@ __pycache__/
 
 # --- Trade data (local only) ---
 trade_logs/
+trade_logs_archive/
 screenshots/
 temp/
 data/
+
+# --- Runtime logs (local only) ---
+logs/
+*.log
 
 # --- Debug artifacts ---
 cropped_debug.png
