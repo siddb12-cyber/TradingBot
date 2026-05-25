@@ -18,6 +18,9 @@ if not exist logs mkdir logs
 REM Clear old log on fresh start (optional — comment out to keep history)
 REM del /f /q logs\trading.log 2>nul
 
+REM Set UTF-8 encoding so emojis in Telegram messages don't crash the log redirect
+set PYTHONIOENCODING=utf-8
+
 REM Start bot with pythonw.exe (no console window)
 REM Redirect both stdout and stderr to the log file
-pythonw.exe main.py >> logs\trading.log 2>&1
+pythonw.exe -X utf8 main.py >> logs\trading.log 2>&1

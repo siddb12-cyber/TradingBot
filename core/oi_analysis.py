@@ -337,6 +337,43 @@ class OIAnalysis:
         return 0
 
     # =========================
+    # OPTION PREMIUM FETCH
+    # =========================
+
+    def get_option_premium(self, strike: int, direction: str) -> Optional[float]:
+        """
+        Fetch the last traded price (LTP/lastPrice) for a specific NIFTY option.
+
+        Args:
+            strike:    Strike price (e.g. 23800)
+            direction: "CE" or "PE"
+
+        Returns:
+            Premium in NIFTY points (e.g. 145.0), or None if unavailable.
+            Total cost of 1 lot = premium × NIFTY_LOT_SIZE
+        """
+        if not self._init_nse_session():
+            return None
+        try:
+            r = self._session.get(NSE_OPTION_CHAIN_URL, timeout=12)
+            if r.status_code != 200:
+                logger.warning("[OI] get_option_premium: HTTP %d", r.status_code)
+                return None
+            records = r.json().get("records", {}).get("data", [])
+            for rec in records:
+                if rec.get("strikePrice") == strike:
+                    opt = rec.get(direction.upper(), {})
+                    ltp = opt.get("lastPrice") or opt.get("ltp") or opt.get("close")
+                    if ltp and float(ltp) > 0:
+                        logger.info("[OI] Premium | %d %s LTP=%.2f", strike, direction, float(ltp))
+                        return float(ltp)
+            logger.warning("[OI] Strike %d %s not found in option chain", strike, direction)
+            return None
+        except Exception as e:
+            logger.warning("[OI] get_option_premium failed: %s", e)
+            return None
+
+    # =========================
     # PUBLIC API
     # =========================
 

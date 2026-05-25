@@ -98,10 +98,10 @@ for _dir in [SCREENSHOT_DIR, TRADE_LOG_DIR, TEMP_DIR, DATA_DIR]:
 # =========================
 
 NIFTY_STRIKE_INTERVAL: int  = 50    # Round to nearest 50 for ATM strike
-STOP_LOSS_POINTS: int        = 10   # Exit if price moves 10 pts against trade
-TARGET_1_POINTS: int         = 15   # First partial target
-TARGET_2_POINTS: int         = 25   # Second target
-TARGET_3_POINTS: int         = 40   # Full target
+STOP_LOSS_POINTS: int        = 25   # Exit if price moves 25 pts against trade (~18.75% of ₹5k capital at 1 lot)
+TARGET_1_POINTS: int         = 35   # First partial target  (1.4x SL)
+TARGET_2_POINTS: int         = 60   # Second target         (2.4x SL)
+TARGET_3_POINTS: int         = 100  # Full target           (4.0x SL)
 
 # =========================
 # RISK ENGINE
@@ -112,11 +112,18 @@ TARGET_3_POINTS: int         = 40   # Full target
 ACCOUNT_CAPITAL: float          = 5_000.0   # Starting paper trading capital (INR)
 MAX_RISK_PCT: float             = 20.0      # Max % of capital at risk per trade
 MAX_DAILY_LOSS_PCT: float       = 30.0      # Max % of capital as total daily loss
-MAX_TRADES_PER_DAY: int         = 3         # Hard limit on signals per session
+MAX_TRADES_PER_DAY: int         = 5         # Base daily trade limit (extendable via Telegram approval)
 COOLDOWN_AFTER_SL_MINUTES: int  = 30        # Minutes to wait after an SL hit (same-direction only)
 COOLDOWN_HIGH_CONF_OVERRIDE: bool = True    # HIGH confidence (>=70) bypasses SL cooldown entirely
 COOLDOWN_REVERSAL_OVERRIDE: bool  = True    # Opposite-direction signal with MEDIUM+ bypasses cooldown
 MAX_CONSECUTIVE_LOSSES: int     = 2         # Lockout after this many losses in a row
+
+# Trade limit extension via Telegram approval
+# When daily limit is hit, bot asks for Telegram approval to add more trades.
+# Only triggered when signal confidence >= CONFIDENCE_HIGH_THRESHOLD (70+).
+TRADE_EXTENSION_BATCH: int      = 2         # How many extra trades approved per extension
+TRADE_EXTENSION_MAX_TOTAL: int  = 4         # Max total extra trades in a day (absolute ceiling = 5+4=9)
+TRADE_EXTENSION_MIN_SCORE: int  = 70        # Minimum adjusted score to trigger extension request
 NIFTY_LOT_SIZE: int             = 75        # NSE NIFTY options contract lot size
 OPTION_DELTA: float             = 0.5       # Assumed ATM delta for premium P&L estimate
 
@@ -254,7 +261,7 @@ def configure_logging() -> None:
 # =========================
 
 # Minutes to wait for APPROVE/REJECT reply before auto-cancelling the order
-TELEGRAM_APPROVAL_TIMEOUT_MINUTES: int = 2
+TELEGRAM_APPROVAL_TIMEOUT_MINUTES: int = 5
 
 # Seconds between each getUpdates poll while waiting for approval
 TELEGRAM_POLL_INTERVAL_SECONDS: int = 3

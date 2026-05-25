@@ -50,8 +50,20 @@ This caused crashes because:
 The new trading_engine.py replaces both with a robust single-process design.
 """
 
+import io
 import logging
 import sys
+
+# =========================
+# FORCE UTF-8 FOR ALL OUTPUT
+# Windows redirects stdout/stderr to cp1252 by default when piped to a file.
+# This causes UnicodeEncodeError on any emoji in log output.
+# Reconfigure both streams to UTF-8 with 'replace' so nothing ever crashes.
+# =========================
+if hasattr(sys.stdout, "buffer"):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "buffer"):
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 from config.config import configure_logging, BASE_DIR, PAPER_TRADING_MODE
 
@@ -68,7 +80,7 @@ logger = logging.getLogger(__name__)
 # =========================
 
 def _print_banner() -> None:
-    mode = "📄 PAPER TRADING" if PAPER_TRADING_MODE else "⚠️  LIVE TRADING"
+    mode = "PAPER TRADING" if PAPER_TRADING_MODE else "LIVE TRADING"
     print("\n" + "=" * 58)
     print("   AI INTRADAY TRADING SYSTEM")
     print(f"   Mode   : {mode}")

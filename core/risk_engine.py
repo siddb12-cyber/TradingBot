@@ -66,6 +66,7 @@ from config.config import (
     NIFTY_LOT_SIZE, OPTION_DELTA, STOP_LOSS_POINTS,
     COOLDOWN_HIGH_CONF_OVERRIDE, COOLDOWN_REVERSAL_OVERRIDE,
     CONFIDENCE_HIGH_THRESHOLD,
+    TRADE_EXTENSION_BATCH, TRADE_EXTENSION_MAX_TOTAL, TRADE_EXTENSION_MIN_SCORE,
 )
 
 # =========================
@@ -89,13 +90,21 @@ _LOSS_OUTCOMES = {"SL HIT"}
 
 def _empty_state(today: str) -> dict:
     return {
-        "date":               today,
-        "trades_today":       0,
-        "daily_pnl_points":   0.0,
-        "consecutive_losses": 0,
-        "cooldown_until":     None,
-        "last_sl_direction":  None,   # BULLISH or BEARISH — direction of last SL-hit trade
-        "last_updated":       None,
+        "date":                  today,
+        "trades_today":          0,
+        "trades_won":            0,       # Trades that closed at T1 / T2 / T3 or positive EOD
+        "trades_lost":           0,       # Trades that closed at SL or negative EOD
+        "daily_pnl_points":      0.0,
+        "gross_profit_points":   0.0,     # Sum of winning trade points
+        "gross_loss_points":     0.0,     # Sum of losing trade points (stored as negative)
+        "consecutive_losses":    0,
+        "consecutive_wins":      0,       # Current winning streak
+        "max_consecutive_wins":  0,       # Best win streak today
+        "max_consecutive_losses":0,       # Worst loss streak today
+        "cooldown_until":        None,
+        "last_sl_direction":     None,
+        "trade_limit_extension": 0,
+        "last_updated":          None,
     }
 
 
@@ -245,14 +254,29 @@ class RiskEngine:
         """
         now = datetime.now()
 
-        # 1. Max trades per day
-        if self.state["trades_today"] >= MAX_TRADES_PER_DAY:
+        # 1. Max trades per day (base limit + any Telegram-approved extension)
+        extension    = self.state.get("trade_limit_extension", 0)
+        effective_max = MAX_TRADES_PER_DAY + extension
+        if self.state["trades_today"] >= effective_max:
+            at_base_limit = (self.state["trades_today"] >= MAX_TRADES_PER_DAY)
+            total_extension_used = extension
+            can_extend = (
+                at_base_limit
+                and adjusted_score >= TRADE_EXTENSION_MIN_SCORE
+                and total_extension_used < TRADE_EXTENSION_MAX_TOTAL
+            )
             reason = (
                 "Max trades/day reached: " + str(self.state["trades_today"]) +
-                "/" + str(MAX_TRADES_PER_DAY)
+                "/" + str(effective_max) +
+                (" (extended)" if extension > 0 else "")
             )
             logger.warning("[RISK] BLOCKED — " + reason)
-            return {"allowed": False, "reason": reason}
+            return {
+                "allowed":       False,
+                "reason":        reason,
+                "at_daily_limit": True,
+                "can_extend":    can_extend,   # True → engine should ask user for extension
+            }
 
         # 2. Max daily loss (hard stop — cannot be overridden)
         max_loss_inr   = ACCOUNT_CAPITAL * MAX_DAILY_LOSS_PCT / 100
@@ -375,22 +399,48 @@ class RiskEngine:
         elif outcome == "EOD CLOSE" and points_result < 0:
             is_loss = True
 
+        is_win = not is_loss and points_result > 0
+
         if is_loss:
+            # Track loss stats
+            self.state["trades_lost"]        = self.state.get("trades_lost", 0) + 1
+            self.state["gross_loss_points"]  = round(
+                self.state.get("gross_loss_points", 0.0) + points_result, 2
+            )
             self.state["consecutive_losses"] = self.state.get("consecutive_losses", 0) + 1
+            self.state["consecutive_wins"]   = 0   # Reset win streak
+            self.state["max_consecutive_losses"] = max(
+                self.state.get("max_consecutive_losses", 0),
+                self.state["consecutive_losses"]
+            )
             # Set cooldown (only for SL HIT, not EOD) and save the SL direction
             if outcome == "SL HIT":
                 cooldown_dt = datetime.now() + timedelta(minutes=COOLDOWN_AFTER_SL_MINUTES)
                 self.state["cooldown_until"]    = cooldown_dt.isoformat()
-                self.state["last_sl_direction"] = direction  # enables smart override
+                self.state["last_sl_direction"] = direction
                 logger.info(
                     "[RISK] SL hit — cooldown set until " +
                     cooldown_dt.strftime("%H:%M") +
                     " | direction=" + str(direction) +
                     " | HIGH conf or reversal will bypass"
                 )
-        else:
-            # Win or neutral — reset consecutive loss streak and clear SL direction
+        elif is_win:
+            # Track win stats
+            self.state["trades_won"]         = self.state.get("trades_won", 0) + 1
+            self.state["gross_profit_points"]= round(
+                self.state.get("gross_profit_points", 0.0) + points_result, 2
+            )
+            self.state["consecutive_wins"]   = self.state.get("consecutive_wins", 0) + 1
             self.state["consecutive_losses"] = 0
+            self.state["last_sl_direction"]  = None
+            self.state["max_consecutive_wins"] = max(
+                self.state.get("max_consecutive_wins", 0),
+                self.state["consecutive_wins"]
+            )
+        else:
+            # Breakeven / EOD neutral — reset both streaks
+            self.state["consecutive_losses"] = 0
+            self.state["consecutive_wins"]   = 0
             self.state["last_sl_direction"]  = None
 
         self._save()
@@ -406,6 +456,38 @@ class RiskEngine:
         )
 
     # =========================
+    # TRADE LIMIT EXTENSION
+    # =========================
+
+    def grant_trade_extension(self, additional: int = None) -> int:
+        """
+        Grant extra trades for today via Telegram approval.
+        Called by trading_engine.py after user approves the extension.
+
+        Args:
+            additional: How many extra trades to add (defaults to TRADE_EXTENSION_BATCH)
+
+        Returns:
+            New effective daily limit (base + total extension)
+        """
+        if additional is None:
+            additional = TRADE_EXTENSION_BATCH
+
+        current_ext  = self.state.get("trade_limit_extension", 0)
+        max_ext      = TRADE_EXTENSION_MAX_TOTAL
+        actual_add   = min(additional, max_ext - current_ext)   # Don't exceed ceiling
+
+        self.state["trade_limit_extension"] = current_ext + actual_add
+        self._save()
+
+        new_limit = MAX_TRADES_PER_DAY + self.state["trade_limit_extension"]
+        logger.info(
+            "[RISK] Trade limit extended by %d → new limit: %d/day (total extension: %d)",
+            actual_add, new_limit, self.state["trade_limit_extension"],
+        )
+        return new_limit
+
+    # =========================
     # SUMMARY
     # =========================
 
@@ -416,17 +498,46 @@ class RiskEngine:
         """
         daily_pnl_inr = self.state["daily_pnl_points"] * OPTION_DELTA * NIFTY_LOT_SIZE
         sizing        = self.calculate_position_size()
+        extension     = self.state.get("trade_limit_extension", 0)
+        effective_max = MAX_TRADES_PER_DAY + extension
+        trades_won    = self.state.get("trades_won", 0)
+        trades_lost   = self.state.get("trades_lost", 0)
+        trades_closed = trades_won + trades_lost
+        win_rate      = round(trades_won / trades_closed * 100, 1) if trades_closed > 0 else 0.0
+        gross_profit  = self.state.get("gross_profit_points", 0.0)
+        gross_loss    = abs(self.state.get("gross_loss_points", 0.0))
+        profit_factor = round(gross_profit / gross_loss, 2) if gross_loss > 0 else None
+        avg_win_pts   = round(gross_profit / trades_won, 2) if trades_won > 0 else 0.0
+        avg_loss_pts  = round(gross_loss / trades_lost, 2) if trades_lost > 0 else 0.0
+        # Expectancy: (win_rate × avg_win) - (loss_rate × avg_loss)
+        loss_rate     = 1 - (win_rate / 100)
+        expectancy    = round((win_rate / 100) * avg_win_pts - loss_rate * avg_loss_pts, 2)
+
         return {
-            "date":               self.state["date"],
-            "trades_today":       self.state["trades_today"],
-            "max_trades":         MAX_TRADES_PER_DAY,
-            "daily_pnl_points":   self.state["daily_pnl_points"],
-            "daily_pnl_inr":      round(daily_pnl_inr, 2),
-            "consecutive_losses": self.state["consecutive_losses"],
-            "cooldown_until":     self.state["cooldown_until"],
-            "suggested_lots":     sizing["lots"],
-            "max_loss_inr":       sizing["max_loss_inr"],
-            "risk_pct":           sizing["risk_pct"],
+            "date":                   self.state["date"],
+            "trades_today":           self.state["trades_today"],
+            "trades_won":             trades_won,
+            "trades_lost":            trades_lost,
+            "max_trades":             effective_max,
+            "max_trades_base":        MAX_TRADES_PER_DAY,
+            "trade_limit_extension":  extension,
+            "daily_pnl_points":       self.state["daily_pnl_points"],
+            "daily_pnl_inr":          round(daily_pnl_inr, 2),
+            "gross_profit_points":    gross_profit,
+            "gross_loss_points":      self.state.get("gross_loss_points", 0.0),
+            "profit_factor":          profit_factor,
+            "win_rate":               win_rate,
+            "avg_win_pts":            avg_win_pts,
+            "avg_loss_pts":           avg_loss_pts,
+            "expectancy_pts":         expectancy,
+            "consecutive_losses":     self.state["consecutive_losses"],
+            "consecutive_wins":       self.state.get("consecutive_wins", 0),
+            "max_consecutive_wins":   self.state.get("max_consecutive_wins", 0),
+            "max_consecutive_losses": self.state.get("max_consecutive_losses", 0),
+            "cooldown_until":         self.state["cooldown_until"],
+            "suggested_lots":         sizing["lots"],
+            "max_loss_inr":           sizing["max_loss_inr"],
+            "risk_pct":               sizing["risk_pct"],
         }
 
     def __repr__(self) -> str:

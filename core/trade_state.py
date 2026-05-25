@@ -57,6 +57,11 @@ _DEFAULT_STATE: dict = {
     "trend":               None,
     "vwap_at_entry":       None,
     "ema9_at_entry":       None,
+    # ---- Option premium / capital tracking ----
+    "option_premium":      None,
+    "premium_source":      None,
+    "capital_invested":    None,
+    # ---- Exit fields ----
     "exit_price":          None,
     "exit_time":           None,
     "points_result":       None,
@@ -189,13 +194,33 @@ class TradeStateManager:
 
     def open_trade(
         self,
-        signal:      str,
-        entry_price: float,
-        trend:       str,
-        vwap:        float,
-        ema9:        float,
-        lots:        int = 1,
+        signal:           str,
+        entry_price:      float,
+        trend:            str,
+        vwap:             float,
+        ema9:             float,
+        lots:             int   = 1,
+        option_premium:   float = None,
+        premium_source:   str   = None,
+        capital_invested: float = None,
     ) -> str:
+        """
+        Transition from IDLE → OPEN.
+
+        Args:
+            signal:           Trade signal string e.g. "BUY 23800 CE"
+            entry_price:      NIFTY index price at entry
+            trend:            MTF trend label
+            vwap:             VWAP at entry
+            ema9:             EMA9 at entry
+            lots:             Number of lots (default 1)
+            option_premium:   Option LTP in points (fetched from NSE or estimated)
+            premium_source:   "nse_api" | "estimated" | None
+            capital_invested: Total premium paid in INR (premium × lot_size × lots)
+
+        Returns:
+            trade_id string
+        """
         if self.has_active_trade():
             raise RuntimeError(
                 f"[STATE] Cannot open trade: a trade is already active "
@@ -206,25 +231,29 @@ class TradeStateManager:
         direction = "CE" if "CE" in signal else "PE"
         self.state = {
             **dict(_DEFAULT_STATE),
-            "version":        1,
-            "status":         self.OPEN,
-            "trade_id":       trade_id,
-            "signal":         signal,
-            "direction":      direction,
-            "lots":           lots,
-            "entry_price":    entry_price,
-            "entry_time":     now.strftime("%H:%M:%S"),
-            "entry_date":     now.strftime("%Y-%m-%d"),
-            "trend":          trend,
-            "vwap_at_entry":  vwap,
-            "ema9_at_entry":  ema9,
-            "milestones_hit": [],
+            "version":          1,
+            "status":           self.OPEN,
+            "trade_id":         trade_id,
+            "signal":           signal,
+            "direction":        direction,
+            "lots":             lots,
+            "entry_price":      entry_price,
+            "entry_time":       now.strftime("%H:%M:%S"),
+            "entry_date":       now.strftime("%Y-%m-%d"),
+            "trend":            trend,
+            "vwap_at_entry":    vwap,
+            "ema9_at_entry":    ema9,
+            "option_premium":   option_premium,
+            "premium_source":   premium_source,
+            "capital_invested": capital_invested,
+            "milestones_hit":   [],
             "last_tracker_result": None,
         }
         self._save()
         logger.info(
             f"[STATE] Trade OPENED | id={trade_id} | signal={signal} | "
-            f"entry={entry_price:.2f} | direction={direction} | lots={lots}"
+            f"entry={entry_price:.2f} | direction={direction} | lots={lots} | "
+            f"premium={option_premium} ({premium_source}) | capital=₹{capital_invested}"
         )
         return trade_id
 

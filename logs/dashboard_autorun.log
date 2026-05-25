@@ -1,0 +1,14 @@
+[21-05-2026 19:20:41.15] Running dashboard generator... 
+[Dashboard] Loading trade logs...
+[Dashboard] Saved: C:\Users\siddh\Downloads\HK\TradingBot\docs\index.html
+[Dashboard] Saved: C:\Users\siddh\Downloads\HK\TradingBot\dashboard.html
+[Dashboard] Trades: 0 | Decisions: 61
+[Dashboard] Net P&L: INR 0 | Win Rate: 0% | Invested: INR 0
+[21-05-2026 19:20:43.89] Dashboard generated successfully. 
+[22-05-2026 16:13:24.80] Running dashboard generator... 
+[Dashboard] Loading trade logs...
+[Dashboard] Saved: C:\Users\siddh\Downloads\HK\TradingBot\docs\index.html
+[Dashboard] Saved: C:\Users\siddh\Downloads\HK\TradingBot\dashboard.html
+[Dashboard] Trades: 3 | Decisions: 128
+[Dashboard] Net P&L: INR -1,599 | Win Rate: 0.0% | Invested: INR 1,312
+[22-05-2026 16:13:26.99] Dashboard generated successfully. 

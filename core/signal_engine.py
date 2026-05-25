@@ -388,7 +388,7 @@ class SignalEngine:
         # STEP 4: OI adjustment
         # ================================================================
         try:
-            oi_result  = self._oi.get_score_adjustment(direction)
+            oi_result  = self._oi.get_score_adjustment(price or 0.0, direction)
             oi_adj     = oi_result.get("score_adjustment", 0)
         except Exception as exc:
             logger.warning("[SignalEngine] OI analysis failed: %s — skipping OI adjustment", exc)

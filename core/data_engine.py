@@ -88,11 +88,17 @@ def compute_vwap(df: pd.DataFrame) -> pd.Series:
     """
     Compute VWAP (Volume Weighted Average Price), reset at each calendar day.
 
-    Formula per candle: cumsum((H+L+C)/3 * Volume) / cumsum(Volume)
+    Formula per candle (when volume is available):
+        cumsum((H+L+C)/3 * Volume) / cumsum(Volume)
 
-    The VWAP is reset to zero at the start of each new trading day,
-    which is essential for intraday analysis. We use df.index.normalize()
-    (strips the time component) to group candles by date.
+    Fallback for index instruments (e.g. ^NSEI) with zero volume:
+        cumulative mean of (H+L+C)/3 — TWAP (Time-Weighted Average Price).
+        This is standard practice for instruments that carry no native volume
+        and produces meaningful intraday deviation from price, unlike the
+        NaN-then-fallback-to-close behaviour of the pure volume formula.
+
+    The VWAP is reset at the start of each new trading day using
+    df.index.normalize() (strips the time component) to group candles by date.
 
     Parameters
     ----------
@@ -103,21 +109,28 @@ def compute_vwap(df: pd.DataFrame) -> pd.Series:
     Returns
     -------
     pd.Series of VWAP values aligned to df.index.
-    NaN is returned for rows where cumulative volume is zero.
     """
     typical_price = (df["High"] + df["Low"] + df["Close"]) / 3.0
-    tp_vol        = typical_price * df["Volume"]
 
     # Group by calendar date (handles multi-day DataFrames)
-    day_key      = df.index.normalize()
-    vwap_series  = pd.Series(index=df.index, dtype=float)
+    day_key     = df.index.normalize()
+    vwap_series = pd.Series(index=df.index, dtype=float)
 
     for day in day_key.unique():
-        mask              = day_key == day
-        cum_tp_vol        = tp_vol[mask].cumsum()
-        cum_vol           = df["Volume"][mask].cumsum()
-        # Replace zero volume with NaN to avoid division by zero
-        vwap_series[mask] = cum_tp_vol / cum_vol.replace(0, float("nan"))
+        mask    = day_key == day
+        tp_day  = typical_price[mask]
+        vol_day = df["Volume"][mask]
+        cum_vol = vol_day.cumsum()
+
+        if cum_vol.iloc[-1] > 0:
+            # ---- Standard VWAP: volume-weighted typical price ----
+            cum_tp_vol        = (tp_day * vol_day).cumsum()
+            vwap_series[mask] = cum_tp_vol / cum_vol.replace(0, float("nan"))
+        else:
+            # ---- TWAP fallback: used for indices (e.g. ^NSEI) with no volume ----
+            # Cumulative mean of HLC3 — resets each day, diverges from price
+            # as the session progresses, giving a meaningful vs-VWAP reading.
+            vwap_series[mask] = tp_day.expanding().mean()
 
     return vwap_series
 

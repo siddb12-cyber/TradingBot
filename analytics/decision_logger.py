@@ -284,8 +284,9 @@ class DecisionLogger:
         ema9   = d5m.get("ema9")
 
         # ---- Derived vs-VWAP / vs-EMA9 ----
-        vs_vwap = round(price - vwap, 2) if (price and vwap) else None
-        vs_ema9 = round(price - ema9, 2) if (price and ema9) else None
+        # Use explicit None checks — do NOT use truthiness (0.0 is falsy but valid)
+        vs_vwap = round(price - vwap, 2) if (price is not None and vwap is not None) else None
+        vs_ema9 = round(price - ema9, 2) if (price is not None and ema9 is not None) else None
 
         # ---- 15m / 1h directions ----
         dir_5m  = d5m.get("direction",                         "N/A")
