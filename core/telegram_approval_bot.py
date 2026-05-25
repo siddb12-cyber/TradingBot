@@ -66,6 +66,10 @@ from config.config import (
     TARGET_1_POINTS,
     TARGET_2_POINTS,
     TARGET_3_POINTS,
+    NIFTY_LOT_SIZE,
+    OPTION_DELTA,
+    ACCOUNT_CAPITAL,
+    MAX_RISK_PCT,
 )
 
 # =========================
@@ -338,14 +342,24 @@ class TelegramApprovalBot:
 
         emoji = "🟢" if direction == "BULLISH" else ("🔴" if direction == "BEARISH" else "⚪")
 
+        # ---- INR risk/reward calculations (1 lot basis) ----
+        _pts_per_lot = NIFTY_LOT_SIZE * OPTION_DELTA          # ₹ per NIFTY point per lot
+        _sl_inr      = STOP_LOSS_POINTS  * _pts_per_lot       # max loss at SL
+        _t1_inr      = TARGET_1_POINTS   * _pts_per_lot       # gain at T1
+        _t2_inr      = TARGET_2_POINTS   * _pts_per_lot       # gain at T2
+        _t3_inr      = TARGET_3_POINTS   * _pts_per_lot       # gain at T3
+        _risk_pct    = round((_sl_inr / ACCOUNT_CAPITAL) * 100, 1)
+
         text = (
             f"{emoji} <b>TRADE SIGNAL — {direction}</b>\n"
             f"━━━━━━━━━━━━━━━━━━━━━━\n"
             f"<b>Signal:</b> {trade_sig}\n"
-            f"<b>Stop Loss:</b> {signal.get('stop_loss', '?')} ({STOP_LOSS_POINTS} pts)\n"
-            f"<b>Target 1:</b> {signal.get('target1', '?')}\n"
-            f"<b>Target 2:</b> {signal.get('target2', '?')}\n"
-            f"<b>Target 3:</b> {signal.get('target3', '?')}\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"💰 <b>Capital at Risk:</b> ₹{_sl_inr:,.0f} ({_risk_pct}% of ₹{ACCOUNT_CAPITAL:,.0f})\n"
+            f"🛑 <b>Stop Loss:</b> {STOP_LOSS_POINTS} pts → <b>-₹{_sl_inr:,.0f}</b>\n"
+            f"🎯 <b>Target 1:</b> {TARGET_1_POINTS} pts → <b>+₹{_t1_inr:,.0f}</b>\n"
+            f"🎯 <b>Target 2:</b> {TARGET_2_POINTS} pts → <b>+₹{_t2_inr:,.0f}</b>\n"
+            f"🎯 <b>Target 3:</b> {TARGET_3_POINTS} pts → <b>+₹{_t3_inr:,.0f}</b>\n"
             f"━━━━━━━━━━━━━━━━━━━━━━\n"
             f"<b>Price:</b> {price_str} | <b>VWAP:</b> {vwap_str} | <b>EMA9:</b> {ema9_str}\n"
             f"<b>MTF:</b> {alignment}\n"
@@ -513,12 +527,14 @@ class TelegramApprovalBot:
 
         # ---- Map action to CallbackOutcome ----
         _ACTION_MAP = {
-            "approve":    CallbackOutcome.APPROVED,
-            "reject":     CallbackOutcome.REJECTED,
-            "scale":      CallbackOutcome.SCALED,
-            "tighten_sl": CallbackOutcome.TIGHTEN_SL,
-            "trail_sl":   CallbackOutcome.TRAIL_SL,
-            "close":      CallbackOutcome.CLOSE_NOW,
+            "approve":        CallbackOutcome.APPROVED,
+            "reject":         CallbackOutcome.REJECTED,
+            "scale":          CallbackOutcome.SCALED,
+            "tighten_sl":     CallbackOutcome.TIGHTEN_SL,
+            "trail_sl":       CallbackOutcome.TRAIL_SL,
+            "close":          CallbackOutcome.CLOSE_NOW,
+            "extend_approve": CallbackOutcome.APPROVED,   # Extension approval reuses APPROVED
+            "extend_reject":  CallbackOutcome.REJECTED,   # Extension rejection reuses REJECTED
         }
 
         outcome = _ACTION_MAP.get(action)
@@ -549,9 +565,10 @@ class TelegramApprovalBot:
             return data
 
         # ---- Acknowledge button press ----
+        is_extension = action.startswith("extend_")
         outcome_labels = {
-            CallbackOutcome.APPROVED:   "✅ Trade APPROVED — placing order",
-            CallbackOutcome.REJECTED:   "❌ Trade REJECTED",
+            CallbackOutcome.APPROVED:   "✅ Extension APPROVED" if is_extension else "✅ Trade APPROVED — placing order",
+            CallbackOutcome.REJECTED:   "❌ Limit kept" if is_extension else "❌ Trade REJECTED",
             CallbackOutcome.SCALED:     "📈 Trade APPROVED with 2x scale-up",
             CallbackOutcome.TIGHTEN_SL: "🔒 SL tightened",
             CallbackOutcome.TRAIL_SL:   "📈 SL trailing activated",
@@ -653,6 +670,94 @@ class TelegramApprovalBot:
             f"🛑 <b>TradingBot STOPPED</b>\n"
             f"Stopped at: {now}"
         )
+
+    # ------------------------------------------------------------------
+    # TRADE LIMIT EXTENSION REQUEST
+    # ------------------------------------------------------------------
+
+    def send_extension_request(
+        self,
+        signal: dict,
+        extension_batch: int = 2,
+    ) -> bool:
+        """
+        Send a Telegram message asking the user to approve extra trades for today.
+        Blocks for TELEGRAM_APPROVAL_TIMEOUT_MINUTES.
+
+        Called by trading_engine.py when:
+          - Daily trade limit is hit
+          - A HIGH/VERY HIGH confidence signal has just been generated
+          - Extension total hasn't hit ceiling
+
+        Args:
+            signal:          The current signal dict (for context in the message)
+            extension_batch: Number of extra trades to request
+
+        Returns:
+            True  — user tapped APPROVE +N
+            False — user tapped KEEP LIMIT or request expired
+        """
+        import uuid as _uuid
+        ext_id = "EXT-" + datetime.now().strftime("%H%M%S")
+
+        direction    = signal.get("direction", "?")
+        score        = signal.get("adjusted_score", signal.get("base_score", 0))
+        confidence   = signal.get("confidence_level", "?")
+        trade_signal = signal.get("trade_signal", "?")
+
+        text = (
+            f"📊 <b>TRADE LIMIT REACHED — Extension Request</b>\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"Daily trade limit hit, but a <b>{confidence}</b> signal is ready:\n"
+            f"<b>Signal:</b> {trade_signal}\n"
+            f"<b>Direction:</b> {direction} | <b>Score:</b> {score}/100\n"
+            f"━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"Approve <b>+{extension_batch} extra trades</b> for today?\n"
+            f"<i>Request expires in {TELEGRAM_APPROVAL_TIMEOUT_MINUTES} min.</i>"
+        )
+
+        keyboard = {
+            "inline_keyboard": [[
+                {"text": f"✅ APPROVE +{extension_batch} TRADES", "callback_data": f"extend_approve:{ext_id}"},
+                {"text": "❌ KEEP LIMIT",                         "callback_data": f"extend_reject:{ext_id}"},
+            ]]
+        }
+
+        msg_id = _send_message(text, keyboard)
+        if not msg_id:
+            logger.warning("[TGBot] Extension request send failed — defaulting to KEEP LIMIT")
+            return False
+
+        # Register as pending (same mechanism as signal approvals)
+        pending = _PendingRequest(
+            trade_id   = ext_id,
+            message_id = msg_id,
+            expires_at = time.time() + TELEGRAM_APPROVAL_TIMEOUT_MINUTES * 60,
+        )
+        with self._pending_lock:
+            self._pending[ext_id] = pending
+
+        logger.info("[TGBot] Extension request sent (id=%s) — waiting for user tap...", ext_id)
+        pending.event.wait(timeout=TELEGRAM_APPROVAL_TIMEOUT_MINUTES * 60 + 5)
+
+        with self._pending_lock:
+            self._pending.pop(ext_id, None)
+
+        if pending.outcome == CallbackOutcome.APPROVED:
+            _edit_message(msg_id, f"✅ Extension approved — +{extension_batch} extra trades granted for today.")
+            logger.info("[TGBot] Extension APPROVED by user")
+            return True
+
+        elif pending.outcome == CallbackOutcome.REJECTED:
+            _edit_message(msg_id, "❌ Extension rejected — keeping daily limit.")
+            logger.info("[TGBot] Extension REJECTED by user")
+            return False
+
+        else:
+            # Expired
+            _edit_message(msg_id, "⏱ Extension request expired — keeping daily limit.")
+            logger.info("[TGBot] Extension request EXPIRED")
+            return False
 
     # ------------------------------------------------------------------
     # INTERNAL: EXPIRY LOOP (background thread)
