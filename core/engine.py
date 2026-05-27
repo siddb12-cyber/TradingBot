@@ -230,8 +230,7 @@ class Engine:
 
         # Get live price
         try:
-            price_data    = self._data.get_live_price()
-            current_price = price_data.get("price")
+            current_price = self._data.get_live_price()
             if current_price is None:
                 logger.warning("[TrackerLoop] No live price — skipping")
                 return
