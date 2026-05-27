@@ -49,3 +49,9 @@ feedparser>=6.0.0
 schedule>=1.2.0
 
 # Standard lib: subprocess, threading, json, pathlib, datetime, logging, dataclasses, enum
+
+# =========================
+# DASHBOARD SERVER
+# =========================
+flask>=3.0.0
+flask-cors>=4.0.0

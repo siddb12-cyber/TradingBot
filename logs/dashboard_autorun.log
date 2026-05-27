@@ -12,3 +12,12 @@
 [Dashboard] Trades: 3 | Decisions: 128
 [Dashboard] Net P&L: INR -1,599 | Win Rate: 0.0% | Invested: INR 1,312
 [22-05-2026 16:13:26.99] Dashboard generated successfully. 
+[25-05-2026 15:35:01.87] Running dashboard generator... 
+[Dashboard] Loading trade logs...
+[Dashboard] Saved: C:\Users\siddh\Downloads\HK\TradingBot\docs\index.html
+[Dashboard] Saved: C:\Users\siddh\Downloads\HK\TradingBot\dashboard.html
+[Dashboard] Trades: 5 | Decisions: 185
+[Dashboard] Net P&L: INR -4,532 | Win Rate: 0.0% | Invested: INR 4,125
+[25-05-2026 15:35:04.17] Dashboard generated successfully. 
+[26-05-2026 15:35:02.13] Running dashboard generator... 
+^C

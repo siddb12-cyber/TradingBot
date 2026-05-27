@@ -94,8 +94,14 @@ class TradeStateManager:
     SL_HIT       = "SL_HIT"
     EOD_CLOSE    = "EOD_CLOSE"
 
-    ACTIVE_STATUSES: frozenset = frozenset({OPEN, TARGET1_HIT, TARGET2_HIT})
-    TERMINAL_STATUSES: frozenset = frozenset({TARGET3_HIT, SL_HIT})
+    # ACTIVE_STATUSES covers both canonical names (TARGET1_HIT) and the short-form
+    # milestone strings ("T1_HIT", "T2_HIT", "T3_HIT") used in trading_engine.py
+    # so that has_active_trade() returns True regardless of which form is stored.
+    ACTIVE_STATUSES: frozenset = frozenset({
+        OPEN, TARGET1_HIT, TARGET2_HIT, TARGET3_HIT,
+        "T1_HIT", "T2_HIT", "T3_HIT",
+    })
+    TERMINAL_STATUSES: frozenset = frozenset({SL_HIT, EOD_CLOSE})
 
     OUTCOME_LABELS: dict = {
         TARGET3_HIT: "TARGET 3 HIT",

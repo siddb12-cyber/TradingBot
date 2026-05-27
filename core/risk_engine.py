@@ -59,7 +59,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
-from config.config import (
+from config.settings import (
     DAILY_RISK_STATE_FILE,
     ACCOUNT_CAPITAL, MAX_RISK_PCT, MAX_DAILY_LOSS_PCT,
     MAX_TRADES_PER_DAY, COOLDOWN_AFTER_SL_MINUTES, MAX_CONSECUTIVE_LOSSES,

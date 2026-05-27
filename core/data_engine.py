@@ -56,7 +56,7 @@ import pandas as pd
 import requests
 import yfinance as yf
 
-from config.config import (
+from config.settings import (
     # NSE API
     NSE_INDEX_URL,
     NSE_API_HEADERS,

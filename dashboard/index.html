@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TradingBot — Live Dashboard</title>
+  <style>
+    :root {
+      --bg:      #0f1117;
+      --card:    #1a1d27;
+      --border:  #252836;
+      --accent:  #6366f1;
+      --green:   #22c55e;
+      --red:     #ef4444;
+      --yellow:  #f59e0b;
+      --text:    #e2e8f0;
+      --muted:   #64748b;
+      --font:    'Inter', system-ui, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      padding: 24px;
+    }
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
+    .header h1 span { color: var(--accent); }
+    .pill {
+      background: #1e2030;
+      border: 1px solid var(--border);
+      border-radius: 9999px;
+      padding: 4px 14px;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .pill.live { border-color: var(--green); color: var(--green); }
+    /* ── Period tabs ── */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .tab {
+      padding: 7px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .tab:hover { border-color: var(--accent); color: var(--text); }
+    .tab.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+    /* ── KPI Cards ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .kpi-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px 20px;
+    }
+    .kpi-card .label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+    .kpi-card .value { font-size: 1.6rem; font-weight: 700; line-height: 1; }
+    .kpi-card .sub   { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
+    .positive { color: var(--green); }
+    .negative { color: var(--red); }
+    .neutral  { color: var(--text); }
+    /* ── Live trade card ── */
+    .live-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 28px;
+    }
+    .live-card .section-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+    .live-row { display: flex; gap: 32px; flex-wrap: wrap; align-items: flex-start; }
+    .live-item .key   { font-size: 0.72rem; color: var(--muted); margin-bottom: 3px; }
+    .live-item .val   { font-size: 1.05rem; font-weight: 600; }
+    .status-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 9999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .badge-open    { background: rgba(34,197,94,.15); color: var(--green); }
+    .badge-pending { background: rgba(245,158,11,.15); color: var(--yellow); }
+    .badge-idle    { background: rgba(100,116,139,.15); color: var(--muted); }
+    /* ── Trade table ── */
+    .table-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .table-card .table-header {
+      padding: 16px 20px;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    table { width: 100%; border-collapse: collapse; }
+    th {
+      padding: 12px 16px;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--muted);
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 12px 16px;
+      font-size: 0.82rem;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,.025); }
+    /* ── Milestone bars ── */
+    .milestone-dots { display: flex; gap: 4px; align-items: center; }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+    .dot.hit { background: var(--green); }
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.72rem;
+      padding-top: 16px;
+    }
+    /* ── Loading spinner ── */
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    /* ── No-data ── */
+    .empty { padding: 32px; text-align: center; color: var(--muted); font-size: 0.85rem; }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <h1>TradingBot <span>Live Dashboard</span></h1>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="pill">📋 PAPER TRADING</span>
+      <span class="pill live" id="status-pill">● Connecting...</span>
+    </div>
+  </div>
+
+  <!-- Period Tabs -->
+  <div class="tabs" id="period-tabs">
+    <div class="tab" data-period="daily">Today</div>
+    <div class="tab active" data-period="weekly">This Week</div>
+    <div class="tab" data-period="monthly">This Month</div>
+    <div class="tab" data-period="quarterly">Quarter</div>
+    <div class="tab" data-period="half-yearly">Half Year</div>
+    <div class="tab" data-period="yearly">Year</div>
+  </div>
+
+  <!-- KPI Row -->
+  <div class="kpi-grid" id="kpi-grid">
+    <div class="kpi-card"><div class="label">Total Trades</div><div class="value neutral" id="kpi-total">—</div></div>
+    <div class="kpi-card"><div class="label">Win Rate</div><div class="value neutral" id="kpi-winrate">—</div></div>
+    <div class="kpi-card"><div class="label">Net P&L (pts)</div><div class="value neutral" id="kpi-pnl-pts">—</div></div>
+    <div class="kpi-card"><div class="label">Net P&L (₹)</div><div class="value neutral" id="kpi-pnl-inr">—</div></div>
+    <div class="kpi-card"><div class="label">Best Trade</div><div class="value neutral" id="kpi-best">—</div></div>
+    <div class="kpi-card"><div class="label">Worst Trade</div><div class="value neutral" id="kpi-worst">—</div></div>
+    <div class="kpi-card"><div class="label">SL Hits</div><div class="value neutral" id="kpi-sl">—</div></div>
+    <div class="kpi-card"><div class="label">Max Win Streak</div><div class="value neutral" id="kpi-streak-w">—</div></div>
+  </div>
+
+  <!-- Live Trade -->
+  <div class="live-card">
+    <div class="section-title">⚡ Active Trade</div>
+    <div class="live-row" id="live-row">
+      <div class="live-item"><div class="key">Status</div><div class="val" id="live-status"><span class="badge-idle status-badge">IDLE</span></div></div>
+      <div class="live-item"><div class="key">Signal</div><div class="val" id="live-signal">—</div></div>
+      <div class="live-item"><div class="key">Entry</div><div class="val" id="live-entry">—</div></div>
+      <div class="live-item"><div class="key">Current</div><div class="val" id="live-price">—</div></div>
+      <div class="live-item"><div class="key">P&L (pts)</div><div class="val" id="live-pnl">—</div></div>
+      <div class="live-item"><div class="key">SL Level</div><div class="val" id="live-sl">—</div></div>
+      <div class="live-item"><div class="key">Milestones</div><div class="val" id="live-milestones">—</div></div>
+      <div class="live-item"><div class="key">Last Update</div><div class="val" id="live-time" style="font-size:.8rem;color:var(--muted)">—</div></div>
+    </div>
+  </div>
+
+  <!-- Trade History Table -->
+  <div class="table-card">
+    <div class="table-header">📊 Trade History</div>
+    <div id="trade-table-container">
+      <div class="empty"><span class="spinner"></span> Loading...</div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    TradingBot • PAPER TRADING ONLY • Auto-refreshes every 30s
+    <br>Decisions log: <code>decisions/</code> &nbsp;|&nbsp; Trades log: <code>trades/</code>
+  </div>
+
+<script>
+  // ── State ──────────────────────────────────────────────────────────────────
+  let currentPeriod = 'weekly';
+  const BASE = '';  // Same origin
+
+  // ── Period tab clicks ──────────────────────────────────────────────────────
+  document.getElementById('period-tabs').addEventListener('click', e => {
+    const tab = e.target.closest('.tab');
+    if (!tab) return;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    currentPeriod = tab.dataset.period;
+    loadStats();
+    loadTrades();
+  });
+
+  // ── KPI loader ─────────────────────────────────────────────────────────────
+  async function loadStats() {
+    try {
+      const r = await fetch(`${BASE}/api/stats?period=${currentPeriod}`);
+      const d = await r.json();
+      const s = d.stats;
+
+      const set = (id, val, cls) => {
+        const el = document.getElementById(id);
+        el.textContent = val;
+        el.className = `value ${cls}`;
+      };
+
+      const pnlClass = s.total_pnl_points > 0 ? 'positive' : s.total_pnl_points < 0 ? 'negative' : 'neutral';
+      set('kpi-total',    s.total_trades,                          'neutral');
+      set('kpi-winrate',  s.total_trades ? `${s.win_rate}%` : '—','neutral');
+      set('kpi-pnl-pts',  s.total_pnl_points > 0 ? `+${s.total_pnl_points}` : s.total_pnl_points, pnlClass);
+      set('kpi-pnl-inr',  s.total_pnl_inr >= 0 ? `+₹${s.total_pnl_inr.toFixed(0)}` : `-₹${Math.abs(s.total_pnl_inr).toFixed(0)}`, pnlClass);
+      set('kpi-best',     s.best_trade > 0 ? `+${s.best_trade}pts` : '—', 'positive');
+      set('kpi-worst',    s.worst_trade < 0 ? `${s.worst_trade}pts` : '—', 'negative');
+      set('kpi-sl',       s.sl_count, s.sl_count > 0 ? 'negative' : 'neutral');
+      set('kpi-streak-w', s.max_consecutive_wins, s.max_consecutive_wins > 2 ? 'positive' : 'neutral');
+    } catch(e) { console.error('Stats error:', e); }
+  }
+
+  // ── Live trade ─────────────────────────────────────────────────────────────
+  async function loadLive() {
+    try {
+      const r = await fetch(`${BASE}/api/live`);
+      const d = await r.json();
+      const t = d.trade || {};
+      const lp = d.live_price;
+
+      const status = t.status || 'IDLE';
+
+      // Status badge
+      let badgeClass, badgeText;
+      if (status === 'OPEN') { badgeClass = 'badge-open'; badgeText = '● OPEN'; }
+      else if (status === 'PENDING') { badgeClass = 'badge-pending'; badgeText = '⏳ PENDING'; }
+      else { badgeClass = 'badge-idle'; badgeText = '○ IDLE'; }
+
+      document.getElementById('live-status').innerHTML =
+        `<span class="status-badge ${badgeClass}">${badgeText}</span>`;
+      document.getElementById('live-signal').textContent = t.signal_text || '—';
+      document.getElementById('live-entry').textContent = t.entry_price ? t.entry_price.toFixed(2) : '—';
+
+      // Current price + P&L
+      const currentPrice = lp || t.current_price;
+      if (currentPrice) {
+        document.getElementById('live-price').textContent = currentPrice.toFixed(2);
+        if (status === 'OPEN' && t.entry_price) {
+          const pnl = t.direction === 'BULLISH'
+            ? currentPrice - t.entry_price
+            : t.entry_price - currentPrice;
+          const pnlEl = document.getElementById('live-pnl');
+          pnlEl.textContent = `${pnl > 0 ? '+' : ''}${pnl.toFixed(1)}`;
+          pnlEl.style.color = pnl > 0 ? 'var(--green)' : pnl < 0 ? 'var(--red)' : 'var(--text)';
+        } else {
+          document.getElementById('live-pnl').textContent = '—';
+        }
+      } else {
+        document.getElementById('live-price').textContent = '—';
+        document.getElementById('live-pnl').textContent = '—';
+      }
+
+      document.getElementById('live-sl').textContent = t.sl_price ? t.sl_price.toFixed(2) : '—';
+
+      // Milestone dots
+      const hits = t.milestones_hit || [];
+      const maxDots = Math.max(hits.length + 1, 4);
+      let dotsHtml = '';
+      for (let i = 1; i <= maxDots; i++) {
+        dotsHtml += `<div class="dot ${hits.includes(i) ? 'hit' : ''}" title="T${i}"></div>`;
+      }
+      if (hits.length) dotsHtml += `<span style="font-size:.75rem;color:var(--muted);margin-left:4px">T${Math.max(...hits)} hit</span>`;
+      document.getElementById('live-milestones').innerHTML = `<div class="milestone-dots">${dotsHtml}</div>`;
+
+      document.getElementById('live-time').textContent =
+        new Date(d.timestamp).toLocaleTimeString('en-IN');
+
+      // Status pill
+      const pill = document.getElementById('status-pill');
+      pill.textContent = status === 'OPEN' ? '● TRADING' : '● Online';
+    } catch(e) {
+      document.getElementById('status-pill').textContent = '● Offline';
+      console.error('Live error:', e);
+    }
+  }
+
+  // ── Trade history table ────────────────────────────────────────────────────
+  async function loadTrades() {
+    const container = document.getElementById('trade-table-container');
+    container.innerHTML = `<div class="empty"><span class="spinner"></span> Loading...</div>`;
+    try {
+      const r = await fetch(`${BASE}/api/trades?period=${currentPeriod}`);
+      const d = await r.json();
+      const trades = d.trades || [];
+
+      if (!trades.length) {
+        container.innerHTML = `<div class="empty">No trades found for this period.</div>`;
+        return;
+      }
+
+      // Sort newest first
+      trades.sort((a, b) => (b.open_time || '').localeCompare(a.open_time || ''));
+
+      const rows = trades.map(t => {
+        const pnl  = t.pnl_points || 0;
+        const pnlInr = t.pnl_inr || 0;
+        const cls  = pnl > 0 ? 'positive' : pnl < 0 ? 'negative' : 'neutral';
+        const dir  = t.direction === 'BULLISH' ? '🟢' : '🔴';
+
+        const hits = t.milestones_hit || [];
+        const dots = [1,2,3,4].map(n =>
+          `<div class="dot ${hits.includes(n) ? 'hit' : ''}" title="T${n}"></div>`
+        ).join('');
+
+        const openTime = t.open_time ? new Date(t.open_time).toLocaleString('en-IN', {
+          month:'short', day:'2-digit', hour:'2-digit', minute:'2-digit'
+        }) : '—';
+
+        return `<tr>
+          <td>${openTime}</td>
+          <td>${dir} ${t.signal_text || '—'}</td>
+          <td>${t.entry_price ? t.entry_price.toFixed(2) : '—'}</td>
+          <td>${t.close_price ? t.close_price.toFixed(2) : '—'}</td>
+          <td class="${cls}" style="font-weight:600">${pnl > 0 ? '+' : ''}${pnl.toFixed(1)}</td>
+          <td class="${cls}">₹${pnlInr >= 0 ? '+' : ''}${pnlInr.toFixed(0)}</td>
+          <td>${t.lots || 1}L</td>
+          <td><div class="milestone-dots">${dots}</div></td>
+          <td style="font-size:.75rem;color:var(--muted)">${(t.close_reason || '').replace('_', ' ')}</td>
+          <td style="font-size:.75rem;color:var(--muted)">${t.confidence || '—'}</td>
+        </tr>`;
+      }).join('');
+
+      container.innerHTML = `<table>
+        <thead><tr>
+          <th>Time</th><th>Signal</th><th>Entry</th><th>Close</th>
+          <th>P&L (pts)</th><th>P&L (₹)</th><th>Lots</th>
+          <th>Milestones</th><th>Reason</th><th>Score</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+    } catch(e) {
+      container.innerHTML = `<div class="empty">Error loading trades. Is the server running?</div>`;
+      console.error('Trades error:', e);
+    }
+  }
+
+  // ── Initial load + auto-refresh ────────────────────────────────────────────
+  loadStats();
+  loadTrades();
+  loadLive();
+
+  // Live trade refreshes every 30s; stats/trades every 5 min
+  setInterval(loadLive, 30_000);
+  setInterval(() => { loadStats(); loadTrades(); }, 300_000);
+</script>
+</body>
+</html>

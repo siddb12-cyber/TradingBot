@@ -27,7 +27,7 @@ Usage:
 import logging
 from datetime import datetime, timedelta
 
-from config.config import (
+from config.settings import (
     MARKET_OPEN_HOUR, MARKET_OPEN_MINUTE,
     MARKET_CLOSE_HOUR, MARKET_CLOSE_MINUTE,
     EOD_CLOSE_HOUR, EOD_CLOSE_MINUTE,

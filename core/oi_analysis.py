@@ -33,7 +33,7 @@ import logging
 import requests
 from typing import Optional
 
-from config.config import (
+from config.settings import (
     NSE_BASE_URL,
     NSE_OPTION_CHAIN_URL,
     NSE_API_HEADERS,

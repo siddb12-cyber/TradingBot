@@ -2568,3 +2568,282 @@ C:\Users\siddh\Downloads\HK\TradingBot\core\trade_state.py:372: FutureWarning: T
 2026-05-25 08:52:56 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
 2026-05-25 08:53:56 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
 2026-05-25 08:54:56 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:38:48 | INFO     | __main__ | [MAIN] Starting TradingEngine (single-process, 3-thread)
+2026-05-26 08:38:48 | INFO     | __main__ | [MAIN] Mode: PAPER
+2026-05-26 08:38:48 | INFO     | __main__ | [MAIN] Base directory: C:\Users\siddh\Downloads\HK\TradingBot
+2026-05-26 08:38:59 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-26 08:38:59 | INFO     | core.signal_engine | [SignalEngine] Initialised | TF weights: align=50 vwap=25 ema=25 | Thresholds: VH=85 H=70 M=45
+2026-05-26 08:38:59 | INFO     | core.telegram_approval_bot | [TGBot] TelegramApprovalBot initialised | timeout=5 min | chat=8331670846
+2026-05-26 08:39:00 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:39:00 | INFO     | core.trade_state | [STATE] TradeStateManager initialized | status=IDLE | trade_id=None
+2026-05-26 08:39:00 | INFO     | core.risk_engine | [RISK] New trading day (2026-05-26) — resetting daily counters. Previous: 2026-05-25
+2026-05-26 08:39:00 | INFO     | core.risk_engine | [RISK] RiskEngine initialized | date=2026-05-26 | trades=0 | pnl=0.0pts | consec_losses=0
+2026-05-26 08:39:00 | INFO     | analytics.decision_logger | [DLOG] DecisionLogger initialised (output: trade_logs/<date>/decisions_<date>.xlsx)
+2026-05-26 08:39:00 | INFO     | core.trading_engine | [Engine] 📄 Paper trading mode — Groww executor disabled
+2026-05-26 08:39:00 | INFO     | core.trading_engine | [Engine] closed_trades_today.json is from a previous day — resetting
+2026-05-26 08:39:00 | INFO     | core.trading_engine | [Engine] TradingEngine initialised | mode=PAPER | SCAN=300s | TRACKER=60s | POLLER=3s
+2026-05-26 08:39:00 | INFO     | core.trading_engine | ============================================================
+2026-05-26 08:39:00 | INFO     | core.trading_engine | [Engine] TradingBot starting up
+2026-05-26 08:39:00 | INFO     | core.trading_engine | [Engine] Mode: PAPER TRADING
+2026-05-26 08:39:00 | INFO     | core.trading_engine | ============================================================
+2026-05-26 08:39:00 | INFO     | core.data_engine | [DataEngine] Health: NSE price OK → 24031.70
+2026-05-26 08:39:04 | INFO     | core.data_engine | [DataEngine] Health: yfinance 5m OK → 525 rows
+2026-05-26 08:39:04 | INFO     | core.data_engine | [DataEngine] Health status: HEALTHY
+2026-05-26 08:39:04 | INFO     | core.trading_engine | [Engine] Data health: HEALTHY
+2026-05-26 08:39:04 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:39:05 | INFO     | core.trading_engine | [SignalLoop] Thread started
+2026-05-26 08:39:05 | INFO     | core.trading_engine | [SignalLoop] Market closed — sleeping 2154s until next open
+2026-05-26 08:39:05 | INFO     | core.trading_engine | [Engine] Thread started: SignalLoop
+2026-05-26 08:39:05 | INFO     | core.trading_engine | [Tracker] Thread started
+2026-05-26 08:39:05 | INFO     | core.trading_engine | [Engine] Thread started: TrackerLoop
+2026-05-26 08:39:05 | INFO     | core.trading_engine | [Poller] Telegram poller thread started
+2026-05-26 08:39:05 | INFO     | core.trading_engine | [Engine] Thread started: TGPoller
+2026-05-26 08:39:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:40:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:41:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:42:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:43:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:44:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:45:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:46:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:47:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:48:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:49:05 | INFO     | core.trading_engine | [SignalLoop] Market closed — sleeping 1554s until next open
+2026-05-26 08:49:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:50:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:51:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:52:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:53:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:54:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:55:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:56:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:57:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:58:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 08:59:05 | INFO     | core.trading_engine | [SignalLoop] Market closed — sleeping 954s until next open
+2026-05-26 08:59:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:00:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:01:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:02:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:03:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:04:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:05:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:06:05 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:07:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:08:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:09:05 | INFO     | core.trading_engine | [SignalLoop] Market closed — sleeping 354s until next open
+2026-05-26 09:09:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:10:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:11:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:12:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:13:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:14:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:15:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:16:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:17:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:18:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:19:05 | INFO     | core.trading_engine | [SignalLoop] === SCAN #1 ===
+2026-05-26 09:19:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:19:07 | INFO     | core.data_engine | [DataEngine] MTF | Dir=SIDEWAYS | Align=0/3 | 5m:SIDEWAYS | 15m:SIDEWAYS | 1h:BULLISH
+2026-05-26 09:19:07 | INFO     | core.signal_engine | [SignalEngine] No trade — direction is SIDEWAYS
+2026-05-26 09:19:07 | INFO     | core.trading_engine | [SignalLoop] No trade — Primary timeframe direction is SIDEWAYS
+2026-05-26 09:20:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:21:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:22:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:23:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:24:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:24:07 | INFO     | core.trading_engine | [SignalLoop] === SCAN #2 ===
+2026-05-26 09:24:08 | INFO     | core.data_engine | [DataEngine] MTF | Dir=SIDEWAYS | Align=0/3 | 5m:SIDEWAYS | 15m:BULLISH | 1h:BULLISH
+2026-05-26 09:24:08 | INFO     | core.signal_engine | [SignalEngine] No trade — direction is SIDEWAYS
+2026-05-26 09:24:08 | INFO     | core.trading_engine | [SignalLoop] No trade — Primary timeframe direction is SIDEWAYS
+2026-05-26 09:25:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:26:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:27:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:28:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:29:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=IDLE | trade_id=None
+2026-05-26 09:29:08 | INFO     | core.trading_engine | [SignalLoop] === SCAN #3 ===
+2026-05-26 09:29:09 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-26 09:29:09 | INFO     | core.signal_engine | [SignalEngine] Base score: 84 (TF=50 + VWAP=9 + EMA=25)
+2026-05-26 09:29:09 | INFO     | core.oi_analysis | [OI] Fetching fresh option chain data...
+2026-05-26 09:29:09 | WARNING  | core.oi_analysis | [OI] NSE session init returned 403
+2026-05-26 09:29:09 | INFO     | core.oi_analysis | [OI] Falling back to page scrape...
+2026-05-26 09:29:09 | WARNING  | core.oi_analysis | [OI] NSE session init returned 403
+2026-05-26 09:29:09 | WARNING  | core.oi_analysis | [OI] Could not find embedded JSON in page
+2026-05-26 09:29:09 | WARNING  | core.oi_analysis | [OI] Option chain unavailable — returning 0 adjustment
+2026-05-26 09:29:09 | INFO     | core.news_sentiment | [SENTIMENT] Fetching all sentiment sources...
+2026-05-26 09:29:10 | INFO     | core.news_sentiment | [SENTIMENT][VIX] India VIX = 16.50
+2026-05-26 09:29:10 | INFO     | core.news_sentiment | [SENTIMENT][US] ES=F change = 0.65%
+2026-05-26 09:29:10 | WARNING  | core.news_sentiment | [SENTIMENT][RSS] ET Markets failed: syntax error: line 1, column 15
+2026-05-26 09:29:10 | INFO     | core.news_sentiment | [SENTIMENT][RSS] Total headlines collected: 14
+2026-05-26 09:29:11 | INFO     | core.news_sentiment | [SENTIMENT][GNEWS] 15 headlines fetched
+2026-05-26 09:29:11 | INFO     | core.news_sentiment | [SENTIMENT][HEADLINES] bull=13 bear=8 mood=BULLISH signal=BULLISH
+2026-05-26 09:29:11 | INFO     | core.news_sentiment | [SENTIMENT] VIX=16.5(+0)  Futures=+0.65%(+5)  Sent=BULLISH(+3)  TOTAL=+8
+2026-05-26 09:29:11 | INFO     | core.signal_engine | [SignalEngine] Final score: 92 (base=84 OI=+0 sent=+8) → VERY HIGH
+2026-05-26 09:29:11 | INFO     | core.signal_engine | [SignalEngine] VERY HIGH confidence — scale-up suggestion: 2 lots
+2026-05-26 09:29:11 | INFO     | core.trading_engine | [Engine] State: IDLE → PENDING_APPROVAL
+2026-05-26 09:29:11 | INFO     | core.trading_engine | [SignalLoop] Signal ready | BULLISH | BUY 24050 CE | score=92 | trade_id=PAPER-20260526_092911
+2026-05-26 09:29:12 | INFO     | core.telegram_approval_bot | [TGBot] Signal request sent | trade_id=PAPER-20260526_092911 | msg_id=197 | timeout=300s
+2026-05-26 09:29:28 | INFO     | core.trading_engine | [SignalLoop] Telegram outcome: SCALED | trade_id=PAPER-20260526_092911
+2026-05-26 09:29:28 | WARNING  | core.oi_analysis | [OI] NSE session init returned 403
+2026-05-26 09:29:28 | INFO     | core.trading_engine | [Engine] Option premium estimated at 150 pts (NSE fetch unavailable)
+2026-05-26 09:29:28 | INFO     | core.trade_state | [STATE] Trade OPENED | id=20260526_092928 | signal=BUY 24050 CE | entry=24032.50 | direction=CE | lots=2 | premium=150.0 (estimated) | capital=₹22500.0
+2026-05-26 09:29:28 | INFO     | core.risk_engine | [RISK] Trade opened. Today: 1/5 trades
+2026-05-26 09:29:28 | INFO     | core.trade_state | [STATE] Excel row created | id=20260526_092928 | file=trade_log_2026-05-26.xlsx
+2026-05-26 09:29:28 | INFO     | core.trading_engine | [Engine] State: PENDING_APPROVAL → TRADE_ACTIVE
+2026-05-26 09:29:28 | INFO     | core.trading_engine | [SignalLoop] Paper mode — Groww execution skipped
+2026-05-26 09:29:29 | INFO     | core.trading_engine | [SignalLoop] Trade opened | id=20260526_092928 | signal=BUY 24050 CE | entry=24032.50 | lots=2
+2026-05-26 09:29:36 | INFO     | core.telegram_approval_bot | [TGBot] Callback processed | trade_id=PAPER-20260526_092911 | action=scale | outcome=SCALED
+2026-05-26 09:30:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=OPEN | trade_id=20260526_092928
+2026-05-26 09:30:06 | INFO     | core.trading_engine | [Tracker] Trade 20260526_092928 | entry=24032.50 now=24037.50 | P&L=+5.00 pts
+2026-05-26 09:30:06 | INFO     | core.trading_engine | [Tracker] Status tick | P&L=+5.00 pts
+2026-05-26 09:31:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=OPEN | trade_id=20260526_092928
+2026-05-26 09:31:06 | INFO     | core.trading_engine | [Tracker] Trade 20260526_092928 | entry=24032.50 now=24031.95 | P&L=-0.55 pts
+2026-05-26 09:32:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=OPEN | trade_id=20260526_092928
+2026-05-26 09:32:06 | INFO     | core.trading_engine | [Tracker] Trade 20260526_092928 | entry=24032.50 now=24035.30 | P&L=+2.80 pts
+2026-05-26 09:33:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=OPEN | trade_id=20260526_092928
+2026-05-26 09:33:06 | INFO     | core.trading_engine | [Tracker] Trade 20260526_092928 | entry=24032.50 now=24034.35 | P&L=+1.85 pts
+2026-05-26 09:34:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=OPEN | trade_id=20260526_092928
+2026-05-26 09:34:06 | INFO     | core.trading_engine | [Tracker] Trade 20260526_092928 | entry=24032.50 now=24035.55 | P&L=+3.05 pts
+2026-05-26 09:34:29 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 09:35:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=OPEN | trade_id=20260526_092928
+2026-05-26 09:35:06 | INFO     | core.trading_engine | [Tracker] Trade 20260526_092928 | entry=24032.50 now=24039.70 | P&L=+7.20 pts
+2026-05-26 09:35:06 | INFO     | core.trading_engine | [Tracker] Status tick | P&L=+7.20 pts
+2026-05-26 09:36:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=OPEN | trade_id=20260526_092928
+2026-05-26 09:36:06 | INFO     | core.trading_engine | [Tracker] Trade 20260526_092928 | entry=24032.50 now=24022.70 | P&L=-9.80 pts
+2026-05-26 09:37:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=OPEN | trade_id=20260526_092928
+2026-05-26 09:37:06 | INFO     | core.trading_engine | [Tracker] Trade 20260526_092928 | entry=24032.50 now=24034.35 | P&L=+1.85 pts
+2026-05-26 09:38:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=OPEN | trade_id=20260526_092928
+2026-05-26 09:38:06 | INFO     | core.trading_engine | [Tracker] Trade 20260526_092928 | entry=24032.50 now=24050.30 | P&L=+17.80 pts
+2026-05-26 09:39:06 | INFO     | core.trade_state | [STATE] Loaded from disk: status=OPEN | trade_id=20260526_092928
+2026-05-26 09:39:07 | INFO     | core.trading_engine | [Tracker] Trade 20260526_092928 | entry=24032.50 now=24063.60 | P&L=+31.10 pts
+2026-05-26 09:39:29 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 09:40:07 | INFO     | core.trade_state | [STATE] Loaded from disk: status=OPEN | trade_id=20260526_092928
+2026-05-26 09:40:07 | INFO     | core.trading_engine | [Tracker] Trade 20260526_092928 | entry=24032.50 now=24066.05 | P&L=+33.55 pts
+2026-05-26 09:40:07 | INFO     | core.trading_engine | [Tracker] Status tick | P&L=+33.55 pts
+2026-05-26 09:41:07 | INFO     | core.trade_state | [STATE] Loaded from disk: status=OPEN | trade_id=20260526_092928
+2026-05-26 09:41:07 | INFO     | core.trading_engine | [Tracker] Trade 20260526_092928 | entry=24032.50 now=24072.35 | P&L=+39.85 pts
+2026-05-26 09:41:07 | INFO     | core.trading_engine | [Tracker] TARGET 1 HIT | 39.85 pts
+2026-05-26 09:41:07 | INFO     | core.trade_state | [STATE] Milestone recorded: T1_HIT
+2026-05-26 09:41:07 | INFO     | core.trade_state | [STATE] Excel updated | row=0 | file=trade_log_2026-05-26.xlsx | updates=['Trade Status']
+2026-05-26 09:42:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 09:43:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 09:44:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 09:44:29 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 09:45:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 09:46:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 09:47:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 09:48:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 09:49:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 09:49:29 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 09:50:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 09:51:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 09:52:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 09:53:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 09:54:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 09:54:29 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 09:55:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 09:56:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 09:57:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 09:58:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 09:59:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 09:59:29 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 10:00:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:01:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:02:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:03:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:04:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:04:29 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 10:05:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:06:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:07:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:08:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:09:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:09:29 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 10:10:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:11:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:12:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:13:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:14:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:14:30 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 10:15:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:16:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:17:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:18:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:19:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:19:30 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 10:20:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:21:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:22:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:23:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:24:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:24:30 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 10:25:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:26:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:27:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:28:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:29:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:29:30 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 10:30:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:31:08 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:32:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:33:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:34:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:34:30 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 10:35:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:36:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:37:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:38:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:39:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:39:30 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 10:40:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:41:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:42:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:43:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:44:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:44:30 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 10:45:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:46:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:47:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:48:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:49:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:49:30 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 10:49:30 | ERROR    | analytics.decision_logger | [DLOG] Atomic save failed: [WinError 5] Access is denied: 'C:\\Users\\siddh\\Downloads\\HK\\TradingBot\\trade_logs\\2026-05-26\\decisions_2026-05-26.tmp.xlsx' -> 'C:\\Users\\siddh\\Downloads\\HK\\TradingBot\\trade_logs\\2026-05-26\\decisions_2026-05-26.xlsx'
+2026-05-26 10:50:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:51:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:52:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:53:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:54:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:54:30 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 10:55:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:56:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:57:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:58:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:59:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 10:59:31 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 11:00:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:01:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:02:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:03:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:04:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:04:31 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 11:05:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:06:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:07:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:08:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:09:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:09:31 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 11:10:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:11:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:12:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:13:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:14:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:14:31 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 11:15:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:16:10 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:17:11 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:18:11 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:19:11 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:19:32 | INFO     | core.trading_engine | [SignalLoop] Trade active — skip scan (tracker monitoring)
+2026-05-26 11:20:11 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:21:11 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+2026-05-26 11:22:11 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
+^C

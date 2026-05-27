@@ -35,7 +35,7 @@ from typing import Optional
 
 import requests
 
-from config.config import (
+from config.settings import (
     NSE_INDEX_URL,
     NSE_API_HEADERS,
     NSE_BASE_URL,
