@@ -2846,4 +2846,682 @@ C:\Users\siddh\Downloads\HK\TradingBot\core\trade_state.py:372: FutureWarning: T
 2026-05-26 11:20:11 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
 2026-05-26 11:21:11 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
 2026-05-26 11:22:11 | INFO     | core.trade_state | [STATE] Loaded from disk: status=T1_HIT | trade_id=20260526_092928
-^C
+^C2026-05-27 09:48:59 | INFO     | __main__ | [MAIN] Starting TradingEngine (single-process, 3-thread)
+2026-05-27 09:48:59 | INFO     | __main__ | [MAIN] Mode: PAPER
+2026-05-27 09:48:59 | INFO     | __main__ | [MAIN] Base directory: C:\Users\siddh\Downloads\HK\TradingBot
+2026-05-27 09:49:01 | INFO     | __main__ | [MAIN] Dashboard starting on http://localhost:5050
+
+============================================================
+   AI INTRADAY TRADING SYSTEM  (Rebuilt 2026-05-27)
+   Mode     : PAPER TRADING
+   Root     : C:\Users\siddh\Downloads\HK\TradingBot
+   Data     : yfinance + NSE API (no browser required)
+   UX       : Telegram inline keyboard approvals
+   Targets  : T1=25 T2=40 T3=60 T4=85 T5=110 ... (+25 each)
+   Trailing : SL -> breakeven after T1, trails each milestone
+   Dashboard: http://localhost:5050
+============================================================
+
+ * Serving Flask app 'dashboard.server'
+ * Debug mode: off
+2026-05-27 09:49:06 | INFO     | core.trade_manager | [TradeManager] Loaded state | id= status=IDLE
+2026-05-27 09:49:06 | INFO     | core.trade_manager | [TradeManager] Initialised | status=IDLE
+2026-05-27 09:49:06 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 09:49:06 | INFO     | core.signal_engine | [SignalEngine] Initialised | TF weights: align=50 vwap=25 ema=25 | Thresholds: VH=85 H=70 M=45
+2026-05-27 09:49:06 | INFO     | core.risk_engine | [RISK] RiskEngine initialized | date=2026-05-27 | trades=0 | pnl=-15.3pts | consec_losses=1
+2026-05-27 09:49:06 | INFO     | analytics.logger | [AnalyticsLogger] Initialised | decisions=C:\Users\siddh\Downloads\HK\TradingBot\decisions trades=C:\Users\siddh\Downloads\HK\TradingBot\trades
+2026-05-27 09:49:06 | INFO     | telegram.bot | [TGBot] Initialised | chat_id=8331670846 paper=True
+2026-05-27 09:49:06 | INFO     | telegram.heartbeat | [Heartbeat] Initialised
+2026-05-27 09:49:06 | INFO     | core.engine | [Engine] Initialised | Paper=True
+2026-05-27 09:49:07 | INFO     | telegram.bot | [TGBot] Startup message sent
+2026-05-27 09:49:07 | INFO     | core.engine | [SignalLoop] Started
+2026-05-27 09:49:07 | WARNING  | core.risk_engine | [RISK] BLOCKED — SL cooldown active: 17m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 09:49:07 | INFO     | core.engine | [SignalLoop] Risk gate blocked: SL cooldown active: 17m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 09:49:07 | INFO     | core.engine | [Engine] Started thread: SignalLoop
+2026-05-27 09:49:07 | INFO     | core.engine | [TrackerLoop] Started
+2026-05-27 09:49:07 | INFO     | core.engine | [Engine] Started thread: TrackerLoop
+2026-05-27 09:49:07 | INFO     | core.engine | [TGPoller] Started
+2026-05-27 09:49:07 | INFO     | core.engine | [Engine] Started thread: TGPoller
+2026-05-27 09:49:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 09:51:43 | INFO     | __main__ | [MAIN] Starting TradingEngine (single-process, 3-thread)
+2026-05-27 09:51:43 | INFO     | __main__ | [MAIN] Mode: PAPER
+2026-05-27 09:51:43 | INFO     | __main__ | [MAIN] Base directory: C:\Users\siddh\Downloads\HK\TradingBot
+2026-05-27 09:51:43 | INFO     | __main__ | [MAIN] Dashboard starting on http://localhost:5050
+
+============================================================
+   AI INTRADAY TRADING SYSTEM  (Rebuilt 2026-05-27)
+   Mode     : PAPER TRADING
+   Root     : C:\Users\siddh\Downloads\HK\TradingBot
+   Data     : yfinance + NSE API (no browser required)
+   UX       : Telegram inline keyboard approvals
+   Targets  : T1=25 T2=40 T3=60 T4=85 T5=110 ... (+25 each)
+   Trailing : SL -> breakeven after T1, trails each milestone
+   Dashboard: http://localhost:5050
+============================================================
+
+ * Serving Flask app 'dashboard.server'
+ * Debug mode: off
+2026-05-27 09:51:43 | INFO     | core.trade_manager | [TradeManager] Loaded state | id= status=IDLE
+2026-05-27 09:51:43 | INFO     | core.trade_manager | [TradeManager] Initialised | status=IDLE
+2026-05-27 09:51:43 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 09:51:43 | INFO     | core.signal_engine | [SignalEngine] Initialised | TF weights: align=50 vwap=25 ema=25 | Thresholds: VH=85 H=70 M=45
+2026-05-27 09:51:43 | INFO     | core.risk_engine | [RISK] RiskEngine initialized | date=2026-05-27 | trades=0 | pnl=-15.3pts | consec_losses=1
+2026-05-27 09:51:43 | INFO     | analytics.logger | [AnalyticsLogger] Initialised | decisions=C:\Users\siddh\Downloads\HK\TradingBot\decisions trades=C:\Users\siddh\Downloads\HK\TradingBot\trades
+2026-05-27 09:51:43 | INFO     | telegram.bot | [TGBot] Initialised | chat_id=8331670846 paper=True
+2026-05-27 09:51:43 | INFO     | telegram.heartbeat | [Heartbeat] Initialised
+2026-05-27 09:51:43 | INFO     | core.engine | [Engine] Initialised | Paper=True
+2026-05-27 09:51:44 | INFO     | telegram.bot | [TGBot] Startup message sent
+2026-05-27 09:51:44 | INFO     | core.engine | [SignalLoop] Started
+2026-05-27 09:51:44 | WARNING  | core.risk_engine | [RISK] BLOCKED — SL cooldown active: 14m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 09:51:44 | INFO     | core.engine | [SignalLoop] Risk gate blocked: SL cooldown active: 14m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 09:51:44 | INFO     | core.engine | [Engine] Started thread: SignalLoop
+2026-05-27 09:51:44 | INFO     | core.engine | [TrackerLoop] Started
+2026-05-27 09:51:44 | INFO     | core.engine | [Engine] Started thread: TrackerLoop
+2026-05-27 09:51:44 | INFO     | core.engine | [TGPoller] Started
+2026-05-27 09:51:44 | INFO     | core.engine | [Engine] Started thread: TGPoller
+2026-05-27 09:52:03 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 09:52:33 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 09:53:03 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 09:53:33 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 09:54:03 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 09:54:33 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 09:55:03 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 09:56:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 09:56:47 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 09:56:47 | WARNING  | core.risk_engine | [RISK] BLOCKED — SL cooldown active: 9m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 09:56:47 | INFO     | core.engine | [SignalLoop] Risk gate blocked: SL cooldown active: 9m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 09:57:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 09:58:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 09:59:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:00:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:01:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:01:51 | WARNING  | core.risk_engine | [RISK] BLOCKED — SL cooldown active: 4m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 10:01:51 | INFO     | core.engine | [SignalLoop] Risk gate blocked: SL cooldown active: 4m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 10:01:52 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:02:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:03:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:04:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:05:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:06:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:06:54 | INFO     | core.engine | [SignalLoop] Scanning for signal...
+2026-05-27 10:06:56 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=1/3 | 5m:BULLISH | 15m:SIDEWAYS | 1h:SIDEWAYS
+2026-05-27 10:06:56 | INFO     | core.signal_engine | [SignalEngine] Base score: 64 (TF=50 + VWAP=6 + EMA=8)
+2026-05-27 10:06:56 | INFO     | core.oi_analysis | [OI] Fetching fresh option chain data...
+2026-05-27 10:06:56 | WARNING  | core.oi_analysis | [OI] NSE session init returned 403
+2026-05-27 10:06:56 | INFO     | core.oi_analysis | [OI] Falling back to page scrape...
+2026-05-27 10:06:56 | WARNING  | core.oi_analysis | [OI] NSE session init returned 403
+2026-05-27 10:06:56 | WARNING  | core.oi_analysis | [OI] Could not find embedded JSON in page
+2026-05-27 10:06:56 | WARNING  | core.oi_analysis | [OI] Option chain unavailable — returning 0 adjustment
+2026-05-27 10:06:56 | INFO     | core.news_sentiment | [SENTIMENT] Fetching all sentiment sources...
+2026-05-27 10:06:57 | INFO     | core.news_sentiment | [SENTIMENT][VIX] India VIX = 15.68
+2026-05-27 10:06:57 | INFO     | core.news_sentiment | [SENTIMENT][US] ES=F change = 0.01%
+2026-05-27 10:06:57 | WARNING  | core.news_sentiment | [SENTIMENT][RSS] ET Markets failed: syntax error: line 1, column 15
+2026-05-27 10:06:57 | INFO     | core.news_sentiment | [SENTIMENT][RSS] Total headlines collected: 14
+2026-05-27 10:06:58 | INFO     | core.news_sentiment | [SENTIMENT][GNEWS] 15 headlines fetched
+2026-05-27 10:06:58 | INFO     | core.news_sentiment | [SENTIMENT][HEADLINES] bull=9 bear=4 mood=BULLISH signal=BULLISH
+2026-05-27 10:06:58 | INFO     | core.news_sentiment | [SENTIMENT] VIX=15.7(+0)  Futures=+0.01%(+0)  Sent=BULLISH(+3)  TOTAL=+3
+2026-05-27 10:06:58 | INFO     | core.signal_engine | [SignalEngine] Final score: 67 (base=64 OI=+0 sent=+3) → MEDIUM
+2026-05-27 10:06:58 | INFO     | core.engine | [SignalLoop] SIGNAL | BUY 23900 CE | score=67 | MEDIUM
+2026-05-27 10:06:59 | INFO     | telegram.bot | [TGBot] Signal request sent | msg_id=212
+2026-05-27 10:06:59 | INFO     | core.trade_manager | [TradeManager] PENDING | id=20260527_100659 dir=BULLISH entry=23912.60 SL=23897.60 lots=1
+2026-05-27 10:06:59 | INFO     | core.engine | [SignalLoop] PENDING trade opened | lots=1
+2026-05-27 10:07:47 | INFO     | core.engine | [TGPoller] Callback: APPROVE
+2026-05-27 10:07:47 | INFO     | core.trade_manager | [TradeManager] Trade APPROVED | id=20260527_100659 lots=1
+2026-05-27 10:07:48 | INFO     | telegram.bot | [TGBot] Trade open message sent | id=20260527_100659
+2026-05-27 10:08:00 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:08:04 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:08:07 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:08:07 | INFO     | core.engine | [TrackerLoop] OPEN | price=23910.45 entry=23912.60 P&L=-2.1pts SL=23897.60 last_milestone=T0
+2026-05-27 10:08:35 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:08:38 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:08:38 | INFO     | core.engine | [TrackerLoop] OPEN | price=23921.85 entry=23912.60 P&L=+9.2pts SL=23897.60 last_milestone=T0
+2026-05-27 10:09:05 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:09:09 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:09:09 | INFO     | core.engine | [TrackerLoop] OPEN | price=23921.85 entry=23912.60 P&L=+9.2pts SL=23897.60 last_milestone=T0
+2026-05-27 10:09:35 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:09:39 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:09:39 | INFO     | core.engine | [TrackerLoop] OPEN | price=23936.95 entry=23912.60 P&L=+24.4pts SL=23897.60 last_milestone=T0
+2026-05-27 10:10:05 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:10:10 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:10:10 | INFO     | core.engine | [TrackerLoop] OPEN | price=23936.95 entry=23912.60 P&L=+24.4pts SL=23897.60 last_milestone=T0
+2026-05-27 10:10:35 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:10:40 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:10:40 | INFO     | core.engine | [TrackerLoop] OPEN | price=23932.95 entry=23912.60 P&L=+20.4pts SL=23897.60 last_milestone=T0
+2026-05-27 10:11:05 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:11:11 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:11:11 | INFO     | core.engine | [TrackerLoop] OPEN | price=23931.60 entry=23912.60 P&L=+19.0pts SL=23897.60 last_milestone=T0
+2026-05-27 10:11:42 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:11:42 | INFO     | core.engine | [TrackerLoop] OPEN | price=23931.60 entry=23912.60 P&L=+19.0pts SL=23897.60 last_milestone=T0
+2026-05-27 10:12:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:12:13 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:12:13 | INFO     | core.engine | [TrackerLoop] OPEN | price=23935.10 entry=23912.60 P&L=+22.5pts SL=23897.60 last_milestone=T0
+2026-05-27 10:12:39 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:12:49 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:12:54 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:12:54 | INFO     | core.engine | [TrackerLoop] OPEN | price=23935.10 entry=23912.60 P&L=+22.5pts SL=23897.60 last_milestone=T0
+2026-05-27 10:13:19 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:13:25 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:13:25 | INFO     | core.engine | [TrackerLoop] OPEN | price=23931.70 entry=23912.60 P&L=+19.1pts SL=23897.60 last_milestone=T0
+2026-05-27 10:13:49 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:13:55 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:13:55 | INFO     | core.engine | [TrackerLoop] OPEN | price=23936.05 entry=23912.60 P&L=+23.5pts SL=23897.60 last_milestone=T0
+2026-05-27 10:14:19 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:14:26 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:14:26 | INFO     | core.engine | [TrackerLoop] OPEN | price=23936.05 entry=23912.60 P&L=+23.5pts SL=23897.60 last_milestone=T0
+2026-05-27 10:14:50 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:14:56 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:14:56 | INFO     | core.trade_manager | [TradeManager] T1 HIT @ 23942.50 | SL: 23897.60 → 23912.60 (+0 pts from entry)
+2026-05-27 10:14:56 | INFO     | core.engine | [TrackerLoop] T1 HIT @ 23942.50
+2026-05-27 10:14:57 | INFO     | telegram.bot | [TGBot] T1 hit message sent
+2026-05-27 10:15:22 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:15:28 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:15:28 | INFO     | core.engine | [TrackerLoop] OPEN | price=23942.50 entry=23912.60 P&L=+29.9pts SL=23912.60 last_milestone=T1
+2026-05-27 10:15:49 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:15:58 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:15:58 | INFO     | core.engine | [TrackerLoop] OPEN | price=23940.85 entry=23912.60 P&L=+28.2pts SL=23912.60 last_milestone=T1
+2026-05-27 10:16:19 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:16:29 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:16:29 | INFO     | core.engine | [TrackerLoop] OPEN | price=23940.85 entry=23912.60 P&L=+28.2pts SL=23912.60 last_milestone=T1
+2026-05-27 10:16:42 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:17:00 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:17:00 | INFO     | core.engine | [TrackerLoop] OPEN | price=23938.50 entry=23912.60 P&L=+25.9pts SL=23912.60 last_milestone=T1
+2026-05-27 10:17:13 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:17:31 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:17:31 | INFO     | core.engine | [TrackerLoop] OPEN | price=23950.05 entry=23912.60 P&L=+37.5pts SL=23912.60 last_milestone=T1
+2026-05-27 10:17:43 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:18:02 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:18:02 | INFO     | core.engine | [TrackerLoop] OPEN | price=23950.05 entry=23912.60 P&L=+37.5pts SL=23912.60 last_milestone=T1
+2026-05-27 10:18:12 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:18:34 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:18:34 | INFO     | core.trade_manager | [TradeManager] T2 HIT @ 23952.60 | SL: 23912.60 → 23937.60 (+25 pts from entry)
+2026-05-27 10:18:34 | INFO     | core.engine | [TrackerLoop] T2 HIT @ 23952.60
+2026-05-27 10:18:34 | INFO     | telegram.bot | [TGBot] T2 hit message sent
+2026-05-27 10:18:43 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:19:04 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:19:04 | INFO     | core.engine | [TrackerLoop] OPEN | price=23952.60 entry=23912.60 P&L=+40.0pts SL=23937.60 last_milestone=T2
+2026-05-27 10:19:12 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:19:35 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:19:35 | INFO     | core.engine | [TrackerLoop] OPEN | price=23952.80 entry=23912.60 P&L=+40.2pts SL=23937.60 last_milestone=T2
+2026-05-27 10:19:43 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:20:06 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:20:06 | INFO     | core.engine | [TrackerLoop] OPEN | price=23952.80 entry=23912.60 P&L=+40.2pts SL=23937.60 last_milestone=T2
+2026-05-27 10:20:13 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:20:37 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:20:37 | INFO     | core.engine | [TrackerLoop] OPEN | price=23953.05 entry=23912.60 P&L=+40.5pts SL=23937.60 last_milestone=T2
+2026-05-27 10:21:07 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:21:07 | INFO     | core.engine | [TrackerLoop] OPEN | price=23952.85 entry=23912.60 P&L=+40.2pts SL=23937.60 last_milestone=T2
+2026-05-27 10:21:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:21:39 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:21:39 | INFO     | core.engine | [TrackerLoop] OPEN | price=23952.85 entry=23912.60 P&L=+40.2pts SL=23937.60 last_milestone=T2
+2026-05-27 10:22:04 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:22:09 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:22:09 | INFO     | core.engine | [TrackerLoop] OPEN | price=23955.05 entry=23912.60 P&L=+42.5pts SL=23937.60 last_milestone=T2
+2026-05-27 10:22:12 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:22:40 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:22:40 | INFO     | core.engine | [TrackerLoop] OPEN | price=23955.05 entry=23912.60 P&L=+42.5pts SL=23937.60 last_milestone=T2
+2026-05-27 10:22:42 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:23:11 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:23:11 | INFO     | core.engine | [TrackerLoop] OPEN | price=23948.80 entry=23912.60 P&L=+36.2pts SL=23937.60 last_milestone=T2
+2026-05-27 10:23:13 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:23:42 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:23:42 | INFO     | core.engine | [TrackerLoop] OPEN | price=23948.80 entry=23912.60 P&L=+36.2pts SL=23937.60 last_milestone=T2
+2026-05-27 10:23:43 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:24:13 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:24:13 | INFO     | core.engine | [TrackerLoop] OPEN | price=23944.65 entry=23912.60 P&L=+32.1pts SL=23937.60 last_milestone=T2
+2026-05-27 10:24:44 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:24:44 | INFO     | core.engine | [TrackerLoop] OPEN | price=23957.00 entry=23912.60 P&L=+44.4pts SL=23937.60 last_milestone=T2
+2026-05-27 10:25:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:25:14 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:25:14 | INFO     | core.engine | [TrackerLoop] OPEN | price=23957.00 entry=23912.60 P&L=+44.4pts SL=23937.60 last_milestone=T2
+2026-05-27 10:25:45 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:25:45 | INFO     | core.engine | [TrackerLoop] OPEN | price=23957.55 entry=23912.60 P&L=+45.0pts SL=23937.60 last_milestone=T2
+2026-05-27 10:26:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:26:16 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:26:16 | INFO     | core.engine | [TrackerLoop] OPEN | price=23957.55 entry=23912.60 P&L=+45.0pts SL=23937.60 last_milestone=T2
+2026-05-27 10:26:46 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:26:46 | INFO     | core.engine | [TrackerLoop] OPEN | price=23961.80 entry=23912.60 P&L=+49.2pts SL=23937.60 last_milestone=T2
+2026-05-27 10:27:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:27:17 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:27:17 | INFO     | core.engine | [TrackerLoop] OPEN | price=23961.25 entry=23912.60 P&L=+48.7pts SL=23937.60 last_milestone=T2
+2026-05-27 10:27:48 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:27:48 | INFO     | core.engine | [TrackerLoop] OPEN | price=23961.25 entry=23912.60 P&L=+48.7pts SL=23937.60 last_milestone=T2
+2026-05-27 10:28:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:28:19 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:28:19 | INFO     | core.engine | [TrackerLoop] OPEN | price=23963.40 entry=23912.60 P&L=+50.8pts SL=23937.60 last_milestone=T2
+2026-05-27 10:28:50 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:28:50 | INFO     | core.engine | [TrackerLoop] OPEN | price=23963.40 entry=23912.60 P&L=+50.8pts SL=23937.60 last_milestone=T2
+2026-05-27 10:29:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:29:21 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:29:21 | INFO     | core.engine | [TrackerLoop] OPEN | price=23969.90 entry=23912.60 P&L=+57.3pts SL=23937.60 last_milestone=T2
+2026-05-27 10:29:53 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:29:53 | INFO     | core.engine | [TrackerLoop] OPEN | price=23969.90 entry=23912.60 P&L=+57.3pts SL=23937.60 last_milestone=T2
+2026-05-27 10:30:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:30:23 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:30:23 | INFO     | core.engine | [TrackerLoop] OPEN | price=23964.70 entry=23912.60 P&L=+52.1pts SL=23937.60 last_milestone=T2
+2026-05-27 10:30:54 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:30:54 | INFO     | core.engine | [TrackerLoop] OPEN | price=23964.70 entry=23912.60 P&L=+52.1pts SL=23937.60 last_milestone=T2
+2026-05-27 10:31:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:31:19 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:31:25 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:31:25 | INFO     | core.engine | [TrackerLoop] OPEN | price=23962.30 entry=23912.60 P&L=+49.7pts SL=23937.60 last_milestone=T2
+2026-05-27 10:31:43 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:31:57 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:31:57 | INFO     | core.engine | [TrackerLoop] OPEN | price=23953.75 entry=23912.60 P&L=+41.2pts SL=23937.60 last_milestone=T2
+2026-05-27 10:32:13 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:32:27 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:32:27 | INFO     | core.engine | [TrackerLoop] OPEN | price=23953.75 entry=23912.60 P&L=+41.2pts SL=23937.60 last_milestone=T2
+2026-05-27 10:32:58 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:32:58 | INFO     | core.engine | [TrackerLoop] OPEN | price=23956.00 entry=23912.60 P&L=+43.4pts SL=23937.60 last_milestone=T2
+2026-05-27 10:33:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:33:29 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:33:29 | INFO     | core.engine | [TrackerLoop] OPEN | price=23956.00 entry=23912.60 P&L=+43.4pts SL=23937.60 last_milestone=T2
+2026-05-27 10:34:00 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:34:00 | INFO     | core.engine | [TrackerLoop] OPEN | price=23958.00 entry=23912.60 P&L=+45.4pts SL=23937.60 last_milestone=T2
+2026-05-27 10:34:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:34:30 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:34:30 | INFO     | core.engine | [TrackerLoop] OPEN | price=23957.25 entry=23912.60 P&L=+44.7pts SL=23937.60 last_milestone=T2
+2026-05-27 10:35:02 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:35:02 | INFO     | core.engine | [TrackerLoop] OPEN | price=23957.25 entry=23912.60 P&L=+44.7pts SL=23937.60 last_milestone=T2
+2026-05-27 10:35:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:35:33 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:35:33 | INFO     | core.engine | [TrackerLoop] OPEN | price=23964.45 entry=23912.60 P&L=+51.9pts SL=23937.60 last_milestone=T2
+2026-05-27 10:36:04 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:36:04 | INFO     | core.engine | [TrackerLoop] OPEN | price=23964.45 entry=23912.60 P&L=+51.9pts SL=23937.60 last_milestone=T2
+2026-05-27 10:36:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:36:35 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:36:35 | INFO     | core.engine | [TrackerLoop] OPEN | price=23954.05 entry=23912.60 P&L=+41.5pts SL=23937.60 last_milestone=T2
+2026-05-27 10:37:05 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:37:05 | INFO     | core.engine | [TrackerLoop] OPEN | price=23954.05 entry=23912.60 P&L=+41.5pts SL=23937.60 last_milestone=T2
+2026-05-27 10:37:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:37:36 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:37:36 | INFO     | core.engine | [TrackerLoop] OPEN | price=23960.50 entry=23912.60 P&L=+47.9pts SL=23937.60 last_milestone=T2
+2026-05-27 10:38:07 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:38:07 | INFO     | core.engine | [TrackerLoop] OPEN | price=23960.50 entry=23912.60 P&L=+47.9pts SL=23937.60 last_milestone=T2
+2026-05-27 10:38:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:38:38 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:38:38 | INFO     | core.engine | [TrackerLoop] OPEN | price=23968.45 entry=23912.60 P&L=+55.9pts SL=23937.60 last_milestone=T2
+2026-05-27 10:39:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:39:09 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:39:09 | INFO     | core.engine | [TrackerLoop] OPEN | price=23954.50 entry=23912.60 P&L=+41.9pts SL=23937.60 last_milestone=T2
+2026-05-27 10:39:39 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:39:39 | INFO     | core.engine | [TrackerLoop] OPEN | price=23954.50 entry=23912.60 P&L=+41.9pts SL=23937.60 last_milestone=T2
+2026-05-27 10:40:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:40:10 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:40:10 | INFO     | core.engine | [TrackerLoop] OPEN | price=23958.35 entry=23912.60 P&L=+45.8pts SL=23937.60 last_milestone=T2
+2026-05-27 10:40:41 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:40:41 | INFO     | core.engine | [TrackerLoop] OPEN | price=23958.35 entry=23912.60 P&L=+45.8pts SL=23937.60 last_milestone=T2
+2026-05-27 10:41:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:41:12 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:41:12 | INFO     | core.engine | [TrackerLoop] OPEN | price=23955.10 entry=23912.60 P&L=+42.5pts SL=23937.60 last_milestone=T2
+2026-05-27 10:41:42 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=3/3 | 5m:BULLISH | 15m:BULLISH | 1h:BULLISH
+2026-05-27 10:41:42 | INFO     | core.engine | [TrackerLoop] OPEN | price=23955.10 entry=23912.60 P&L=+42.5pts SL=23937.60 last_milestone=T2
+2026-05-27 10:42:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:42:13 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:42:13 | INFO     | core.engine | [TrackerLoop] OPEN | price=23956.90 entry=23912.60 P&L=+44.3pts SL=23937.60 last_milestone=T2
+2026-05-27 10:42:43 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:42:43 | INFO     | core.engine | [TrackerLoop] OPEN | price=23946.80 entry=23912.60 P&L=+34.2pts SL=23937.60 last_milestone=T2
+2026-05-27 10:43:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:43:15 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:43:15 | INFO     | core.engine | [TrackerLoop] OPEN | price=23946.80 entry=23912.60 P&L=+34.2pts SL=23937.60 last_milestone=T2
+2026-05-27 10:43:45 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:43:45 | INFO     | core.engine | [TrackerLoop] OPEN | price=23946.50 entry=23912.60 P&L=+33.9pts SL=23937.60 last_milestone=T2
+2026-05-27 10:44:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:44:17 | INFO     | core.data_engine | [DataEngine] MTF | Dir=SIDEWAYS | Align=0/3 | 5m:SIDEWAYS | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:44:17 | INFO     | core.engine | [TrackerLoop] OPEN | price=23946.50 entry=23912.60 P&L=+33.9pts SL=23937.60 last_milestone=T2
+2026-05-27 10:44:47 | INFO     | core.data_engine | [DataEngine] MTF | Dir=SIDEWAYS | Align=0/3 | 5m:SIDEWAYS | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-27 10:44:47 | INFO     | core.trade_manager | [TradeManager] CLOSED | reason=SL_HIT @ 23936.50 pnl=23.90 pts / ₹896
+2026-05-27 10:44:47 | INFO     | core.engine | [TrackerLoop] Trade CLOSED | action=SL_HIT
+2026-05-27 10:44:48 | INFO     | telegram.bot | [TGBot] Trade close sent | id=20260527_100659 pnl=23.9pts ₹896
+2026-05-27 10:44:48 | INFO     | analytics.logger | [AnalyticsLogger] Trade logged | id=20260527_100659 pnl=23.9pts ₹896
+2026-05-27 10:44:48 | INFO     | core.risk_engine | [RISK] SL hit — cooldown set until 11:14 | direction=BULLISH | HIGH conf or reversal will bypass
+2026-05-27 10:44:48 | INFO     | core.risk_engine | [RISK] Trade closed | outcome=SL HIT | pts=+23.90 | daily_pnl=8.6pts (~Rs.0 loss) | consec_losses=2
+2026-05-27 10:44:48 | INFO     | core.trade_manager | [TradeManager] State reset to IDLE
+2026-05-27 10:45:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:46:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:47:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:47:22 | WARNING  | core.risk_engine | [RISK] BLOCKED — SL cooldown active: 27m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 10:47:22 | INFO     | core.engine | [SignalLoop] Risk gate blocked: SL cooldown active: 27m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 10:48:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:48:20 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:49:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:50:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:51:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:52:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:52:24 | WARNING  | core.risk_engine | [RISK] BLOCKED — SL cooldown active: 22m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 10:52:24 | INFO     | core.engine | [SignalLoop] Risk gate blocked: SL cooldown active: 22m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 10:53:07 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:53:12 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:53:33 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:53:43 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:54:13 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:55:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:56:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:57:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:57:27 | WARNING  | core.risk_engine | [RISK] BLOCKED — SL cooldown active: 17m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 10:57:27 | INFO     | core.engine | [SignalLoop] Risk gate blocked: SL cooldown active: 17m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 10:58:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:58:36 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 10:59:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:00:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:01:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:01:24 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:01:42 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:02:13 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:02:29 | WARNING  | core.risk_engine | [RISK] BLOCKED — SL cooldown active: 12m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 11:02:29 | INFO     | core.engine | [SignalLoop] Risk gate blocked: SL cooldown active: 12m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 11:02:43 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:03:39 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:04:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:05:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:06:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:07:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:07:31 | WARNING  | core.risk_engine | [RISK] BLOCKED — SL cooldown active: 7m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 11:07:31 | INFO     | core.engine | [SignalLoop] Risk gate blocked: SL cooldown active: 7m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 11:08:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:08:42 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:09:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:10:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:11:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:12:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:12:34 | WARNING  | core.risk_engine | [RISK] BLOCKED — SL cooldown active: 2m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 11:12:34 | INFO     | core.engine | [SignalLoop] Risk gate blocked: SL cooldown active: 2m remaining (same direction as last SL). HIGH confidence or direction reversal will bypass this.
+2026-05-27 11:13:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:13:46 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:14:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:15:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:16:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:17:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:17:36 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 11:17:36 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 11:18:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:18:50 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:19:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:20:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:21:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:22:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:22:38 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 11:22:38 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 11:23:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:23:53 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:24:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:25:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:26:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:27:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:27:40 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 11:27:40 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 11:28:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:29:06 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:29:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:29:58 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:30:13 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:30:43 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:32:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:32:43 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 11:32:43 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 11:33:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:34:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:34:09 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:35:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:36:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:37:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:37:45 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 11:37:45 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 11:38:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:39:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:39:22 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:40:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:41:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:42:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:42:45 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:42:47 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 11:42:47 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 11:42:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:43:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:43:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:44:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:44:25 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:44:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:45:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:45:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:46:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:46:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:47:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:47:49 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 11:47:49 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 11:48:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:49:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:49:38 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:50:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:51:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:52:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:52:52 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 11:52:52 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 11:53:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:54:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:54:41 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:55:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:56:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:57:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:57:54 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 11:57:54 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 11:58:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:59:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 11:59:55 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:00:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:01:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:02:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:02:56 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:02:56 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:03:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:04:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:04:58 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:05:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:06:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:07:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:07:58 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:07:58 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:08:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:09:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:10:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:10:11 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:11:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:12:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:13:01 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:13:01 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:13:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:14:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:15:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:15:14 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:16:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:17:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:18:03 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:18:03 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:18:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:19:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:20:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:20:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:21:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:22:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:23:05 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:23:05 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:23:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:24:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:25:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:25:31 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:26:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:27:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:28:08 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:28:08 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:28:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:28:46 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:28:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:29:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:29:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:30:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:30:34 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:30:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:31:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:31:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:32:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:32:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:33:10 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:33:10 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:33:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:33:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:34:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:34:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:35:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:35:37 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:35:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:36:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:37:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:38:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:38:12 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:38:12 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:39:07 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:39:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:39:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:40:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:40:41 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:40:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:41:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:41:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:42:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:42:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:43:15 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:43:15 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:43:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:43:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:45:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:45:44 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:46:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:47:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:48:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:48:17 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:48:17 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:49:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:50:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:50:47 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:51:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:52:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:53:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:53:19 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:53:19 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:54:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:55:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:55:51 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:56:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:57:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:58:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 12:58:22 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:58:22 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 12:59:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:00:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:00:54 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:01:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:02:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:03:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:03:24 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:03:24 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:04:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:05:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:05:57 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:06:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:07:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:08:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:08:26 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:08:26 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:09:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:10:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:11:01 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:11:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:12:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:13:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:13:29 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:13:29 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:14:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:15:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:16:05 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:16:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:17:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:18:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:18:32 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:18:32 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:19:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:20:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:21:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:21:09 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:22:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:23:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:23:36 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:23:36 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:24:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:25:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:26:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:26:13 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:27:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:28:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:28:39 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:28:39 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:29:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:30:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:31:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:31:17 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:32:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:33:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:33:42 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:33:42 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:34:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:35:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:36:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:36:21 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:37:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:38:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:38:45 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:38:45 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:39:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:40:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:41:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:41:25 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:42:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:43:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:43:49 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:43:49 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:44:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:45:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:46:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:46:29 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:47:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:48:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:48:51 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:48:51 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:49:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:50:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:50:38 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:50:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:51:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:51:33 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:51:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:52:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:52:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:53:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:53:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:53:55 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:53:55 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:54:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:54:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:55:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:55:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:56:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:56:37 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:56:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:57:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:57:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:58:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:58:48 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 13:58:59 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:58:59 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 13:59:18 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:00:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:01:09 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:01:43 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']

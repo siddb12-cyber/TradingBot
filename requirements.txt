@@ -1,57 +1,38 @@
 # TradingBot — Python Dependencies
-# Install: pip install -r requirements.txt --break-system-packages
+# Install: pip install -r requirements.txt
 
 # =========================
-# MARKET DATA (API-based — replaces TradingView + OCR)
+# MARKET DATA
 # =========================
 yfinance>=0.2.38
 pandas>=2.0.0
 
 # =========================
-# BROWSER AUTOMATION (Groww execution only — not required in paper mode)
-# =========================
-playwright>=1.40.0
-
-# =========================
-# OCR (backward compat — not used in new trading_engine.py pipeline)
-# =========================
-pytesseract>=0.3.10
-Pillow>=10.0.0
-
-# =========================
-# EXCEL / TRADE LOGS
-# =========================
-openpyxl>=3.1.0
-
-# =========================
-# HTTP (NSE API, Telegram inline keyboard)
+# HTTP — NSE API + Telegram
 # =========================
 requests>=2.31.0
 
 # =========================
-# ENVIRONMENT CONFIGURATION
+# ENVIRONMENT
 # =========================
 python-dotenv>=1.0.0
 
 # =========================
-# TELEGRAM BOT
-# =========================
-pyTelegramBotAPI>=4.14.0
-
-# =========================
-# RSS / NEWS SENTIMENT ENGINE
+# RSS / NEWS SENTIMENT
 # =========================
 feedparser>=6.0.0
-
-# =========================
-# SCHEDULING
-# =========================
-schedule>=1.2.0
-
-# Standard lib: subprocess, threading, json, pathlib, datetime, logging, dataclasses, enum
 
 # =========================
 # DASHBOARD SERVER
 # =========================
 flask>=3.0.0
 flask-cors>=4.0.0
+
+# =========================
+# WINDOWS SYSTEM TRAY APP
+# =========================
+pystray>=0.19.4         # System tray icon
+Pillow>=10.0.0          # Icon rendering (also used by pystray)
+winotify>=1.1.0         # Windows 10/11 toast notifications
+
+# Standard lib used: threading, json, pathlib, datetime, logging, dataclasses, webbrowser, os

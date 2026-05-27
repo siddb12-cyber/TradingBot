@@ -1,0 +1,48 @@
+[
+  {
+    "trade_id": "20260527_093305",
+    "open_time": "2026-05-27T09:33:16.369670",
+    "close_time": "2026-05-27T09:36:24.260127",
+    "close_reason": "SL_HIT @ 23887.15",
+    "status": "CLOSED_SL",
+    "direction": "BEARISH",
+    "signal_text": "BUY 23850 PE",
+    "confidence": 89,
+    "lots": 2,
+    "entry_price": 23871.85,
+    "close_price": 23887.15,
+    "initial_sl": 23886.85,
+    "final_sl": 23886.85,
+    "last_milestone": 0,
+    "milestones_hit": [],
+    "milestone_prices": {},
+    "pnl_points": -15.3,
+    "pnl_inr": -1147.5
+  },
+  {
+    "trade_id": "20260527_100659",
+    "open_time": "2026-05-27T10:07:47.936849",
+    "close_time": "2026-05-27T10:44:47.500962",
+    "close_reason": "SL_HIT @ 23936.50",
+    "status": "CLOSED_SL",
+    "direction": "BULLISH",
+    "signal_text": "BUY 23900 CE",
+    "confidence": 67,
+    "lots": 1,
+    "entry_price": 23912.6,
+    "close_price": 23936.5,
+    "initial_sl": 23897.6,
+    "final_sl": 23937.6,
+    "last_milestone": 2,
+    "milestones_hit": [
+      1,
+      2
+    ],
+    "milestone_prices": {
+      "T1": 23942.5,
+      "T2": 23952.6
+    },
+    "pnl_points": 23.9,
+    "pnl_inr": 896.25
+  }
+]

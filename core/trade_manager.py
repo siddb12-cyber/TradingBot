@@ -51,6 +51,10 @@ from config.settings import (
     EOD_CLOSE_HOUR,
     EOD_CLOSE_MINUTE,
     REVERSAL_REQUIRE_EMA_CONFIRM,
+    SL_AFTER_T1_OFFSET,
+    BOOKING_FRACTION,
+    NIFTY_LOT_SIZE,
+    OPTION_DELTA,
 )
 
 logger = logging.getLogger(__name__)
@@ -113,6 +117,11 @@ class TradeRecord:
     # P&L (paper)
     pnl_points:      float          = 0.0   # Points captured (positive = profit)
     pnl_inr:         float          = 0.0   # Estimated INR P&L
+
+    # Per-milestone booking breakdown (informational analytics)
+    # Key: "T1", "T2", etc.
+    # Value: {"pts": 25, "fraction": 0.333, "lots_booked": 0.67, "inr": 625.0, "price": 23846.85}
+    milestone_bookings: Dict        = field(default_factory=dict)
 
 
 # =============================================================================
@@ -409,11 +418,11 @@ class TradeManager:
         self._trade.target_sequence[f"T{n}"] = price
 
         # ── Trailing SL update ────────────────────────────────────────────────
-        # After T1 → SL to breakeven (entry)
-        # After T2 → SL to T1 level
+        # After T1 → SL to entry + SL_AFTER_T1_OFFSET (BE+15, locks in min profit)
+        # After T2 → SL to T1 level  (entry + 25)
         # After Tn → SL to T(n-1) level
         if n == 1:
-            new_sl_offset = 0       # Breakeven
+            new_sl_offset = SL_AFTER_T1_OFFSET   # +15 above entry (not just breakeven)
         else:
             new_sl_offset = get_target_points(n - 1)
 
@@ -425,18 +434,42 @@ class TradeManager:
         old_sl = self._trade.sl_price
         self._trade.sl_price = new_sl
 
+        # ── Partial booking analytics ──────────────────────────────────────────
+        # T1 and T2: track 1/3 position booking for display purposes
+        # T3+: no further booking recorded — remainder runs with trailing SL
+        if n <= 2:
+            fraction    = BOOKING_FRACTION          # 1/3
+            lots_booked = round(self._trade.lots * fraction, 4)
+            booking_inr = round(pts * OPTION_DELTA * NIFTY_LOT_SIZE * lots_booked, 2)
+        else:
+            fraction    = 0.0
+            lots_booked = 0.0
+            booking_inr = 0.0
+
+        self._trade.milestone_bookings[f"T{n}"] = {
+            "pts":         pts,
+            "fraction":    round(fraction, 3),
+            "lots_booked": lots_booked,
+            "inr":         booking_inr,
+            "price":       price,
+        }
+
         self._save()
 
         logger.info(
-            "[TradeManager] T%d HIT @ %.2f | SL: %.2f → %.2f (+%d pts from entry)",
-            n, price, old_sl, new_sl, new_sl_offset,
+            "[TradeManager] T%d HIT @ %.2f | SL: %.2f → %.2f (offset +%d) | booked %.4f lots ₹%.0f",
+            n, price, old_sl, new_sl, new_sl_offset, lots_booked, booking_inr,
         )
         return {
-            "action":   "TARGET_HIT",
-            "target_n": n,
-            "message":  (
+            "action":            "TARGET_HIT",
+            "target_n":          n,
+            "new_sl":            new_sl,
+            "new_sl_offset":     new_sl_offset,
+            "lots_booked":       lots_booked,
+            "booking_inr":       booking_inr,
+            "message":           (
                 f"T{n} HIT @ {price:.2f} | new SL={new_sl:.2f} | "
-                f"pts from entry={pts}"
+                f"pts from entry={pts} | booked {lots_booked:.2f} lots ₹{booking_inr:.0f}"
             ),
         }
 

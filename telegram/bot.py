@@ -260,36 +260,68 @@ class TelegramBot:
     # =========================================================================
 
     def send_target_hit(self, trade: Any, n: int, price: float) -> None:
-        """Send notification when target Tn is hit."""
-        from config.settings import get_target_points, NIFTY_LOT_SIZE, OPTION_DELTA
+        """Send notification when target Tn is hit — with full booking breakdown."""
+        from config.settings import (
+            get_target_points, NIFTY_LOT_SIZE, OPTION_DELTA,
+            SL_AFTER_T1_OFFSET, BOOKING_FRACTION,
+        )
 
         pts         = get_target_points(n)
         pts_per_lot = NIFTY_LOT_SIZE * OPTION_DELTA
-        inr_this    = pts * pts_per_lot * trade.lots
 
-        # Trailing SL level
+        # ── New SL level ──────────────────────────────────────────────────────
         if n == 1:
-            trailing_sl_pts = 0       # Breakeven
-            trailing_note   = "Breakeven"
+            new_sl_offset = SL_AFTER_T1_OFFSET
+            sl_note       = f"BE+{SL_AFTER_T1_OFFSET}pts (min profit locked)"
         else:
-            from config.settings import get_target_points as gtp
-            trailing_sl_pts = gtp(n - 1)
-            trailing_note   = f"T{n-1} level (+{trailing_sl_pts}pts)"
+            new_sl_offset = get_target_points(n - 1)
+            sl_note       = f"T{n-1} level (+{new_sl_offset}pts)"
 
         new_sl = (
-            trade.entry_price + trailing_sl_pts if trade.direction == "BULLISH"
-            else trade.entry_price - trailing_sl_pts
+            trade.entry_price + new_sl_offset if trade.direction == "BULLISH"
+            else trade.entry_price - new_sl_offset
         )
 
-        # Partial booking text
-        if n == 1:
-            booking_note = "Book ⅓ position"
-        elif n == 2:
-            booking_note = "Book another ⅓"
-        elif n == 3:
-            booking_note = "Book remaining ⅓ — or hold for momentum"
+        # ── Booking breakdown ─────────────────────────────────────────────────
+        booking_lines = []
+        cumulative_inr = 0.0
+        for i in range(1, n + 1):
+            bk = (trade.milestone_bookings or {}).get(f"T{i}", {})
+            b_pts  = bk.get("pts", get_target_points(i))
+            b_lots = bk.get("lots_booked", 0.0)
+            b_inr  = bk.get("inr", 0.0)
+            b_prc  = bk.get("price", 0.0)
+            if b_lots > 0:
+                cumulative_inr += b_inr
+                booking_lines.append(
+                    f"  T{i} @ {b_prc:.2f}  +{b_pts}pts  "
+                    f"{b_lots:.2f} lots  ₹{b_inr:,.0f}"
+                )
+
+        if booking_lines:
+            booking_block = "\n".join(booking_lines)
+            booking_section = (
+                f"━━━━━━━━━━━━━━━━━━━━━\n"
+                f"📊 <b>Booking Breakdown (⅓ per target)</b>\n"
+                f"{booking_block}\n"
+                f"  Cumulative booked  : ₹{cumulative_inr:,.0f}\n"
+            )
         else:
-            booking_note = f"Virtual T{n} — riding momentum"
+            total_inr = pts * pts_per_lot * trade.lots
+            booking_section = (
+                f"━━━━━━━━━━━━━━━━━━━━━\n"
+                f"📊 Virtual T{n} — full position running\n"
+                f"  P&amp;L if closed now : ₹{total_inr:,.0f}\n"
+            )
+
+        # Running remainder info
+        booked_fractions = sum(
+            1 for i in range(1, n + 1)
+            if (trade.milestone_bookings or {}).get(f"T{i}", {}).get("lots_booked", 0) > 0
+        )
+        booked_pct   = min(booked_fractions * 33, 100)
+        running_pct  = 100 - booked_pct
+        running_lots = round(trade.lots * running_pct / 100, 2)
 
         text = (
             f"{_TGT} <b>TARGET T{n} HIT!</b>\n"
@@ -297,15 +329,16 @@ class TelegramBot:
             f"Signal      : {trade.signal_text}\n"
             f"Entry       : {trade.entry_price:.2f}\n"
             f"T{n} Price  : {price:.2f}  (+{pts}pts)\n"
-            f"≈ ₹{inr_this:.0f} per lot\n"
+            f"Lots        : {trade.lots}\n"
+            f"{booking_section}"
             f"━━━━━━━━━━━━━━━━━━━━━\n"
-            f"{_CHECK} Action    : {booking_note}\n"
-            f"Trailing SL : {new_sl:.2f}  ({trailing_note})\n"
+            f"🛡️ <b>SL Updated</b>\n"
+            f"  {trade.sl_price:.2f} → <b>{new_sl:.2f}</b>  ({sl_note})\n"
             f"━━━━━━━━━━━━━━━━━━━━━\n"
-            f"Holding remainder for T{n+1}... 🚀"
+            f"📈 Running {running_lots} lots for T{n+1}+ 🚀"
         )
         self.send_text(text)
-        logger.info("[TGBot] T%d hit message sent", n)
+        logger.info("[TGBot] T%d hit message sent | booked_cumulative=₹%.0f", n, cumulative_inr)
 
     # =========================================================================
     # TRADE CLOSE
@@ -335,6 +368,21 @@ class TelegramBot:
             if trade.milestones_hit else "None"
         )
 
+        # Per-milestone booking breakdown for close summary
+        booking_lines = []
+        total_booked_inr = 0.0
+        for key, bk in sorted((trade.milestone_bookings or {}).items()):
+            b_inr  = bk.get("inr", 0.0)
+            b_lots = bk.get("lots_booked", 0.0)
+            b_pts  = bk.get("pts", 0)
+            b_prc  = bk.get("price", 0.0)
+            if b_lots > 0:
+                total_booked_inr += b_inr
+                booking_lines.append(
+                    f"  {key}: {b_lots:.2f} lots @ +{b_pts}pts @ {b_prc:.2f} = ₹{b_inr:,.0f}"
+                )
+        booking_detail = ("\n" + "\n".join(booking_lines)) if booking_lines else "  None"
+
         # Duration
         try:
             open_dt  = datetime.fromisoformat(trade.open_time)
@@ -355,8 +403,10 @@ class TelegramBot:
             f"Duration    : {duration}\n"
             f"Lots        : {trade.lots}\n"
             f"━━━━━━━━━━━━━━━━━━━━━\n"
-            f"P&L         : <b>{pnl_pts:+.1f} pts  ≈ ₹{pnl_inr:+.0f}</b>\n"
+            f"P&amp;L (total) : <b>{pnl_pts:+.1f} pts  ≈ ₹{pnl_inr:+.0f}</b>\n"
             f"Milestones  : {milestones_str}\n"
+            f"━━━━━━━━━━━━━━━━━━━━━\n"
+            f"📊 <b>Booking Breakdown</b>{booking_detail}\n"
             f"━━━━━━━━━━━━━━━━━━━━━\n"
             f"{_PAPER} PAPER TRADE"
         )

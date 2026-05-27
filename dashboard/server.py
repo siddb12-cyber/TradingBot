@@ -7,18 +7,14 @@ Serves a single-page HTML dashboard on http://localhost:5050
 
 Endpoints
 ---------
-  GET /               → Serve dashboard/index.html
-  GET /api/trades     → JSON list of closed trades (filtered by period)
-  GET /api/decisions  → JSON list of signal decisions
-  GET /api/live       → JSON current trade state + NIFTY price
-  GET /api/stats      → JSON summary stats (win rate, P&L, streaks)
+  GET /               -> Serve dashboard/index.html
+  GET /api/trades     -> JSON list of closed trades (filtered by period)
+  GET /api/decisions  -> JSON list of signal decisions
+  GET /api/live       -> JSON current trade state + NIFTY price
+  GET /api/stats      -> JSON summary stats (win rate, P&L, streaks)
 
-Usage
------
-  python dashboard/server.py          → starts server on port 5050
-  Double-click: dashboard/start_dashboard.bat
-
-Run alongside the main bot — it's a separate lightweight process.
+Started automatically by main.py in a background daemon thread.
+Can also be run standalone: python dashboard/server.py
 """
 
 import json
@@ -36,7 +32,6 @@ from flask import Flask, jsonify, send_from_directory, request
 from flask_cors import CORS
 
 from config.settings import DECISIONS_DIR, TRADES_DIR, DATA_DIR, BASE_DIR
-from core.trade_manager import TradeRecord
 
 # =============================================================================
 # FLASK APP
@@ -98,7 +93,6 @@ def _parse_period(period: str):
         start = today.replace(month=1, day=1)
         return start, today
     else:
-        # Default: last 30 days
         return today - timedelta(days=30), today
 
 
@@ -122,15 +116,12 @@ def _compute_stats(trades: List[Dict]) -> Dict:
     total_pnl_pts = sum(pnl_list)
     total_pnl_inr = sum(t.get("pnl_inr", 0) for t in trades)
 
-    # Milestone distribution
     def _milestone_count(n: int) -> int:
         return sum(1 for t in trades if n in (t.get("milestones_hit") or []))
 
-    # Reason distribution
     def _reason_count(keyword: str) -> int:
         return sum(1 for t in trades if keyword in (t.get("close_reason") or ""))
 
-    # Streak calc
     max_c_wins = max_c_losses = cur_w = cur_l = 0
     for p in pnl_list:
         if p > 0:
@@ -198,13 +189,11 @@ def api_live():
         except Exception:
             pass
 
-    # Get live price (best effort)
+    # get_live_price() returns Optional[float] directly
     live_price = None
     try:
         from core.data_engine import DataEngine
-        de = DataEngine()
-        pd = de.get_live_price()
-        live_price = pd.get("price")
+        live_price = DataEngine().get_live_price()
     except Exception:
         pass
 
@@ -222,7 +211,7 @@ def api_stats():
 
 
 # =============================================================================
-# ENTRY POINT
+# ENTRY POINT (standalone use)
 # =============================================================================
 
 if __name__ == "__main__":

@@ -116,6 +116,14 @@ def get_target_points(n: int) -> int:
 #   2. Price is below EMA9 (for long) or above EMA9 (for short)
 REVERSAL_REQUIRE_EMA_CONFIRM: bool = True  # Require EMA9 confirmation for reversal
 
+# After T1 hit, SL moves to entry + this offset (not just breakeven)
+# BULLISH: entry + 15,  BEARISH: entry - 15  → locks in +15pts minimum
+SL_AFTER_T1_OFFSET: int = 15
+
+# Partial booking fractions (informational analytics — no real execution)
+# T1: show 1/3 booked, T2: show 1/3 booked, T3+: remainder runs with trailing SL
+BOOKING_FRACTION: float = 1 / 3
+
 # =============================================================================
 # RISK ENGINE
 # =============================================================================
