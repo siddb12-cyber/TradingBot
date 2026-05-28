@@ -9,8 +9,8 @@ No external timezone library is required — keep dependencies minimal.
 Public API:
     is_market_open()           → bool   True if inside NSE trading hours
     is_eod_close_time()        → bool   True at 15:29 IST (auto-close window)
-    is_trading_day()           → bool   True if today is Mon–Fri
-    next_market_open_dt()      → datetime  Next 09:15 on a trading day
+    is_trading_day()           → bool   True if today is Mon–Fri (excl. NSE holidays)
+    next_market_open_dt()      → datetime  Next 09:15 on a trading day (holiday-aware)
     seconds_until_next_open()  → int    Seconds to sleep until next open
     log_market_closed_reason() → None   Logs why market is closed + wait time
 
@@ -25,7 +25,7 @@ Usage:
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, date, timedelta
 
 from config.settings import (
     MARKET_OPEN_HOUR, MARKET_OPEN_MINUTE,
@@ -45,6 +45,55 @@ logger = logging.getLogger(__name__)
 
 # weekday() values: Monday=0 … Friday=4
 _TRADING_DAYS: frozenset = frozenset({0, 1, 2, 3, 4})
+
+# =========================
+# NSE HOLIDAY CALENDAR
+# Source: NSE India official holiday list
+# Update this list each year in January.
+# =========================
+
+_NSE_HOLIDAYS: frozenset = frozenset({
+    # ── 2025 ──────────────────────────────────────────────────────────────────
+    date(2025, 1, 26),   # Republic Day
+    date(2025, 2, 26),   # Mahashivratri
+    date(2025, 3, 14),   # Holi
+    date(2025, 3, 31),   # Id-Ul-Fitr (Ramadan Eid)
+    date(2025, 4, 10),   # Shri Ram Navami
+    date(2025, 4, 14),   # Dr. Baba Saheb Ambedkar Jayanti
+    date(2025, 4, 18),   # Good Friday
+    date(2025, 5, 1),    # Maharashtra Day
+    date(2025, 8, 15),   # Independence Day
+    date(2025, 8, 27),   # Ganesh Chaturthi
+    date(2025, 10, 2),   # Mahatma Gandhi Jayanti / Dussehra
+    date(2025, 10, 20),  # Diwali - Laxmi Pujan (Muhurat Trading — special session)
+    date(2025, 10, 21),  # Diwali - Balipratipada
+    date(2025, 11, 5),   # Prakash Gurpurab Sri Guru Nanak Dev Ji
+    date(2025, 12, 25),  # Christmas
+
+    # ── 2026 ──────────────────────────────────────────────────────────────────
+    date(2026, 1, 26),   # Republic Day
+    date(2026, 2, 26),   # Mahashivratri (tentative — verify against NSE circular)
+    date(2026, 3, 20),   # Holi (tentative)
+    date(2026, 3, 20),   # Holi
+    date(2026, 4, 3),    # Good Friday
+    date(2026, 4, 14),   # Dr. Baba Saheb Ambedkar Jayanti
+    date(2026, 4, 17),   # Shri Ram Navami (tentative)
+    date(2026, 5, 1),    # Maharashtra Day
+    date(2026, 5, 27),   # Buddha Purnima / Bank Holiday (NSE closed)
+    date(2026, 8, 15),   # Independence Day
+    date(2026, 10, 2),   # Mahatma Gandhi Jayanti
+    date(2026, 11, 11),  # Diwali - Laxmi Pujan (tentative — verify)
+    date(2026, 12, 25),  # Christmas
+
+    # Add further 2026 dates as NSE publishes the official circular.
+    # Reference: https://www.nseindia.com/products-services/equity-market-trading-holidays
+})
+
+
+def is_nse_holiday(dt: datetime = None) -> bool:
+    """Returns True if the given date is an NSE-declared holiday."""
+    d = (dt or datetime.now()).date()
+    return d in _NSE_HOLIDAYS
 
 
 # =========================
@@ -73,18 +122,22 @@ def _at_close(dt: datetime) -> datetime:
 
 def is_trading_day(dt: datetime = None) -> bool:
     """
-    Returns True if the given datetime falls on a weekday (Mon–Fri).
-    Does NOT account for NSE holidays — add a holiday list if needed.
+    Returns True if the given datetime is a valid NSE trading day.
+    Checks: weekday (Mon–Fri) AND not in NSE holiday calendar.
     """
     dt = dt or datetime.now()
-    return dt.weekday() in _TRADING_DAYS
+    if dt.weekday() not in _TRADING_DAYS:
+        return False
+    return not is_nse_holiday(dt)
 
 
 def is_market_open(dt: datetime = None) -> bool:
     """
     Returns True if currently inside NSE trading hours.
 
-    Condition: is_trading_day() AND 09:15:00 <= now < 15:30:00 (IST)
+    Conditions:
+      1. is_trading_day() → weekday Mon-Fri AND not an NSE holiday
+      2. 09:15:00 <= now < 15:30:00 (IST)
 
     Args:
         dt: datetime to test (defaults to now). Assumes IST.
@@ -94,7 +147,7 @@ def is_market_open(dt: datetime = None) -> bool:
     """
     dt = dt or datetime.now()
 
-    if dt.weekday() not in _TRADING_DAYS:
+    if not is_trading_day(dt):
         return False
 
     return _at_open(dt) <= dt < _at_close(dt)
@@ -105,7 +158,7 @@ def is_eod_close_time(dt: datetime = None) -> bool:
     Returns True during the EOD auto-close window.
 
     Window: 15:29:00–15:29:59 IST on a trading day.
-    The tracker fires once per tick (60s) so this window is hit reliably.
+    The tracker fires once per tick (30s) so this window is hit reliably.
 
     Args:
         dt: datetime to test (defaults to now). Assumes IST.
@@ -115,7 +168,7 @@ def is_eod_close_time(dt: datetime = None) -> bool:
     """
     dt = dt or datetime.now()
 
-    if dt.weekday() not in _TRADING_DAYS:
+    if not is_trading_day(dt):
         return False
 
     return dt.hour == EOD_CLOSE_HOUR and dt.minute == EOD_CLOSE_MINUTE
@@ -127,23 +180,26 @@ def next_market_open_dt(dt: datetime = None) -> datetime:
 
     Logic:
         - If today is a trading day and we're before 09:15 → today 09:15
-        - Otherwise advance day-by-day until next weekday, return 09:15 of that day
+        - Otherwise advance day-by-day skipping weekends + NSE holidays
 
     Args:
         dt: reference datetime (defaults to now). Assumes IST.
 
     Returns:
-        datetime — next 09:15 on a trading day
+        datetime — next 09:15 on a valid trading day
     """
     dt = dt or datetime.now()
 
     # If today is a trading day and market hasn't opened yet
-    if dt.weekday() in _TRADING_DAYS and dt < _at_open(dt):
+    if is_trading_day(dt) and dt < _at_open(dt):
         return _at_open(dt)
 
-    # Advance to next calendar day, skip weekends
+    # Advance to next calendar day, skip weekends and holidays
     candidate = dt.date() + timedelta(days=1)
-    while candidate.weekday() not in _TRADING_DAYS:
+    while True:
+        candidate_dt = datetime(candidate.year, candidate.month, candidate.day, 10, 0, 0)
+        if is_trading_day(candidate_dt):
+            break
         candidate += timedelta(days=1)
 
     return datetime(
@@ -184,8 +240,10 @@ def log_market_closed_reason(dt: datetime = None) -> None:
     hrs, rem = divmod(secs, 3600)
     mins     = rem // 60
 
-    # Determine reason
-    if dt.weekday() not in _TRADING_DAYS:
+    # Determine reason (holiday check first)
+    if is_nse_holiday(dt):
+        reason = f"NSE Holiday ({dt.strftime('%Y-%m-%d')})"
+    elif dt.weekday() not in _TRADING_DAYS:
         day_names = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
                      "Saturday", "Sunday"]
         reason = f"Weekend ({day_names[dt.weekday()]})"

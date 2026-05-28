@@ -3525,3 +3525,431 @@ C:\Users\siddh\Downloads\HK\TradingBot\core\trade_state.py:372: FutureWarning: T
 2026-05-27 14:00:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
 2026-05-27 14:01:09 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
 2026-05-27 14:01:43 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:02:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:03:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:04:03 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 14:04:03 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 14:04:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:05:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:06:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:06:47 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:07:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:08:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:09:06 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 14:09:06 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 14:09:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:10:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:11:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:11:51 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:12:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:13:14 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:14:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:14:10 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 14:14:10 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 14:15:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:16:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:16:55 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:17:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:18:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:19:08 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:19:12 | WARNING  | core.risk_engine | [RISK] BLOCKED — Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 14:19:12 | INFO     | core.engine | [SignalLoop] Risk gate blocked: Consecutive loss lockout: 2 losses in a row (limit=2). Review strategy before resuming.
+2026-05-27 14:19:21 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-27 14:20:09 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 08:33:17 | INFO     | __main__ | [MAIN] Starting TradingBot (multi-thread)
+2026-05-28 08:33:17 | INFO     | __main__ | [MAIN] Mode: PAPER
+2026-05-28 08:33:17 | INFO     | __main__ | [MAIN] Base directory: C:\Users\siddh\Downloads\HK\TradingBot
+2026-05-28 08:33:18 | INFO     | app.tray | [Tray] System tray started
+2026-05-28 08:33:18 | INFO     | __main__ | [MAIN] System tray started
+2026-05-28 08:33:23 | INFO     | __main__ | [MAIN] Dashboard starting on http://localhost:5050
+
+============================================================
+   AI INTRADAY TRADING SYSTEM
+   Mode     : PAPER TRADING
+   Root     : C:\Users\siddh\Downloads\HK\TradingBot
+   Data     : yfinance + NSE API
+   UX       : Telegram inline keyboard + Windows tray
+   Targets  : T1=25 T2=40 T3=60 T4=85 T5=110 ... (+25)
+   Trailing : BE+15 after T1, trails T(n-1) each milestone
+   Dashboard: http://localhost:5050
+============================================================
+
+ * Serving Flask app 'dashboard.server'
+ * Debug mode: off
+2026-05-28 08:33:36 | INFO     | core.trade_manager | [TradeManager] Loaded state | id= status=IDLE
+2026-05-28 08:33:36 | INFO     | core.trade_manager | [TradeManager] Initialised | status=IDLE
+2026-05-28 08:33:36 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 08:33:36 | INFO     | core.signal_engine | [SignalEngine] Initialised | TF weights: align=50 vwap=25 ema=25 | Thresholds: VH=85 H=70 M=45
+2026-05-28 08:33:36 | INFO     | core.risk_engine | [RISK] New trading day (2026-05-28) — resetting daily counters. Previous: 2026-05-27
+2026-05-28 08:33:36 | INFO     | core.risk_engine | [RISK] RiskEngine initialized | date=2026-05-28 | trades=0 | pnl=0.0pts | consec_losses=0
+2026-05-28 08:33:36 | INFO     | analytics.logger | [AnalyticsLogger] Initialised | decisions=C:\Users\siddh\Downloads\HK\TradingBot\decisions trades=C:\Users\siddh\Downloads\HK\TradingBot\trades
+2026-05-28 08:33:36 | INFO     | telegram.bot | [TGBot] Initialised | chat_id=8331670846 paper=True
+2026-05-28 08:33:36 | INFO     | telegram.heartbeat | [Heartbeat] Initialised
+2026-05-28 08:33:36 | INFO     | core.engine | [Engine] Initialised | Paper=True
+2026-05-28 08:33:37 | INFO     | telegram.bot | [TGBot] Startup message sent
+2026-05-28 08:33:37 | INFO     | core.engine | [SignalLoop] Started
+2026-05-28 08:33:37 | INFO     | core.engine | [Engine] Started thread: SignalLoop
+2026-05-28 08:33:37 | INFO     | core.engine | [TrackerLoop] Started
+2026-05-28 08:33:37 | INFO     | core.engine | [Engine] Started thread: TrackerLoop
+2026-05-28 08:33:37 | INFO     | core.engine | [TGPoller] Started
+2026-05-28 08:33:37 | INFO     | core.engine | [Engine] Started thread: TGPoller
+2026-05-28 09:19:03 | INFO     | core.engine | [SignalLoop] Scanning for signal...
+2026-05-28 09:19:04 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:19:08 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:19:08 | INFO     | core.signal_engine | [SignalEngine] Base score: 68 (TF=50 + VWAP=1 + EMA=17)
+2026-05-28 09:19:08 | INFO     | core.oi_analysis | [OI] Fetching fresh option chain data...
+2026-05-28 09:19:08 | WARNING  | core.oi_analysis | [OI] NSE session init returned 403
+2026-05-28 09:19:08 | INFO     | core.oi_analysis | [OI] Falling back to page scrape...
+2026-05-28 09:19:08 | WARNING  | core.oi_analysis | [OI] NSE session init returned 403
+2026-05-28 09:19:09 | WARNING  | core.oi_analysis | [OI] Could not find embedded JSON in page
+2026-05-28 09:19:09 | WARNING  | core.oi_analysis | [OI] Option chain unavailable — returning 0 adjustment
+2026-05-28 09:19:09 | INFO     | core.news_sentiment | [SENTIMENT] Fetching all sentiment sources...
+2026-05-28 09:19:09 | INFO     | core.news_sentiment | [SENTIMENT][VIX] India VIX = 14.98
+2026-05-28 09:19:09 | INFO     | core.news_sentiment | [SENTIMENT][US] ES=F change = -0.26%
+2026-05-28 09:19:09 | WARNING  | core.news_sentiment | [SENTIMENT][RSS] ET Markets failed: syntax error: line 1, column 15
+2026-05-28 09:19:09 | INFO     | core.news_sentiment | [SENTIMENT][RSS] Total headlines collected: 14
+2026-05-28 09:19:10 | INFO     | core.news_sentiment | [SENTIMENT][GNEWS] 15 headlines fetched
+2026-05-28 09:19:10 | INFO     | core.news_sentiment | [SENTIMENT][HEADLINES] bull=8 bear=6 mood=NEUTRAL signal=BULLISH
+2026-05-28 09:19:10 | INFO     | core.news_sentiment | [SENTIMENT] VIX=15.0(+5)  Futures=-0.26%(+0)  Sent=NEUTRAL(+0)  TOTAL=+5
+2026-05-28 09:19:10 | INFO     | core.signal_engine | [SignalEngine] Final score: 73 (base=68 OI=+0 sent=+5) → HIGH
+2026-05-28 09:19:10 | INFO     | core.engine | [SignalLoop] SIGNAL | BUY 23900 CE | score=73 | HIGH
+2026-05-28 09:19:11 | INFO     | telegram.bot | [TGBot] Signal request sent | msg_id=273
+2026-05-28 09:19:11 | INFO     | core.trade_manager | [TradeManager] PENDING | id=20260528_091911 dir=BULLISH entry=23921.60 SL=23906.60 lots=1
+2026-05-28 09:19:11 | INFO     | core.engine | [SignalLoop] PENDING trade opened | lots=1
+2026-05-28 09:19:36 | INFO     | core.engine | [TGPoller] Callback: SCALE
+2026-05-28 09:19:36 | INFO     | core.trade_manager | [TradeManager] SCALED to 2 lots
+2026-05-28 09:19:36 | INFO     | core.trade_manager | [TradeManager] Trade APPROVED | id=20260528_091911 lots=2
+2026-05-28 09:19:36 | INFO     | telegram.bot | [TGBot] Trade open message sent | id=20260528_091911
+2026-05-28 09:20:05 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:20:05 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:20:36 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:20:36 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:21:07 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:21:07 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:21:37 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:21:37 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:22:08 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:22:08 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:22:38 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:22:38 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:23:09 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:23:09 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:23:40 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:23:40 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:24:10 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:24:10 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:24:41 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:24:41 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:25:12 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:25:12 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:25:43 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:25:43 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:26:13 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:26:13 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:26:44 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:26:44 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:27:14 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:27:14 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:27:45 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:27:45 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:28:15 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:28:15 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:28:46 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:28:46 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:29:16 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:29:16 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:29:48 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:29:48 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:30:18 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:30:18 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:30:49 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:30:49 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:31:19 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:31:19 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:31:50 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:31:50 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:32:21 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:32:21 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:32:52 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:32:52 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:33:22 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:33:22 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:33:53 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:33:53 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:34:24 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:34:24 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:34:55 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:34:55 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:35:26 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:35:26 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:35:56 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:35:56 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:36:23 | INFO     | app.tray | [Tray] Dashboard opened: http://localhost:5050
+2026-05-28 09:36:23 | INFO     | app.tray | [Tray] Dashboard opened: http://localhost:5050
+2026-05-28 09:36:24 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:36:24 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:36:27 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:36:27 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:36:54 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:36:54 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:36:58 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:36:58 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:37:23 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:37:24 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:37:28 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:37:28 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:37:54 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:37:54 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:37:59 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:37:59 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:38:24 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:38:24 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:38:29 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:38:29 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:38:54 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:38:54 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:39:00 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:39:00 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:39:24 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:39:24 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:39:30 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:39:30 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:39:54 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:39:54 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:40:02 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:40:02 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:40:24 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:40:32 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:40:32 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:40:53 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:40:55 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:41:03 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:41:03 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:41:33 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:41:33 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:41:55 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:41:55 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:42:04 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:42:04 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:42:35 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:42:35 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:42:56 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:42:56 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:43:05 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:43:05 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:43:36 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:43:36 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:43:57 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:43:57 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:44:07 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:44:07 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:44:37 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:44:37 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:44:58 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:44:58 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:45:18 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:45:18 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:45:49 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:45:49 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:45:59 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:45:59 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:46:19 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:46:19 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:46:50 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:46:50 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:46:59 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:47:01 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:47:21 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:47:21 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:47:51 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:47:51 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:48:00 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:48:02 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:48:22 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:48:22 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:48:52 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:48:52 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:49:01 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:49:03 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:49:23 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:49:23 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:49:23 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:49:28 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:49:54 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:49:54 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:49:59 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:50:25 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:50:25 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:50:28 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:50:55 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:50:55 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:50:59 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:51:26 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:51:26 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:51:28 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:51:57 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:51:57 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:51:59 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:52:27 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:52:27 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:52:28 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:52:58 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:52:58 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:53:12 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:53:29 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:53:29 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:53:59 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:53:59 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:54:11 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:54:30 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:54:30 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:55:00 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:55:00 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:55:11 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:55:42 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:55:42 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:56:12 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:56:12 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:56:12 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:56:43 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:56:43 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:57:11 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:57:13 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:57:13 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:57:44 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:57:44 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:58:12 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:58:14 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:58:14 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:58:46 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:58:46 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:58:47 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:58:59 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:59:16 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:59:16 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 09:59:28 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 09:59:47 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 09:59:47 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:00:12 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:00:17 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:00:17 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:00:49 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:00:49 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:01:12 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:01:19 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:01:19 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:01:52 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:01:52 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:02:11 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:02:22 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:02:22 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:02:53 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:02:53 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:03:12 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:03:24 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:03:24 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:03:56 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:03:56 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:04:11 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:04:26 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:04:26 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:04:57 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:04:57 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:05:10 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:05:13 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:05:28 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:05:28 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:05:43 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:05:59 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:05:59 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:06:13 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:06:16 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:06:29 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:06:29 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:06:46 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:07:01 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:07:01 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:07:17 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:07:31 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:07:31 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:07:46 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:08:02 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:08:02 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:08:17 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:08:32 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:08:32 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:08:46 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:09:03 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:09:03 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:09:17 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:09:33 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:09:33 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:10:04 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:10:04 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:10:11 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:10:35 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:10:35 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:11:06 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:11:06 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:11:12 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:11:37 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:11:37 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:12:08 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:12:08 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:12:12 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:12:38 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:12:38 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:13:09 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:13:09 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:13:11 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:13:39 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:13:39 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:14:10 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:14:10 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:14:12 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:14:40 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:14:40 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:15:11 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:15:11 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:15:11 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:15:42 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:15:42 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:16:13 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:16:14 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:16:14 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:16:44 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:16:44 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:17:11 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:17:15 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:17:15 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:17:46 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:17:46 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:18:12 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:18:16 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:18:17 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:18:37 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:18:46 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:18:47 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:18:47 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:19:16 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:19:18 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:19:18 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:19:47 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:19:49 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:19:49 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:20:16 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:20:19 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:20:19 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:20:47 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:20:50 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:20:50 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:21:21 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:21:21 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:21:52 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:21:52 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:22:11 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']
+2026-05-28 10:22:23 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:22:23 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:22:54 | INFO     | core.data_engine | [DataEngine] MTF | Dir=BULLISH | Align=2/3 | 5m:BULLISH | 15m:BULLISH | 1h:SIDEWAYS
+2026-05-28 10:22:54 | INFO     | core.engine | [TrackerLoop] OPEN | price=23907.15 entry=23921.60 P&L=-14.4pts SL=23906.60 last_milestone=T0
+2026-05-28 10:23:12 | INFO     | core.data_engine | [DataEngine] Initialised | Ticker=^NSEI | OHLCV cache=60s | Price cache=10s | TFs=['5m', '15m', '1h']

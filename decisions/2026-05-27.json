@@ -150,5 +150,22 @@
     },
     "scale_up": false,
     "_reason": ""
+  },
+  {
+    "timestamp": "2026-05-27T14:21:39.644091",
+    "is_trade": false,
+    "direction": "SIDEWAYS",
+    "trade_signal": "NO TRADE",
+    "adjusted_score": 0,
+    "base_score": 0,
+    "confidence_level": "LOW",
+    "alignment_summary": "0/3 SIDEWAYS aligned | 5m:SIDEWAYS | 15m:BEARISH | 1h:BEARISH",
+    "price": 23906.85,
+    "vwap": 23925.94,
+    "ema9": 23905.93,
+    "oi_result": {},
+    "sent_result": {},
+    "scale_up": false,
+    "_reason": "Primary timeframe direction is SIDEWAYS"
   }
 ]
