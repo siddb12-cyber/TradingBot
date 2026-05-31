@@ -366,21 +366,56 @@ stop.bat
 
 ---
 
-## 16. INSTRUCTIONS FOR FUTURE SESSIONS
+## 16. PORTABILITY — HOW TO MOVE TO ANY NEW MACHINE
 
-At the start of every new session:
+The entire bot lives at: https://github.com/siddb12-cyber/TradingBot (private)
+
+### On a new Windows machine (3 commands):
+```bat
+git clone https://github.com/siddb12-cyber/TradingBot.git
+cd TradingBot
+setup.bat          ← installs packages, creates dirs, copies .env template
+```
+Then open `.env` and add:
+```
+BOT_TOKEN=<your telegram bot token>
+CHAT_ID=<your telegram chat id>
+```
+Then `start.bat` — done.
+
+### What is NOT in GitHub (intentionally):
+- `.env` — secrets, never committed. Keep a copy in your personal cloud (Google Drive encrypted note, etc.)
+- `decisions/` — daily signal logs (local runtime data)
+- `trades/` — daily trade logs (local runtime data)
+- `logs/` — runtime logs
+- `data/` — trade_state.json, daily_risk_state.json (regenerated on first run)
+
+### IMPORTANT: `.pyc` cache issue (sandbox only)
+When editing files through Claude's sandbox and testing in the same session,
+Python may load stale `.pyc` bytecode. Fix: run `find . -name "*.py" -exec touch {} \;`
+before running any tests in the sandbox. This does NOT affect normal Windows usage.
+
+---
+
+## 17. INSTRUCTIONS FOR FUTURE SESSIONS
+
+### At session START:
 1. Read this file (`MEMORY.md`) completely
-2. Run the integrity check:
-   ```
-   python3 -c "import ast, os; [ast.parse(open(f).read()) or print('OK',f) for f in ['core/indicators.py','core/signal_engine.py','core/data_engine.py','core/trade_manager.py','core/engine.py','telegram/bot.py','analytics/logger.py','broker/groww_client.py','broker/order_manager.py','config/settings.py']]"
-   ```
-3. Touch all `.py` files before running tests (sandbox .pyc cache issue):
-   ```
-   find . -name "*.py" -exec touch {} \;
-   ```
+2. Fix .pyc cache (sandbox only): `find . -name "*.py" -exec touch {} \;`
+3. Syntax check: `python3 -c "import ast; [ast.parse(open(f).read()) for f in ['core/indicators.py','core/signal_engine.py','core/data_engine.py','core/trade_manager.py','core/engine.py','telegram/bot.py','analytics/logger.py','broker/groww_client.py','broker/order_manager.py','config/settings.py']]"`
 4. Continue from **Section 14 — Next Session**
 
-After every session:
-- Update Section 13 (session log) with what was built/changed
-- Update Section 14 (next session) with new priorities
-- Update the "Last updated" date at the top
+### During the session — COMMIT MEMORY.MD AFTER EVERY SIGNIFICANT ACTION:
+This is important because we regularly hit the 1M token context limit mid-session.
+After every file creation, edit, or test result — update MEMORY.md and commit:
+```
+git add MEMORY.md <changed_files>
+git commit -m "Progress: <what was done>"
+git push origin main
+```
+
+### After session END:
+- Update Section 13 (session log)
+- Update Section 14 (next session priorities)
+- Update "Last updated" date at top
+- Final commit + push
