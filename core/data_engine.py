@@ -71,6 +71,28 @@ from config.settings import (
     PRIMARY_TIMEFRAME,
     NIFTY_PRICE_MIN,
     NIFTY_PRICE_MAX,
+    # Indicator periods
+    RSI_PERIOD,
+    MACD_FAST, MACD_SLOW, MACD_SIGNAL,
+    ADX_PERIOD,
+    ATR_PERIOD,
+    EMA_SHORT, EMA_MID, EMA_LONG,
+    BB_PERIOD, BB_STD,
+    SUPERTREND_PERIOD, SUPERTREND_MULTIPLIER,
+    ORB_MINUTES,
+    MARKET_STRUCTURE_LOOKBACK,
+)
+from core.indicators import (
+    compute_rsi,
+    compute_macd,
+    compute_adx,
+    compute_atr,
+    compute_bollinger_bands,
+    compute_supertrend,
+    compute_ema,
+    compute_opening_range,
+    detect_market_structure,
+    detect_candlestick_pattern,
 )
 
 # =========================
@@ -83,6 +105,15 @@ logger = logging.getLogger(__name__)
 # =========================
 # INDICATOR COMPUTATIONS
 # =========================
+
+# =========================
+# LEGACY WRAPPERS (kept for backward compatibility)
+# =========================
+
+def compute_ema9(df: pd.DataFrame) -> pd.Series:
+    """EMA9 — thin wrapper around compute_ema for compatibility."""
+    return compute_ema(df, EMA_SHORT)
+
 
 def compute_vwap(df: pd.DataFrame) -> pd.Series:
     """
@@ -135,23 +166,6 @@ def compute_vwap(df: pd.DataFrame) -> pd.Series:
     return vwap_series
 
 
-def compute_ema9(df: pd.DataFrame) -> pd.Series:
-    """
-    Compute EMA9 (9-period Exponential Moving Average) on Close prices.
-
-    Uses pandas ewm with adjust=False for standard EMA recursion:
-        EMA(t) = alpha * Close(t) + (1 - alpha) * EMA(t-1)
-    where alpha = 2 / (span + 1) = 0.2 for span=9.
-
-    Parameters
-    ----------
-    df : pd.DataFrame with a 'Close' column.
-
-    Returns
-    -------
-    pd.Series of EMA9 values aligned to df.index.
-    """
-    return df["Close"].ewm(span=9, adjust=False).mean()
 
 
 # =========================
@@ -344,8 +358,62 @@ class DataEngine:
             return None
 
         # ---- Compute indicators in-place ----
-        df["EMA9"] = compute_ema9(df)
+        # Core (existing)
+        df["EMA9"] = compute_ema(df, EMA_SHORT)
         df["VWAP"] = compute_vwap(df)
+
+        # EMA stack
+        df["EMA20"] = compute_ema(df, EMA_MID)
+        df["EMA50"] = compute_ema(df, EMA_LONG)
+
+        # Momentum
+        try:
+            df["RSI"] = compute_rsi(df, RSI_PERIOD)
+        except Exception as _e:
+            logger.warning("[DataEngine] RSI failed (%s): %s", timeframe, _e)
+            df["RSI"] = 50.0
+
+        try:
+            _macd, _sig, _hist = compute_macd(df, MACD_FAST, MACD_SLOW, MACD_SIGNAL)
+            df["MACD"]      = _macd
+            df["MACD_SIG"]  = _sig
+            df["MACD_HIST"] = _hist
+        except Exception as _e:
+            logger.warning("[DataEngine] MACD failed (%s): %s", timeframe, _e)
+            df["MACD"] = df["MACD_SIG"] = df["MACD_HIST"] = 0.0
+
+        # Trend strength
+        try:
+            df["ADX"] = compute_adx(df, ADX_PERIOD)
+        except Exception as _e:
+            logger.warning("[DataEngine] ADX failed (%s): %s", timeframe, _e)
+            df["ADX"] = 0.0
+
+        # Volatility
+        try:
+            df["ATR"] = compute_atr(df, ATR_PERIOD)
+        except Exception as _e:
+            logger.warning("[DataEngine] ATR failed (%s): %s", timeframe, _e)
+            df["ATR"] = 0.0
+
+        try:
+            _bb_u, _bb_m, _bb_l = compute_bollinger_bands(df, BB_PERIOD, BB_STD)
+            df["BB_UPPER"] = _bb_u
+            df["BB_MID"]   = _bb_m
+            df["BB_LOWER"] = _bb_l
+        except Exception as _e:
+            logger.warning("[DataEngine] BB failed (%s): %s", timeframe, _e)
+            df["BB_UPPER"] = df["BB_MID"] = df["BB_LOWER"] = df["Close"]
+
+        # Supertrend
+        try:
+            _st_val, _st_dir = compute_supertrend(df, SUPERTREND_PERIOD, SUPERTREND_MULTIPLIER)
+            df["ST_VAL"] = _st_val
+            df["ST_DIR"] = _st_dir   # 1 = bullish, -1 = bearish
+        except Exception as _e:
+            logger.warning("[DataEngine] Supertrend failed (%s): %s", timeframe, _e)
+            df["ST_VAL"] = df["Close"]
+            df["ST_DIR"] = 0.0
 
         # ---- Cache and return ----
         self._ohlcv_cache[timeframe].set(df)
@@ -411,14 +479,41 @@ class DataEngine:
             # ---- Use last completed candle ----
             last  = df.iloc[-1]
             price = float(last["Close"])
-            vwap  = float(last["VWAP"]) if not pd.isna(last["VWAP"]) else price
-            ema9  = float(last["EMA9"])  if not pd.isna(last["EMA9"])  else price
+            vwap  = float(last["VWAP"])  if not pd.isna(last["VWAP"])  else price
+            ema9  = float(last["EMA9"])   if not pd.isna(last["EMA9"])   else price
+            ema20 = float(last["EMA20"])  if not pd.isna(last["EMA20"])  else price
+            ema50 = float(last["EMA50"])  if not pd.isna(last["EMA50"])  else price
+            rsi   = float(last["RSI"])    if not pd.isna(last["RSI"])    else 50.0
+            adx   = float(last["ADX"])    if not pd.isna(last["ADX"])    else 0.0
+            atr   = float(last["ATR"])    if not pd.isna(last["ATR"])    else 0.0
+            macd_hist = float(last["MACD_HIST"]) if not pd.isna(last["MACD_HIST"]) else 0.0
+            macd_line = float(last["MACD"])      if not pd.isna(last["MACD"])      else 0.0
+            bb_upper  = float(last["BB_UPPER"])  if not pd.isna(last["BB_UPPER"])  else price
+            bb_lower  = float(last["BB_LOWER"])  if not pd.isna(last["BB_LOWER"])  else price
+            bb_mid    = float(last["BB_MID"])    if not pd.isna(last["BB_MID"])    else price
+            st_dir    = int(last["ST_DIR"])      if not pd.isna(last["ST_DIR"])    else 0
+
+            # BB percentage (0=at lower, 1=at upper, 0.5=at mid)
+            bb_width = bb_upper - bb_lower
+            bb_pct   = round((price - bb_lower) / bb_width, 3) if bb_width > 0 else 0.5
+
             direction = _determine_direction(price, vwap, ema9)
 
             timeframe_data[tf] = {
                 "price":     round(price, 2),
                 "vwap":      round(vwap,  2),
                 "ema9":      round(ema9,  2),
+                "ema20":     round(ema20, 2),
+                "ema50":     round(ema50, 2),
+                "rsi":       round(rsi,   1),
+                "adx":       round(adx,   1),
+                "atr":       round(atr,   2),
+                "macd_hist": round(macd_hist, 3),
+                "macd_line": round(macd_line, 3),
+                "bb_upper":  round(bb_upper, 2),
+                "bb_lower":  round(bb_lower, 2),
+                "bb_pct":    bb_pct,
+                "st_dir":    st_dir,
                 "direction": direction,
             }
             directions[tf] = direction
@@ -432,6 +527,9 @@ class DataEngine:
                 "alignment_count":   0,
                 "alignment_summary": "INVALID — data fetch error on one or more timeframes",
                 "timeframe_data":    timeframe_data,
+                "orb":               {"valid": False, "orb_high": None, "orb_low": None, "orb_range": 0.0},
+                "market_structure":  "SIDEWAYS",
+                "candle_pattern":    {"pattern": "NONE", "bias": "NEUTRAL", "strength": 0},
             }
 
         # ---- Determine primary direction and alignment ----
@@ -447,9 +545,46 @@ class DataEngine:
 
         is_trade = primary_dir != "SIDEWAYS"
 
+        # ---- Fetch 5m DataFrame once for ORB + structure + candle ----
+        # (already cached from the loop above — no extra network call)
+        df_5m = None
+        try:
+            df_5m = self.get_ohlcv(PRIMARY_TIMEFRAME)
+        except Exception as _exc:
+            logger.debug("[DataEngine] 5m fetch for ORB/MS skipped: %s", _exc)
+
+        # ---- Opening Range Breakout ----
+        orb: dict = {"valid": False, "orb_high": None, "orb_low": None, "orb_range": 0.0}
+        try:
+            if df_5m is not None:
+                orb = compute_opening_range(df_5m, ORB_MINUTES)
+        except Exception as _exc:
+            logger.debug("[DataEngine] ORB computation failed: %s", _exc)
+
+        # ---- Market Structure (last MARKET_STRUCTURE_LOOKBACK candles) ----
+        market_structure = "SIDEWAYS"
+        try:
+            if df_5m is not None and len(df_5m) >= MARKET_STRUCTURE_LOOKBACK + 4:
+                market_structure = detect_market_structure(df_5m, MARKET_STRUCTURE_LOOKBACK)
+        except Exception as _exc:
+            logger.debug("[DataEngine] Market structure failed: %s", _exc)
+
+        # ---- Candlestick pattern (last 2 candles) ----
+        candle_pattern: dict = {"pattern": "NONE", "bias": "NEUTRAL", "strength": 0}
+        try:
+            if df_5m is not None and len(df_5m) >= 2:
+                candle_pattern = detect_candlestick_pattern(df_5m)
+        except Exception as _exc:
+            logger.debug("[DataEngine] Candlestick pattern failed: %s", _exc)
+
         logger.info(
-            "[DataEngine] MTF | Dir=%s | Align=%d/%d | %s",
-            primary_dir, alignment_count, len(TIMEFRAMES), tf_breakdown,
+            "[DataEngine] MTF | Dir=%s | Align=%d/%d | ADX=%.1f | RSI=%.1f | ORB=%s | MS=%s | %s",
+            primary_dir, alignment_count, len(TIMEFRAMES),
+            timeframe_data.get(PRIMARY_TIMEFRAME, {}).get("adx", 0),
+            timeframe_data.get(PRIMARY_TIMEFRAME, {}).get("rsi", 50),
+            "valid" if orb.get("valid") else "N/A",
+            market_structure,
+            tf_breakdown,
         )
 
         return {
@@ -459,6 +594,9 @@ class DataEngine:
             "alignment_count":   alignment_count,
             "alignment_summary": alignment_summary,
             "timeframe_data":    timeframe_data,
+            "orb":               orb,
+            "market_structure":  market_structure,
+            "candle_pattern":    candle_pattern,
         }
 
     # ------------------------------------------------------------------

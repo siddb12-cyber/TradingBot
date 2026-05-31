@@ -28,6 +28,7 @@ Close the trade when BOTH are true:
   2. Price is on the wrong side of EMA9 (below EMA9 for longs, above for shorts)
 
 Paper Trading Only — no real order execution happens here.
+When PAPER_TRADING_MODE=False, entry and exit orders are placed via broker/order_manager.py.
 """
 
 import json
@@ -38,6 +39,7 @@ from datetime import datetime, date
 from pathlib import Path
 from typing import Optional, Dict, List
 
+from broker.order_manager import place_entry as _place_entry, place_exit as _place_exit
 from config.settings import (
     STATE_FILE,
     STOP_LOSS_POINTS,
@@ -122,6 +124,12 @@ class TradeRecord:
     # Key: "T1", "T2", etc.
     # Value: {"pts": 25, "fraction": 0.333, "lots_booked": 0.67, "inr": 625.0, "price": 23846.85}
     milestone_bookings: Dict        = field(default_factory=dict)
+
+    # Broker execution (live mode only — empty string in paper mode)
+    broker_order_id:    str         = ""   # Groww order_id from place_entry()
+    strike:             int         = 0    # ATM strike used
+    option_type:        str         = ""   # "CE" or "PE"
+    expiry:             str         = ""   # e.g. "29MAY2026"
 
 
 # =============================================================================
@@ -208,11 +216,15 @@ class TradeManager:
             price     = signal.get("price") or 0.0
             direction = signal.get("direction", "")
 
+            # Use ATR-based dynamic SL if available, else fall back to fixed SL
+            sl_pts = float(signal.get("dynamic_sl_points") or STOP_LOSS_POINTS)
+            sl_pts = max(sl_pts, 8.0)   # Absolute minimum safety net
+
             # Compute SL level
             if direction == "BULLISH":
-                sl_price = price - STOP_LOSS_POINTS
+                sl_price = price - sl_pts
             else:
-                sl_price = price + STOP_LOSS_POINTS
+                sl_price = price + sl_pts
 
             self._trade = TradeRecord(
                 trade_id       = trade_id,
@@ -228,8 +240,21 @@ class TradeManager:
                 signal_time    = now.isoformat(),
                 tg_message_id  = tg_message_id,
                 pending_action = "",
+                # Broker fields
+                strike         = int(signal.get("strike", 0)),
+                option_type    = signal.get("option_type", "CE" if direction == "BULLISH" else "PE"),
+                expiry         = signal.get("expiry", ""),
             )
             self._save()
+
+        # ── Broker execution hook ─────────────────────────────────────────────
+        # Paper mode: logs only. Live mode: places real BUY order on Groww.
+        try:
+            order_result = _place_entry(signal, lots)
+            self._trade.broker_order_id = order_result.get("order_id", "")
+            self._save()
+        except Exception as _exc:
+            logger.warning("[TradeManager] order_manager.place_entry failed: %s", _exc)
 
         logger.info(
             "[TradeManager] PENDING | id=%s dir=%s entry=%.2f SL=%.2f lots=%d",
@@ -537,6 +562,13 @@ class TradeManager:
 
         self._save()
 
+        # ── Broker execution hook ─────────────────────────────────────────────
+        # Paper mode: logs only. Live mode: places real SELL (square-off) on Groww.
+        try:
+            _place_exit(self._trade, reason=close_reason)
+        except Exception as _exc:
+            logger.warning("[TradeManager] order_manager.place_exit failed: %s", _exc)
+
         action_map = {
             STATUS_CLOSED_SL:  "SL_HIT",
             STATUS_CLOSED_T:   "TARGET_HIT",
@@ -600,6 +632,53 @@ class TradeManager:
         except Exception as exc:
             logger.error(
                 "[TradeManager] Failed to load state: %s — starting fresh", exc
+            )
+            self._trade = TradeRecord()
+
+    def reset(self) -> None:
+        """
+        Reset trade state to IDLE.
+        Call this after a trade closes and analytics have been logged.
+        """
+        with self._lock:
+            self._trade = TradeRecord()
+            self._save()
+        logger.info("[TradeManager] State reset to IDLE")
+                encoding="utf-8",
+            )
+            tmp.replace(STATE_FILE)
+        except Exception as exc:
+            logger.error("[TradeManager] Failed to save state: %s", exc)
+
+    def _load(self) -> None:
+        """Load persisted state from data/trade_state.json (if it exists)."""
+        if not STATE_FILE.exists():
+            logger.info("[TradeManager] No state file found -- starting fresh")
+            return
+
+        try:
+            data = json.loads(STATE_FILE.read_text(encoding="utf-8"))
+            self._trade = TradeRecord(**{
+                k: v for k, v in data.items()
+                if k in TradeRecord.__dataclass_fields__
+            })
+            logger.info(
+                "[TradeManager] Loaded state | id=%s status=%s",
+                self._trade.trade_id, self._trade.status,
+            )
+
+            # If we loaded a PENDING trade, it may be stale -- abort it
+            if self._trade.status == STATUS_PENDING:
+                logger.warning(
+                    "[TradeManager] Stale PENDING trade found on load -- resetting to IDLE"
+                )
+                self._trade.status       = STATUS_IDLE
+                self._trade.close_reason = "STALE_PENDING_ON_RESTART"
+                self._save()
+
+        except Exception as exc:
+            logger.error(
+                "[TradeManager] Failed to load state: %s -- starting fresh", exc
             )
             self._trade = TradeRecord()
 

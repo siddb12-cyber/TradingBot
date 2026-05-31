@@ -46,6 +46,7 @@ from config.settings import (
     OI_MAX_PAIN_GRAVITY_POINTS,
     OI_MAX_PAIN_GRAVITY_PENALTY,
     OI_CACHE_SECONDS,
+    OI_STALE_CACHE_SECONDS,
 )
 
 logger = logging.getLogger(__name__)
@@ -416,14 +417,33 @@ class OIAnalysis:
         data = self._fetch_option_chain()
 
         if data is None:
-            logger.warning("[OI] Option chain unavailable — returning 0 adjustment")
+            # --- Stale-cache fallback (serve up to 15 min of old data) ---
+            if self._cache and (now - self._cache_ts) < OI_STALE_CACHE_SECONDS:
+                age = now - self._cache_ts
+                logger.warning(
+                    "[OI] Fetch failed — serving stale cache (age=%.0fs, limit=%ds)",
+                    age, OI_STALE_CACHE_SECONDS,
+                )
+                stale = dict(self._cache)
+                pcr      = stale.get("pcr")
+                max_pain = stale.get("max_pain")
+                adj = 0
+                if pcr is not None:
+                    adj += self._score_from_pcr(pcr, signal_direction)
+                adj += self._score_from_max_pain(max_pain, current_price)
+                stale["score_adjustment"] = adj
+                stale["source"]           = "stale_cache"
+                stale["error"]            = f"stale data ({age:.0f}s old)"
+                return stale
+
+            logger.warning("[OI] Option chain unavailable and no usable cache — returning 0 adjustment")
             return {
                 "score_adjustment": 0,
                 "pcr":              None,
                 "max_pain":         None,
                 "atm_bias":         "NEUTRAL",
                 "valid":            False,
-                "error":            "Option chain fetch failed",
+                "error":            "Option chain fetch failed (no cache)",
                 "source":           "none",
             }
 

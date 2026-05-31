@@ -12,12 +12,14 @@ __pycache__/
 *.pyd
 .Python
 
-# --- Trade data (local only) ---
+# --- Trade data (local only — per-day runtime files) ---
 trade_logs/
 trade_logs_archive/
 screenshots/
 temp/
 data/
+decisions/
+trades/
 
 # --- Runtime logs (local only) ---
 logs/

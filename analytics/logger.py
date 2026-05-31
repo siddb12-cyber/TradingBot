@@ -51,6 +51,22 @@ class AnalyticsLogger:
         log.info("[AnalyticsLogger] Initialised | decisions=%s trades=%s",
                  DECISIONS_DIR, TRADES_DIR)
 
+    def load_today_trades(self) -> list:
+        """
+        Load today closed trade records from trades/YYYY-MM-DD.json.
+        Returns an empty list if no trades today or file does not exist.
+        Used by /pnl Telegram command.
+        """
+        today_file = TRADES_DIR / f"{date.today().isoformat()}.json"
+        if not today_file.exists():
+            return []
+        try:
+            data = json.loads(today_file.read_text(encoding="utf-8"))
+            return data if isinstance(data, list) else []
+        except Exception as exc:
+            log.warning("[AnalyticsLogger] load_today_trades failed: %s", exc)
+            return []
+
     # =========================================================================
     # SIGNAL DECISION LOG
     # =========================================================================

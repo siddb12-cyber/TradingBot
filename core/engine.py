@@ -65,6 +65,7 @@ class Engine:
         self._heartbeat   = Heartbeat(self._bot)
         self._pending_since: Optional[datetime] = None
         self._stop        = threading.Event()
+        self._start_time  = datetime.now()   # for /ping uptime
         logger.info("[Engine] Initialised | Paper=%s", PAPER_TRADING_MODE)
 
     # =========================================================================
@@ -303,38 +304,58 @@ class Engine:
                 updates = self._bot.get_updates(offset=last_update_id)
                 for upd in updates:
                     last_update_id = upd["update_id"] + 1
+
+                    # ── Branch 1: inline keyboard callbacks (APPROVE/REJECT/SCALE) ──
                     callback = upd.get("callback_query", {})
-                    if not callback:
-                        continue
-                    action = callback.get("data", "").upper()
-                    if action not in ("APPROVE", "REJECT", "SCALE"):
-                        continue
+                    if callback:
+                        action = callback.get("data", "").upper()
+                        if action not in ("APPROVE", "REJECT", "SCALE"):
+                            continue
 
-                    logger.info("[TGPoller] Callback: %s", action)
+                        logger.info("[TGPoller] Callback: %s", action)
 
-                    if self._trade_mgr.is_pending():
-                        result = self._trade_mgr.handle_approval(action)
-                        if result == "APPROVED":
-                            trade = self._trade_mgr.get_trade()
+                        if self._trade_mgr.is_pending():
+                            result = self._trade_mgr.handle_approval(action)
+                            if result == "APPROVED":
+                                trade = self._trade_mgr.get_trade()
+                                try:
+                                    self._bot.send_trade_open(trade)
+                                except Exception as exc:
+                                    logger.error("[TGPoller] Trade open msg error: %s", exc)
+                            elif result == "REJECTED":
+                                try:
+                                    self._bot.send_text("Trade rejected.")
+                                except Exception:
+                                    pass
                             try:
-                                self._bot.send_trade_open(trade)
-                            except Exception as exc:
-                                logger.error("[TGPoller] Trade open msg error: %s", exc)
-                        elif result == "REJECTED":
-                            try:
-                                self._bot.send_text("Trade rejected.")
+                                self._bot.answer_callback(
+                                    callback.get("id", ""), f"Trade {result.lower()}")
                             except Exception:
                                 pass
-                        try:
-                            self._bot.answer_callback(
-                                callback.get("id", ""), f"Trade {result.lower()}")
-                        except Exception:
-                            pass
-                    else:
-                        try:
-                            self._bot.answer_callback(callback.get("id", ""), "No pending trade")
-                        except Exception:
-                            pass
+                        else:
+                            try:
+                                self._bot.answer_callback(
+                                    callback.get("id", ""), "No pending trade")
+                            except Exception:
+                                pass
+                        continue
+
+                    # ── Branch 2: text commands (/ping /status /pnl) ──────────────
+                    message = upd.get("message", {})
+                    if not message:
+                        continue
+                    text = message.get("text", "").strip().lower().split()[0] if message.get("text") else ""
+                    if not text.startswith("/"):
+                        continue
+
+                    logger.info("[TGPoller] Command: %s", text)
+
+                    if text == "/ping":
+                        self._handle_cmd_ping()
+                    elif text == "/status":
+                        self._handle_cmd_status()
+                    elif text == "/pnl":
+                        self._handle_cmd_pnl()
 
             except Exception as exc:
                 logger.debug("[TGPoller] Poll error: %s", exc)
@@ -346,6 +367,53 @@ class Engine:
 
         logger.info("[TGPoller] Stopped")
 
+    # =========================================================================
+    # COMMAND HANDLERS
+    # =========================================================================
+
+    def _handle_cmd_ping(self) -> None:
+        """Handle /ping — reply with live NIFTY price + uptime."""
+        try:
+            price = self._data.get_live_price()
+        except Exception:
+            price = None
+
+        elapsed   = datetime.now() - self._start_time
+        hours, r  = divmod(int(elapsed.total_seconds()), 3600)
+        mins      = r // 60
+        uptime    = f"{hours}h {mins}m"
+
+        try:
+            self._bot.send_ping_reply(live_price=price, uptime_str=uptime)
+        except Exception as exc:
+            logger.error("[TGPoller] /ping reply failed: %s", exc)
+
+    def _handle_cmd_status(self) -> None:
+        """Handle /status — reply with risk counters + active trade state."""
+        try:
+            risk_state = dict(self._risk.state)
+            risk_state["max_trades_today"] = self._risk.state.get(
+                "max_trades_today",
+                __import__("config.settings", fromlist=["MAX_TRADES_PER_DAY"]).MAX_TRADES_PER_DAY,
+            )
+            trade = self._trade_mgr.get_trade()
+            self._bot.send_status_reply(risk_state=risk_state, trade=trade)
+        except Exception as exc:
+            logger.error("[TGPoller] /status reply failed: %s", exc)
+
+    def _handle_cmd_pnl(self) -> None:
+        """Handle /pnl — reply with today's closed trades summary."""
+        try:
+            from analytics.logger import AnalyticsLogger as AL
+            today_trades = AL().load_today_trades()
+            self._bot.send_pnl_reply(trades_today=today_trades)
+        except Exception as exc:
+            logger.error("[TGPoller] /pnl reply failed: %s", exc)
+            try:
+                self._bot.send_text("⚠️ Could not load today's trades.")
+            except Exception:
+                pass
+
 
 # =============================================================================
 # ENTRY POINT
@@ -353,5 +421,81 @@ class Engine:
 
 def run() -> None:
     """Called by main.py — blocks until stopped."""
+    engine = Engine()
+    engine.run()
+).strip().lower().split()[0] if message.get("text") else ""
+                    if not text.startswith("/"):
+                        continue
+
+                    logger.info("[TGPoller] Command: %s", text)
+
+                    if text == "/ping":
+                        self._handle_cmd_ping()
+                    elif text == "/status":
+                        self._handle_cmd_status()
+                    elif text == "/pnl":
+                        self._handle_cmd_pnl()
+
+            except Exception as exc:
+                logger.debug("[TGPoller] Poll error: %s", exc)
+
+            for _ in range(TELEGRAM_POLL_INTERVAL_SECONDS):
+                if self._stop.is_set():
+                    break
+                time.sleep(1)
+
+        logger.info("[TGPoller] Stopped")
+
+    # =========================================================================
+    # COMMAND HANDLERS
+    # =========================================================================
+
+    def _handle_cmd_ping(self):
+        """Handle /ping -- reply with live NIFTY price + uptime."""
+        try:
+            price = self._data.get_live_price()
+        except Exception:
+            price = None
+
+        elapsed  = datetime.now() - self._start_time
+        hours, r = divmod(int(elapsed.total_seconds()), 3600)
+        mins     = r // 60
+        uptime   = f"{hours}h {mins}m"
+        try:
+            self._bot.send_ping_reply(live_price=price, uptime_str=uptime)
+        except Exception as exc:
+            logger.error("[TGPoller] /ping reply failed: %s", exc)
+
+    def _handle_cmd_status(self):
+        """Handle /status -- reply with risk counters + active trade state."""
+        try:
+            from config.settings import MAX_TRADES_PER_DAY
+            risk_state = dict(self._risk.state)
+            risk_state.setdefault("max_trades_today", MAX_TRADES_PER_DAY)
+            trade = self._trade_mgr.get_trade()
+            self._bot.send_status_reply(risk_state=risk_state, trade=trade)
+        except Exception as exc:
+            logger.error("[TGPoller] /status reply failed: %s", exc)
+
+    def _handle_cmd_pnl(self):
+        """Handle /pnl -- reply with today closed trades summary."""
+        try:
+            from analytics.logger import AnalyticsLogger as AL
+            today_trades = AL().load_today_trades()
+            self._bot.send_pnl_reply(trades_today=today_trades)
+        except Exception as exc:
+            logger.error("[TGPoller] /pnl reply failed: %s", exc)
+            try:
+                self._bot.send_text("Could not load today trades.")
+            except Exception:
+                pass
+
+
+# =============================================================================
+# ENTRY POINT
+# =============================================================================
+
+def run():
+    """Called by main.py -- blocks until stopped."""
     engine = Engine()
     engine.run()

@@ -431,14 +431,14 @@ class TelegramBot:
     # GET UPDATES
     # =========================================================================
 
-    def get_updates(self, offset: Optional[int] = None) -> List[Dict]:
+    def get_updates(self, offset=None):
         """
-        Poll Telegram for new updates.
+        Poll Telegram for new updates (callback buttons + text commands).
         Returns list of update dicts (may be empty).
         """
         params = {
             "timeout":         1,
-            "allowed_updates": ["callback_query"],
+            "allowed_updates": ["callback_query", "message"],
         }
         if offset is not None:
             params["offset"] = offset
@@ -447,3 +447,87 @@ class TelegramBot:
         if resp and resp.get("ok"):
             return resp.get("result", [])
         return []
+
+    # =========================================================================
+    # COMMAND REPLIES  (/ping  /status  /pnl)
+    # =========================================================================
+
+    def send_ping_reply(self, live_price, uptime_str):
+        """Reply to /ping -- live NIFTY price + bot uptime."""
+        price_str = f"{live_price:,.2f}" if live_price else "N/A"
+        text = (
+            "LIVE TradingBot is alive\n\n"
+            f"NIFTY  : <b>{price_str}</b>\n"
+            f"Uptime : {uptime_str}\n"
+            f"Mode   : <b>PAPER</b>"
+        )
+        self.send_text(text)
+
+    def send_status_reply(self, risk_state, trade):
+        """Reply to /status -- risk counters + current trade state."""
+        trades_today  = risk_state.get("trades_today", 0)
+        daily_pnl_pts = risk_state.get("daily_pnl_points", 0.0)
+        consec_losses = risk_state.get("consecutive_losses", 0)
+        locked        = risk_state.get("locked", False)
+        max_trades    = risk_state.get("max_trades_today", 5)
+
+        pnl_sign  = "UP" if daily_pnl_pts >= 0 else "DOWN"
+        lock_str  = "LOCKED" if locked else "Active"
+
+        trade_status = getattr(trade, "status", "IDLE")
+        if trade_status == "OPEN":
+            direction  = getattr(trade, "direction", "")
+            entry      = getattr(trade, "entry_price", 0.0)
+            sl         = getattr(trade, "sl_price", 0.0)
+            milestone  = getattr(trade, "last_milestone", 0)
+            curr       = getattr(trade, "current_price", 0.0)
+            pnl_now    = (curr - entry) if direction == "BULLISH" else (entry - curr)
+            ms_str     = f"  Milestone : T{milestone}" if milestone else ""
+            trade_line = (
+                "\n\n<b>Open Trade</b>\n"
+                f"  Dir   : {direction}\n"
+                f"  Entry : {entry:.2f}  |  SL : {sl:.2f}\n"
+                f"  P&amp;L  : {pnl_now:+.1f} pts"
+                + ms_str
+            )
+        elif trade_status == "PENDING":
+            trade_line = "\n\nAwaiting approval"
+        else:
+            trade_line = "\n\nNo open trade"
+
+        text = (
+            "<b>TradingBot Status</b>\n\n"
+            f"Trades today : {trades_today} / {max_trades}\n"
+            f"Daily P&amp;L  : <b>{daily_pnl_pts:+.2f} pts</b> [{pnl_sign}]\n"
+            f"Consec losses: {consec_losses}\n"
+            f"Bot state    : {lock_str}"
+            + trade_line
+        )
+        self.send_text(text)
+
+    def send_pnl_reply(self, trades_today):
+        """Reply to /pnl -- today's closed trade summary."""
+        if not trades_today:
+            self.send_text("<b>No closed trades today</b>")
+            return
+
+        total_pts = sum(t.get("pnl_points", 0) for t in trades_today)
+        total_inr = sum(t.get("pnl_inr",    0) for t in trades_today)
+        wins  = sum(1 for t in trades_today if t.get("pnl_points", 0) > 0)
+        loses = len(trades_today) - wins
+
+        rows = []
+        for i, t in enumerate(trades_today, 1):
+            pts    = t.get("pnl_points", 0)
+            reason = t.get("close_reason", "?")[:8]
+            sign   = "+" if pts > 0 else ""
+            rows.append(f"  T{i}: {sign}{pts:.1f}pts  [{reason}]")
+
+        sign_emoji = "UP" if total_pts >= 0 else "DOWN"
+        text = (
+            f"<b>Today Trades ({len(trades_today)})</b>\n\n"
+            + "\n".join(rows)
+            + f"\n\n<b>Total : {total_pts:+.1f} pts / {total_inr:+.0f}</b>\n"
+            f"Wins: {wins}  |  Losses: {loses}  [{sign_emoji}]"
+        )
+        self.send_text(text)

@@ -224,7 +224,8 @@ OI_SCORE_CONFIRM: int            = 8
 OI_SCORE_CONTRADICT: int         = -15
 OI_MAX_PAIN_GRAVITY_POINTS: float = 200.0
 OI_MAX_PAIN_GRAVITY_PENALTY: int  = -5
-OI_CACHE_SECONDS: int            = 300
+OI_CACHE_SECONDS: int            = 300   # fresh cache window (5 min)
+OI_STALE_CACHE_SECONDS: int      = 900   # stale fallback window (15 min)
 
 # =============================================================================
 # NEWS SENTIMENT
@@ -285,13 +286,112 @@ TELEGRAM_APPROVAL_TIMEOUT_MINUTES: int = 5
 TELEGRAM_POLL_INTERVAL_SECONDS: int    = 3
 
 # =============================================================================
+# TECHNICAL INDICATORS — NEW MULTI-LAYER SIGNAL ENGINE
+# =============================================================================
+
+# ── RSI ────────────────────────────────────────────────────────────────────
+RSI_PERIOD: int              = 14
+RSI_BULL_IDEAL_MIN: float    = 52.0   # Ideal bull entry zone (momentum rising)
+RSI_BULL_IDEAL_MAX: float    = 70.0   # Upper end of ideal bull zone
+RSI_BEAR_IDEAL_MIN: float    = 30.0   # Lower end of ideal bear zone
+RSI_BEAR_IDEAL_MAX: float    = 48.0   # Ideal bear entry zone (momentum falling)
+RSI_OVERBOUGHT_BLOCK: float  = 75.0   # HARD BLOCK: RSI above this for bull → skip
+RSI_OVERSOLD_BLOCK: float    = 25.0   # HARD BLOCK: RSI below this for bear → skip
+RSI_WARN_UPPER: float        = 68.0   # Warning: approaching overbought (penalty)
+RSI_WARN_LOWER: float        = 32.0   # Warning: approaching oversold (penalty)
+
+# ── MACD ───────────────────────────────────────────────────────────────────
+MACD_FAST: int   = 12
+MACD_SLOW: int   = 26
+MACD_SIGNAL: int = 9
+
+# ── ADX ────────────────────────────────────────────────────────────────────
+ADX_PERIOD: int              = 14
+ADX_SIDEWAYS_BLOCK: float    = 18.0   # HARD BLOCK: ADX below this = sideways → no trade
+ADX_TREND_THRESHOLD: float   = 22.0   # Emerging trend (penalty if below)
+ADX_STRONG_THRESHOLD: float  = 30.0   # Strong trend (bonus)
+ADX_VERY_STRONG: float       = 40.0   # Very strong (higher bonus)
+
+# ── ATR — Dynamic Stop-Loss ────────────────────────────────────────────────
+ATR_PERIOD: int              = 14
+ATR_SL_MULTIPLIER: float     = 1.0    # SL = ATR * this multiplier
+ATR_MIN_POINTS: float        = 10.0   # Minimum dynamic SL
+ATR_MAX_POINTS: float        = 28.0   # Maximum dynamic SL (capped)
+
+# ── EMA Stack (9 / 20 / 50) ──────────────────────────────────────────────
+EMA_SHORT: int   = 9
+EMA_MID: int     = 20
+EMA_LONG: int    = 50
+
+# ── Bollinger Bands ────────────────────────────────────────────────────────
+BB_PERIOD: int   = 20
+BB_STD: float    = 2.0
+
+# ── Supertrend ─────────────────────────────────────────────────────────────
+SUPERTREND_PERIOD: int        = 10
+SUPERTREND_MULTIPLIER: float  = 3.0
+
+# ── Opening Range Breakout (ORB) ──────────────────────────────────────────
+ORB_MINUTES: int        = 15   # First 15 min of session forms the range
+ORB_WINDOW_SKIP: bool   = True # Skip trades while ORB is still forming
+
+# ── Market Structure ──────────────────────────────────────────────────────
+MARKET_STRUCTURE_LOOKBACK: int = 12  # Candles to scan for HH/HL pattern
+
+# =============================================================================
+# NEW SCORING WEIGHTS  (replaces old SCORE_WEIGHT_* constants)
+# Total base score: 0-100 points across 6 layers
+# =============================================================================
+
+SCORE_WEIGHT_TREND:     int = 25   # Layer 1: VWAP + Supertrend direction
+SCORE_WEIGHT_TF_ALIGN:  int = 20   # Layer 2: 5m/15m/1h timeframe alignment
+SCORE_WEIGHT_MOMENTUM:  int = 20   # Layer 3: RSI ideal zone + MACD histogram
+SCORE_WEIGHT_EMA_STACK: int = 15   # Layer 4: EMA 9/20/50 stack aligned
+SCORE_WEIGHT_MARKET_STRUCTURE: int = 10  # Layer 5: HH/HL (bull) or LH/LL (bear)
+SCORE_WEIGHT_ORB:       int = 10   # Layer 6: Price beyond ORB in signal direction
+
+# ── Per-layer bonus/penalty adjustments ────────────────────────────────────
+SCORE_BONUS_ADX_STRONG:      int = 8    # ADX > 30
+SCORE_BONUS_ADX_VERY_STRONG: int = 12   # ADX > 40
+SCORE_BONUS_CANDLE_PATTERN:  int = 5    # Candlestick pattern confirms signal
+
+SCORE_PENALTY_ADX_BORDERLINE: int = -8  # ADX 18-22 (weak but not blocking)
+SCORE_PENALTY_RSI_WARN:        int = -8  # RSI approaching overbought/oversold
+SCORE_PENALTY_LUNCH_HOUR:      int = -5  # During 12:00-13:00 (optional)
+
+# ── Time-based filters ─────────────────────────────────────────────────────
+LUNCH_AVOID_ENABLED: bool       = False  # Enable lunch-hour penalty
+LUNCH_AVOID_START_HOUR: int     = 12
+LUNCH_AVOID_START_MINUTE: int   = 0
+LUNCH_AVOID_END_HOUR: int       = 13
+LUNCH_AVOID_END_MINUTE: int     = 0
+
+
+# =============================================================================
+# GROWW BROKER API
+# Credentials loaded from .env -- never hardcode in source.
+# PAPER_TRADING_MODE must be True until live sign-off (see top of file).
+# =============================================================================
+
+GROWW_API_BASE_URL: str    = "https://api.groww.in/v1"
+GROWW_API_KEY: str         = os.getenv("GROWW_API_KEY", "")
+GROWW_ACCESS_TOKEN: str    = os.getenv("GROWW_ACCESS_TOKEN", "")
+GROWW_API_TIMEOUT: int     = 10     # seconds per request
+GROWW_ORDER_RETRY_MAX: int = 3      # retries on transient failures
+
+# F&O order defaults
+GROWW_EXCHANGE: str        = "NSE"
+GROWW_PRODUCT: str         = "INTRADAY"   # INTRADAY or DELIVERY
+GROWW_ORDER_TYPE: str      = "MARKET"     # MARKET or LIMIT
+GROWW_VALIDITY: str        = "DAY"
+
+# =============================================================================
 # LOGGING
 # =============================================================================
 
 LOG_LEVEL: str    = os.getenv("LOG_LEVEL", "INFO")
 LOG_FORMAT: str   = "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"
 LOG_DATE_FMT: str = "%Y-%m-%d %H:%M:%S"
-
 
 
 def configure_logging() -> None:
