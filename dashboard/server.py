@@ -210,6 +210,91 @@ def api_stats():
     return jsonify({"stats": stats, "period": period})
 
 
+
+
+@app.route("/api/risk")
+def api_risk():
+    """Return current daily risk state."""
+    risk_file = DATA_DIR / "daily_risk_state.json"
+    state = {}
+    if risk_file.exists():
+        try:
+            state = json.loads(risk_file.read_text(encoding="utf-8"))
+        except Exception:
+            pass
+    return jsonify({"risk": state, "timestamp": datetime.now().isoformat()})
+
+
+@app.route("/api/equity")
+def api_equity():
+    """Return daily P&L series for equity curve (period-aware)."""
+    period     = request.args.get("period", "monthly")
+    start, end = _parse_period(period)
+    points     = []
+    cumulative = 0.0
+    current    = start
+    while current <= end:
+        filepath   = TRADES_DIR / (current.strftime("%Y-%m-%d") + ".json")
+        day_pnl    = 0.0
+        day_trades = 0
+        if filepath.exists():
+            try:
+                data = json.loads(filepath.read_text(encoding="utf-8"))
+                if isinstance(data, list):
+                    day_pnl    = sum(t.get("pnl_points", 0) for t in data)
+                    day_trades = len(data)
+            except Exception:
+                pass
+        cumulative += day_pnl
+        points.append({
+            "date":       current.strftime("%d %b"),
+            "day_pnl":    round(day_pnl, 2),
+            "cumulative": round(cumulative, 2),
+            "trades":     day_trades,
+        })
+        current += timedelta(days=1)
+    return jsonify({"equity": points, "period": period})
+
+
+@app.route("/api/config")
+def api_config():
+    """Return read-only key config parameters for the Settings module."""
+    try:
+        from config.settings import (
+            PAPER_TRADING_MODE, NIFTY_STRIKE_INTERVAL, TIMEFRAMES,
+            ADX_SIDEWAYS_BLOCK, ATR_SL_MULTIPLIER, ATR_MIN_POINTS, ATR_MAX_POINTS,
+            CONFIDENCE_MED_THRESHOLD, CONFIDENCE_HIGH_THRESHOLD,
+            CONFIDENCE_VERY_HIGH_THRESHOLD, OI_CACHE_SECONDS, OI_STALE_CACHE_SECONDS,
+            RISK_MAX_TRADES_PER_DAY, RISK_MAX_DAILY_LOSS_PCT,
+            RISK_MAX_RISK_PER_TRADE_PCT, RISK_MAX_CONSECUTIVE_LOSSES,
+            RISK_COOLDOWN_MINUTES, NIFTY_LOT_SIZE, CAPITAL,
+        )
+        cfg = {
+            "PAPER_TRADING_MODE":             PAPER_TRADING_MODE,
+            "CAPITAL":                        CAPITAL,
+            "NIFTY_LOT_SIZE":                 NIFTY_LOT_SIZE,
+            "NIFTY_STRIKE_INTERVAL":          NIFTY_STRIKE_INTERVAL,
+            "TIMEFRAMES":                     str(TIMEFRAMES),
+            "ADX_SIDEWAYS_BLOCK":             ADX_SIDEWAYS_BLOCK,
+            "ATR_SL_MULTIPLIER":              ATR_SL_MULTIPLIER,
+            "ATR_MIN_POINTS":                 ATR_MIN_POINTS,
+            "ATR_MAX_POINTS":                 ATR_MAX_POINTS,
+            "CONFIDENCE_MED_THRESHOLD":       CONFIDENCE_MED_THRESHOLD,
+            "CONFIDENCE_HIGH_THRESHOLD":      CONFIDENCE_HIGH_THRESHOLD,
+            "CONFIDENCE_VERY_HIGH_THRESHOLD": CONFIDENCE_VERY_HIGH_THRESHOLD,
+            "OI_CACHE_SECONDS":               OI_CACHE_SECONDS,
+            "OI_STALE_CACHE_SECONDS":         OI_STALE_CACHE_SECONDS,
+            "RISK_MAX_TRADES_PER_DAY":        RISK_MAX_TRADES_PER_DAY,
+            "RISK_MAX_DAILY_LOSS_PCT":        RISK_MAX_DAILY_LOSS_PCT,
+            "RISK_MAX_RISK_PER_TRADE_PCT":    RISK_MAX_RISK_PER_TRADE_PCT,
+            "RISK_MAX_CONSECUTIVE_LOSSES":    RISK_MAX_CONSECUTIVE_LOSSES,
+            "RISK_COOLDOWN_MINUTES":          RISK_COOLDOWN_MINUTES,
+        }
+    except Exception as exc:
+        cfg = {"error": str(exc)}
+    return jsonify({"config": cfg})
+
+
 # =============================================================================
 # ENTRY POINT (standalone use)
 # =============================================================================
