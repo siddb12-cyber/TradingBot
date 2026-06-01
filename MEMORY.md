@@ -1,5 +1,5 @@
 # TradingBot — Project Memory File
-> Last updated: 2026-05-31 (Session 3)
+> Last updated: 2026-06-01 (Session 4)
 > Owner: Sidhant (Sid) | Company: Haus and Kinder / Rivermoor / Samara Retail India
 > Read this file at the start of every new session before touching any code.
 
@@ -297,6 +297,27 @@ GROWW_ORDER_TYPE = "MARKET"
 ### Session 1: 2026-05-31 — Signal System Overhaul
 Rebuilt signal engine from scratch: 6-layer scoring, hard filters, ADX/RSI/MACD/Supertrend/EMA/ORB/MarketStructure/Candlestick. Created `core/indicators.py` (673 lines). Full rewrite of `signal_engine.py` (842 lines). Major update to `data_engine.py` (829 lines). Updated `trade_manager.py`, `bot.py`, `settings.py`, `logger.py`.
 
+### Session 4: 2026-06-01 — Trading ERP Dashboard + Portability
+
+**Files updated:**
+| File | Lines | Change |
+|------|-------|--------|
+| `dashboard/server.py` | 305 | Added `/api/risk`, `/api/equity`, `/api/config` endpoints |
+| `dashboard/index.html` | 1176 | Full ERP rebuild — 6 modules (see Section below) |
+| `.gitignore` | — | Added `decisions/` and `trades/` to ignore list |
+| `setup.bat` | — | New one-click setup script for any new Windows machine |
+| `MEMORY.md` | — | Added portability section + incremental commit instructions |
+
+**ERP Modules built:**
+- `⚡ Live Monitor` — KPI strip, active trade hero with P&L progress bar + milestone trail, recent signals
+- `📋 Trade Journal` — Sortable table, KPIs, period filter (daily/weekly/monthly/quarterly/yearly)
+- `🔍 Signal Log` — All signals with score bar, tier, ADX, RSI, decision chip
+- `📈 Analytics` — 5 Chart.js charts: equity curve, daily P&L bars, exit reason doughnut, milestone reach, win/loss doughnut
+- `🛡 Risk Monitor` — 3 animated gauges (trades/loss/consecutive), limits panel, state panel, SL ladder reference
+- `⚙ Settings` — Read-only config display from /api/config
+
+**Portability:** Code pushed to https://github.com/siddb12-cyber/TradingBot. Clone + run `setup.bat` on any machine.
+
 ### Session 2–3: 2026-05-31 — Broker Layer + Telegram Commands + OI Fix
 
 **Files created:**
@@ -330,17 +351,13 @@ When Groww API key is purchased, fill in the `TODO` blocks in `broker/groww_clie
 4. Update `.env.example` with `GROWW_API_KEY` and `GROWW_ACCESS_TOKEN`
 5. Test with `PAPER_TRADING_MODE = False` in a staging environment
 
-### Priority 2: Dashboard enhancements
-The Flask dashboard at `localhost:5050` is functional but minimal. Consider:
-- Live trade P&L card (updates every 30s via `data/trade_state.json`)
-- Today's signal decisions log table
-- Daily P&L chart (from `trades/` JSON files)
-
-### Priority 3: Backtesting harness
+### Priority 2: Backtesting harness
 Build `backtest/run.py` that:
 - Loads historical OHLCV data (yfinance)
 - Runs SignalEngine on each candle
 - Simulates trade outcomes with the trailing SL ladder
+- Outputs equity curve + win rate + avg R:R to a CSV
+- Results viewable in the Analytics module of the ERP
 - Outputs P&L curve + win rate + avg R:R
 
 ---
